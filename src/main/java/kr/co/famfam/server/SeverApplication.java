@@ -1,4 +1,4 @@
-package kr.co.famfam.sever;
+package kr.co.famfam.server;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
