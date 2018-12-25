@@ -1,9 +1,9 @@
 package kr.co.famfam.server.domain;
 
-import lombok.Builder;
 import lombok.Data;
 
-import javax.persistence.Entity;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
@@ -14,14 +14,27 @@ import java.util.Date;
 
 @Data
 @Entity
+@Table(name = "user")
 public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "user_seq_generator", sequenceName = "user_seq", allocationSize = 1)
     private int userIdx;
+
+    @NotNull
     private String userId;
+    @NotNull
     private String userPw;
+    @NotNull
     private String userName;
+    @NotNull
     private String userNickName;
+    @NotNull
     private String userPhone;
+    @NotNull
     private Date birthday;
+    @NotNull
     private int sexType;
 
     private String statusMessage;
