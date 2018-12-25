@@ -1,11 +1,11 @@
 package kr.co.famfam.server.utils.auth;
 
+import kr.co.famfam.server.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import kr.co.famfam.server.dto.User;
-import kr.co.famfam.server.mapper.UserMapper;
+import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.service.JwtService;
 import org.springframework.http.HttpStatus;
@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 /**
  * Created by ehay@naver.com on 2018-12-24
@@ -35,16 +36,16 @@ public class AuthAspect {
 
     private final HttpServletRequest httpServletRequest;
 
-    private final UserMapper userMapper;
+    private final UserRepository userRepository;
 
     private final JwtService jwtService;
 
     /**
      * Repository 의존성 주입
      */
-    public AuthAspect(final HttpServletRequest httpServletRequest, final UserMapper userMapper, final JwtService jwtService) {
+    public AuthAspect(final HttpServletRequest httpServletRequest, final UserRepository userRepository, final JwtService jwtService) {
         this.httpServletRequest = httpServletRequest;
-        this.userMapper = userMapper;
+        this.userRepository = userRepository;
         this.jwtService = jwtService;
     }
 
@@ -72,10 +73,10 @@ public class AuthAspect {
         if (token == null) {
             return RES_RESPONSE_ENTITY;
         } else {
-            final User user = userMapper.findByUserIdx(token.getUser_idx());
+            final Optional<User> user = userRepository.findById(token.getUser_idx());
 
             //유효 사용자 검사
-            if (user == null) {
+            if (!user.isPresent()) {
                 return RES_RESPONSE_ENTITY;
             }
 

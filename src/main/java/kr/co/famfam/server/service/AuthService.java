@@ -1,12 +1,14 @@
 package kr.co.famfam.server.service;
 
-import kr.co.famfam.server.dto.User;
-import kr.co.famfam.server.mapper.UserMapper;
+import kr.co.famfam.server.domain.User;
+import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.model.LoginReq;
 import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 /**
  * Created by ehay@naver.com on 2018-12-24
@@ -17,19 +19,19 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
 
-    private final UserMapper userMapper;
+    private final UserRepository userRepository;
     private final JwtService jwtService;
 
-    public AuthService(UserMapper userMapper, JwtService jwtService) {
-        this.userMapper = userMapper;
+    public AuthService(UserRepository userRepository, JwtService jwtService) {
+        this.userRepository = userRepository;
         this.jwtService = jwtService;
     }
 
     public DefaultRes<JwtService.TokenRes> login(final LoginReq loginReq) {
-        final User user = userMapper.findByIdAndPassword(loginReq.getUserId(), loginReq.getUserPw());
-        if (user != null) {
+        final Optional<User> user = userRepository.findUserByUserIdAndUserPw(loginReq.getUserId(), loginReq.getUserPw());
+        if (user.isPresent()) {
             //토큰 생성
-            final JwtService.TokenRes tokenDto = new JwtService.TokenRes(jwtService.create(user.getUserIdx()));
+            final JwtService.TokenRes tokenDto = new JwtService.TokenRes(jwtService.create(user.get().getUserIdx()));
             return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, tokenDto);
         }
 
