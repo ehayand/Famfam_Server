@@ -1,5 +1,8 @@
 package kr.co.famfam.server.service;
 
+import kr.co.famfam.server.domain.Group;
+import kr.co.famfam.server.model.DefaultRes;
+
 /**
  * Created by ehay@naver.com on 2018-12-25
  * Blog : http://ehay.tistory.com
@@ -7,4 +10,6 @@ package kr.co.famfam.server.service;
  */
 
 public interface GroupService {
+
+    DefaultRes save(final Group group);
 }
