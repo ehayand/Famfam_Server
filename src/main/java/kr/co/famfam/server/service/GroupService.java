@@ -12,4 +12,5 @@ import kr.co.famfam.server.model.DefaultRes;
 public interface GroupService {
 
     DefaultRes save(int userIdx);
+    DefaultRes joinGroup(int userIdx, String code);
 }
