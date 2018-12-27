@@ -37,6 +37,8 @@ public class User {
     @NotNull
     private int sexType;
 
+    private int groupIdx;
+
     private String statusMessage;
     private String profilePhoto;
     private String backPhoto;
