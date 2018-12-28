@@ -4,6 +4,7 @@ import kr.co.famfam.server.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -15,4 +16,5 @@ import java.util.Optional;
 @Service
 public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findUserByUserIdAndUserPw(String userId, String userPw);
+    List<User> findUsersByGroupIdx(int groupIdx);
 }
