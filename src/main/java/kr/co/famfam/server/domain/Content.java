@@ -15,6 +15,7 @@ import java.util.Date;
 
 @Data
 @Entity
+@Table(name = "content")
 public class Content {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
