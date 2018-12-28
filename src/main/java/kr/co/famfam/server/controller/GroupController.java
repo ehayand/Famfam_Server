@@ -75,8 +75,7 @@ public class GroupController {
 
     @Auth
     @DeleteMapping("")
-    public ResponseEntity deleteGroup(@RequestHeader("Authorization") final String header,
-                                      @PathVariable(value = "groupIdx") final int groupIdx) {
+    public ResponseEntity deleteGroup(@RequestHeader("Authorization") final String header) {
         try {
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
