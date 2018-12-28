@@ -1,5 +1,6 @@
 package kr.co.famfam.server.service.impl;
 
+import kr.co.famfam.server.domain.Anniversary;
 import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.repository.AnniversaryRepository;
@@ -9,6 +10,7 @@ import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -48,6 +50,24 @@ public class AnniversaryServiceImpl implements AnniversaryService {
         // 기념일 삭제
 
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER);
+    }
+
+    public List<Anniversary> findByYearAndMonth(final int year, final int month){
+
+        List<Anniversary> anniversaries;
+
+        // 년, 월에 맞는 (앞달, 뒷달 포함)세달치 일정 조회
+
+        return anniversaries;
+    }
+
+    public List<Anniversary> findByYearAndMonthAndDate(final int year, final int month, final int date){
+
+        List<Anniversary> anniversaries;
+
+        // 날짜에 맞는 일정 조회
+
+        return anniversaries;
     }
 
 }
