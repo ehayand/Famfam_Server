@@ -49,7 +49,7 @@ public class UserController {
                                                ,@PathVariable("userIdx") final int userIdx) {
         try {
             DefaultRes<User> defaultRes = userService.findById(userIdx);
-            if (jwtService.checkAuth(header, userIdx)) defaultRes.getData().setAuth(true);
+ //           if (jwtService.checkAuth(header, userIdx)) defaultRes.getData().setAuth(true);
             return new ResponseEntity<>(defaultRes, HttpStatus.OK);
 
         } catch (Exception e) {
