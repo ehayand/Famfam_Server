@@ -2,10 +2,7 @@ package kr.co.famfam.server.domain;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -15,15 +12,15 @@ import javax.persistence.Id;
 
 @Data
 @Entity
+@Table(name = "famfam_group")
 public class Group {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idx;
-
-    // 나중에 수정
-    private int userIdx;
+    @SequenceGenerator(name = "group_seq_generator", sequenceName = "group_seq", allocationSize = 1)
+    private int groupIdx;
 
     private String homePhoto;
 
+    private int userIdx;
 }

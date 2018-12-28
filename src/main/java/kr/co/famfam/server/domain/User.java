@@ -22,24 +22,17 @@ public class User {
     @SequenceGenerator(name = "user_seq_generator", sequenceName = "user_seq", allocationSize = 1)
     private int userIdx;
 
-    @NotNull
     private String userId;
-    @NotNull
     private String userPw;
-    @NotNull
     private String userName;
-    @NotNull
     private String userNickName;
-    @NotNull
     private String userPhone;
-    @NotNull
     private Date birthday;
-    @NotNull
     private int sexType;
-
-    private int groupIdx;
 
     private String statusMessage;
     private String profilePhoto;
     private String backPhoto;
+
+    private int groupIdx;
 }
