@@ -15,6 +15,7 @@ import java.util.Date;
 
 @Data
 @Entity
+@Table(name = "content")
 public class Content {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,9 +26,7 @@ public class Content {
     private int commentCount;
     private int feelCount;
 
-    @NotNull
     private int userIdx;
-    @NotNull
     private int groupIdx;
 
     public Content(ContentReq contentReq) {
