@@ -2,6 +2,7 @@ package kr.co.famfam.server.service.impl;
 
 import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.DefaultRes;
+import kr.co.famfam.server.model.HomePhotoReq;
 import kr.co.famfam.server.repository.GroupRepository;
 import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.GroupService;
@@ -30,6 +31,7 @@ public class GroupServiceImpl {
     public DefaultRes joinGroup(int userIdx, String code) {
         Optional<User> user = userRepository.findById(userIdx);
 
+        // 인증 단계(임시)
         int groupIdx = auth(code);
 
         user.get().setGroupIdx(groupIdx);
@@ -41,6 +43,14 @@ public class GroupServiceImpl {
     private int auth(String code) {
         int groupIdx = -1;
 
+        // 인증 코드 확인 작업
+
         return groupIdx;
+    }
+
+    public DefaultRes photoUpdate(HomePhotoReq homePhotoReq){
+
+        // S3에 사진 저장 후 디비에 경로 저장
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_CONTENT);
     }
 }

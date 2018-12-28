@@ -21,5 +21,9 @@ public class Group {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idx;
 
+    // 나중에 수정
+    private int userIdx;
+
+    private String homePhoto;
 
 }

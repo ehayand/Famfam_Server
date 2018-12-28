@@ -1,18 +1,15 @@
 package kr.co.famfam.server.controller;
 
-import kr.co.famfam.server.domain.Group;
-import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.GroupJoinReq;
+import kr.co.famfam.server.model.HomePhotoReq;
 import kr.co.famfam.server.service.GroupService;
 import kr.co.famfam.server.service.JwtService;
 import kr.co.famfam.server.service.UserService;
 import kr.co.famfam.server.utils.auth.Auth;
-import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
+import org.springframework.web.multipart.MultipartFile;
 
 import static kr.co.famfam.server.model.DefaultRes.FAIL_DEFAULT_RES;
 
@@ -36,6 +33,7 @@ public class GroupController {
         try{
             int userIdx = jwtService.decode(jwt).getUser_idx();
             return new ResponseEntity<>(userIdx, HttpStatus.OK);
+
         }catch (Exception e){
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -56,28 +54,31 @@ public class GroupController {
 
     @Auth
     @PutMapping("")
-    public ResponseEntity updateGroup(@RequestHeader("Authorization") final String jwt){
+    public ResponseEntity updateGroup(HomePhotoReq homePhotoReq,
+                                      @RequestPart(value = "photo", required = false) final MultipartFile photo){
         try{
-
-
-            return new ResponseEntity<>( HttpStatus.OK);
+            if(photo != null) homePhotoReq.setPhoto(photo);
+            return new ResponseEntity<>(groupService.photoUpdate(homePhotoReq), HttpStatus.OK);
 
         }catch (Exception e){
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @Auth
+
+    // 그룹 삭제 기능 일단 보류
+
+/*    @Auth
     @DeleteMapping("")
-    public ResponseEntity deleteGroup(@RequestHeader("Authorization") final String jwt,
-                                      @PathVariable(value = "groupIdx") final int groupIdx){
+    public ResponseEntity deleteGroup(@RequestHeader("Authorization") final String jwt){
         try{
+
 
             return new ResponseEntity<>( HttpStatus.OK);
 
         }catch (Exception e){
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
+    }*/
 
 }
