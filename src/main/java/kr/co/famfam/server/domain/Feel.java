@@ -22,4 +22,5 @@ public class Feel {
     private int type;
 
     private int userIdx;
+    private int contentIdx;
 }
