@@ -20,7 +20,6 @@ public class Photo {
     @SequenceGenerator(name = "photo_seq_generator", sequenceName = "photo_seq", allocationSize = 1)
     private int photoIdx;
 
-    @NotNull
     private String photoUrl;
 
     private int contentIdx;

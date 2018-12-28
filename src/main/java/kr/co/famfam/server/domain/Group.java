@@ -20,9 +20,7 @@ public class Group {
     @SequenceGenerator(name = "group_seq_generator", sequenceName = "group_seq", allocationSize = 1)
     private int groupIdx;
 
-    // 나중에 수정
-    private int userIdx;
-
     private String homePhoto;
 
+    private int userIdx;
 }
