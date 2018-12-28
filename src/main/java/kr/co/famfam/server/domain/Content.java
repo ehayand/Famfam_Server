@@ -26,9 +26,7 @@ public class Content {
     private int commentCount;
     private int feelCount;
 
-    @NotNull
     private int userIdx;
-    @NotNull
     private int groupIdx;
 
     public Content(ContentReq contentReq) {
