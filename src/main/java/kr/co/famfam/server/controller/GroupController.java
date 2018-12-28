@@ -1,18 +1,14 @@
 package kr.co.famfam.server.controller;
 
-import kr.co.famfam.server.domain.Group;
-import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.GroupJoinReq;
 import kr.co.famfam.server.model.HomePhotoReq;
 import kr.co.famfam.server.service.GroupService;
 import kr.co.famfam.server.service.JwtService;
-import kr.co.famfam.server.service.UserService;
 import kr.co.famfam.server.utils.auth.Auth;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import org.springframework.web.multipart.MultipartFile;
 
 import static kr.co.famfam.server.model.DefaultRes.FAIL_DEFAULT_RES;

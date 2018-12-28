@@ -38,7 +38,7 @@ public class ContentController {
             @RequestParam("userIdx") final Optional<Integer> userIdx,
             @PageableDefault(sort = {"createdDate"}, direction = Sort.Direction.DESC, size = 3) Pageable pageable) {
         try {
-            int authUserIdx = Integer.parseInt(jwtService.decode(header).toString());
+            int authUserIdx = jwtService.decode(header).getUser_idx();
             log.info("ID : " + authUserIdx);
 
             if(userIdx.isPresent()) return new ResponseEntity<>(contentService.findContentsByUserIdx(userIdx.get(), pageable), HttpStatus.OK);
@@ -56,7 +56,7 @@ public class ContentController {
             @RequestHeader("Authorization") final String header,
             @PathVariable("contentIdx") final int contentIdx) {
         try {
-            int authUserIdx = Integer.parseInt(jwtService.decode(header).toString());
+            int authUserIdx = jwtService.decode(header).getUser_idx();
             log.info("ID : " + authUserIdx);
 
             return new ResponseEntity<>(contentService.findContentById(contentIdx), HttpStatus.OK);
@@ -72,7 +72,7 @@ public class ContentController {
             @RequestHeader("Authorization") final String header,
             @PathVariable("photoIdx") final int photoIdx) {
         try {
-            int authUserIdx = Integer.parseInt(jwtService.decode(header).toString());
+            int authUserIdx = jwtService.decode(header).getUser_idx();
             log.info("ID : " + authUserIdx);
 
             return new ResponseEntity<>(contentService.findContentByPhotoId(photoIdx), HttpStatus.OK);
@@ -89,7 +89,7 @@ public class ContentController {
             ContentReq contentReq,
             @RequestPart(value = "photo", required = false) final MultipartFile[] files) {
         try {
-            int authUserIdx = Integer.parseInt(jwtService.decode(header).toString());
+            int authUserIdx = jwtService.decode(header).getUser_idx();
             log.info("ID : " + authUserIdx);
 
             contentReq.setUserIdx(authUserIdx);
@@ -109,7 +109,7 @@ public class ContentController {
             @PathVariable("contentIdx") final int contentIdx,
             ContentReq contentReq) {
         try {
-            int authUserIdx = Integer.parseInt(jwtService.decode(header).toString());
+            int authUserIdx = jwtService.decode(header).getUser_idx();
             log.info("ID : " + authUserIdx);
 
             return new ResponseEntity<>(contentService.update(contentIdx, contentReq), HttpStatus.OK);
@@ -125,7 +125,7 @@ public class ContentController {
             @RequestHeader("Authorization") final String header,
             @PathVariable("contentIdx") final int contentIdx) {
         try {
-            int authUserIdx = Integer.parseInt(jwtService.decode(header).toString());
+            int authUserIdx = jwtService.decode(header).getUser_idx();
             log.info("ID : " + authUserIdx);
 
             return new ResponseEntity<>(contentService.deleteByContentId(authUserIdx, contentIdx), HttpStatus.OK);

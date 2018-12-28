@@ -63,7 +63,7 @@ public class GroupServiceImpl implements GroupService {
         try {
             Group group = new Group();
             group.setUserIdx(userIdx);
-            int groupIdx = groupRepository.save(group).getIdx();
+            int groupIdx = groupRepository.save(group).getGroupIdx();
 
             user.get().setGroupIdx(groupIdx);
             userRepository.save(user.get());
