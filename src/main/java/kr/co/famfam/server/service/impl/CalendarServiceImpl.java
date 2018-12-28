@@ -56,4 +56,9 @@ public class CalendarServiceImpl implements CalendarService {
 
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, map);
     }
+    public DefaultRes addSchedule(final int type){
+
+        // 타입값에 따라서 가족/개인 캘린더서비스 불러서 일정 추가하기
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER);
+    }
 }

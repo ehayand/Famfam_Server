@@ -53,12 +53,15 @@ public class CalendarController {
 
     @Auth
     @PostMapping("/{type}")
-    public ResponseEntity addSchedule(){
+    public ResponseEntity addSchedule(@PathVariable(value = "type") final int type){
         try{
+            return new ResponseEntity<>(calendarService.addSchedule(type), HttpStatus.OK);
 
         }catch(Exception e){
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
 
 }
