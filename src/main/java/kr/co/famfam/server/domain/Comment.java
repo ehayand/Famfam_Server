@@ -25,5 +25,6 @@ public class Comment {
     private int commentCount;
     private int feelCount;
 
+    private int contentIdx;
     private int userIdx;
 }
