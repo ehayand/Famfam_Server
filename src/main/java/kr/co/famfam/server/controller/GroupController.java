@@ -19,12 +19,10 @@ public class GroupController {
 
     private final GroupService groupService;
     private final JwtService jwtService;
-    private final UserService userService;
 
-    public GroupController(final GroupService groupService, final JwtService jwtService, final UserService userService){
+    public GroupController(final GroupService groupService, final JwtService jwtService){
         this.groupService = groupService;
         this.jwtService = jwtService;
-        this.userService = userService;
     }
 
     @Auth
