@@ -14,4 +14,5 @@ import java.util.List;
 public interface IndividualCalendarService {
 
     List<IndividualCalendar> findByYearAndMonth(int year, int month);
+    List<IndividualCalendar> findByYearAndMonthAndDate(final int year, final int month, final int date);
 }

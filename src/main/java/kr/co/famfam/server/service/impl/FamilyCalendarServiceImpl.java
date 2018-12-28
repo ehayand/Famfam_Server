@@ -35,4 +35,13 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
 
         return familyCalendars;
     }
+
+    public List<FamilyCalendar> findByYearAndMonthAndDate(final int year, final int month, final int date){
+
+        List<FamilyCalendar> familyCalendars;
+
+        // 날짜에 맞는 일정 조회
+
+        return familyCalendars;
+    }
 }

@@ -14,4 +14,5 @@ import java.util.List;
 public interface FamilyCalendarService {
 
     List<FamilyCalendar> findByYearAndMonth(int year, int month);
+    List<FamilyCalendar> findByYearAndMonthAndDate(final int year, final int month, final int date);
 }

@@ -34,4 +34,13 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
 
         return individualCalendars;
     }
+
+    public List<IndividualCalendar> findByYearAndMonthAndDate(final int year, final int month, final int date){
+
+        List<IndividualCalendar> individualCalendars;
+
+        // 날짜에 맞는 일정 조회
+
+        return individualCalendars;
+    }
 }

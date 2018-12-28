@@ -40,4 +40,20 @@ public class CalendarServiceImpl implements CalendarService {
 
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, map);
     }
+
+    public DefaultRes findDaySchedule(final int year, final int month, final int date){
+
+        // 가족 일정, 개인 일정 합치기
+
+        List<IndividualCalendar> individualCalendars = individualCalendarService.findByYearAndMonthAndDate(year, month, date);
+        List<FamilyCalendar> familyCalendars = familyCalendarService.findByYearAndMonthAndDate(year, month, date);
+
+        Map<String, Object> map = new HashMap<>();
+
+        map.put("individual", individualCalendars);
+        map.put("family", familyCalendars);
+
+
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, map);
+    }
 }
