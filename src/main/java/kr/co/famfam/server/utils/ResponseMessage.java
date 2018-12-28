@@ -21,6 +21,19 @@ public class ResponseMessage {
     public static final String UPDATE_CONTENT = "게시글 수정 성공";
     public static final String DELETE_CONTENT = "게시글 삭제 성공";
 
+    public static final String READ_COMMENT = "댓글 조회 성공";
+    public static final String NOT_FOUND_COMMENT = "댓글을 찾을 수 없습니다.";
+    public static final String CREATED_COMMENT = "댓글 작성 성공";
+    public static final String UPDATE_COMMENT = "댓글 수정 성공";
+    public static final String DELETE_COMMENT = "댓글 삭제 성공";
+
+    public static final String READ_FEEL = "감정표현 조회 성공";
+    public static final String NOT_FOUND_FEEL = "감정표현을 찾을 수 없습니다.";
+    public static final String CREATED_FEEL = "감정표현 추가 성공";
+    public static final String UPDATE_FEEL = "감정표현 수정 성공";
+    public static final String DELETE_FEEL = "감정표현 삭제 성공";
+
+    public static final String READ_PHOTO = "사진 조회 성공";
     public static final String NOT_FOUND_PHOTO = "사진을 찾을 수 없습니다.";
 
     public static final String UNAUTHORIZED = "권한이 없습니다.";

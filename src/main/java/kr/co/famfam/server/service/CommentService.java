@@ -1,5 +1,8 @@
 package kr.co.famfam.server.service;
 
+import kr.co.famfam.server.domain.Comment;
+import kr.co.famfam.server.model.DefaultRes;
+
 /**
  * Created by ehay@naver.com on 2018-12-25
  * Blog : http://ehay.tistory.com
@@ -7,4 +10,8 @@ package kr.co.famfam.server.service;
  */
 
 public interface CommentService {
+    DefaultRes findCommentsByContentIdx(final int contentIdx);
+    DefaultRes save(final int contentIdx, final Comment comment);
+    DefaultRes update(final int contentIdx, final Comment comment);
+    DefaultRes delete(final int contentIdx);
 }

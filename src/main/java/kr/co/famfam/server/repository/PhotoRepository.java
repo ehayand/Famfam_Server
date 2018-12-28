@@ -1,6 +1,8 @@
 package kr.co.famfam.server.repository;
 
 import kr.co.famfam.server.domain.Photo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
@@ -12,4 +14,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface PhotoRepository extends JpaRepository<Photo, Integer> {
+    Page<Photo> findPhotosByUserIdx(int userIdx, Pageable pageable);
 }
