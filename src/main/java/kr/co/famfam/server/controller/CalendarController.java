@@ -4,10 +4,7 @@ import kr.co.famfam.server.service.CalendarService;
 import kr.co.famfam.server.utils.auth.Auth;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static kr.co.famfam.server.model.DefaultRes.FAIL_DEFAULT_RES;
 
@@ -50,6 +47,16 @@ public class CalendarController {
             return new ResponseEntity<>(calendarService.findDaySchedule(year, month, date), HttpStatus.OK);
 
         }catch (Exception e){
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Auth
+    @PostMapping("/{type}")
+    public ResponseEntity addSchedule(){
+        try{
+
+        }catch(Exception e){
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
