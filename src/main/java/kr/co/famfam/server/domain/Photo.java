@@ -3,7 +3,6 @@ package kr.co.famfam.server.domain;
 import lombok.Data;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
