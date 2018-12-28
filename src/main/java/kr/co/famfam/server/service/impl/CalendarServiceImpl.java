@@ -61,4 +61,18 @@ public class CalendarServiceImpl implements CalendarService {
         // 타입값에 따라서 가족/개인 캘린더서비스 불러서 일정 추가하기
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER);
     }
+
+    public DefaultRes updateSchedule(final int type, final int calendarIdx){
+
+        // 타입값에 따라서 가족/개인 캘린더서비스 불러서 일정 수정하기
+
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER);
+    }
+
+    public DefaultRes deleteSchedule(final int type, final int calendarIdx){
+
+        // 타입값에 따라서 가족/개인 캘린더서비스 불러서 일정 삭제하기
+
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER);
+    }
 }

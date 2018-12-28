@@ -62,6 +62,29 @@ public class CalendarController {
         }
     }
 
+    @Auth
+    @PutMapping("/{type}/{calendarIdx}")
+    public ResponseEntity updateSchedule(@PathVariable(value = "type") final int type,
+                                         @PathVariable(value = "calendarIdx") final int calendarIdx){
+        try{
+            return new ResponseEntity<>(calendarService.updateSchedule(type, calendarIdx), HttpStatus.OK);
+
+        }catch(Exception e){
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Auth
+    @DeleteMapping("/{type}/{calendarIdx}")
+    public ResponseEntity deleteSchedule(@PathVariable(value = "type") final int type,
+                                         @PathVariable(value = "calendarIdx") final int calendarIdx){
+        try{
+            return new ResponseEntity<>(calendarService.deleteSchedule(type, calendarIdx), HttpStatus.OK);
+
+        }catch(Exception e){
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 
 }
