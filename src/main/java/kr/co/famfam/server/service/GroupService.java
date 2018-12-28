@@ -1,6 +1,5 @@
 package kr.co.famfam.server.service;
 
-import kr.co.famfam.server.domain.Group;
 import kr.co.famfam.server.model.DefaultRes;
 
 /**
@@ -12,5 +11,6 @@ import kr.co.famfam.server.model.DefaultRes;
 public interface GroupService {
 
     DefaultRes save(int userIdx);
+
     DefaultRes joinGroup(int userIdx, String code);
 }
