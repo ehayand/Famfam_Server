@@ -1,6 +1,7 @@
 package kr.co.famfam.server.service.impl;
 
 import kr.co.famfam.server.domain.IndividualCalendar;
+import kr.co.famfam.server.model.CalendarReq;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.repository.FamilyCalendarRepository;
 import kr.co.famfam.server.repository.IndividualCalendarRepository;
@@ -43,4 +44,17 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
 
         return individualCalendars;
     }
+
+    public void addSchedule(final CalendarReq calendarReq){
+        // 일정 추가
+    }
+
+    public void updateSchedule(final int calendarIdx, final CalendarReq calendarReq){
+        // 일정 수정
+    }
+
+    public void deleteSchedule(final int calendarIdx, final CalendarReq calendarReq){
+        // 일정 삭제
+    }
+
 }

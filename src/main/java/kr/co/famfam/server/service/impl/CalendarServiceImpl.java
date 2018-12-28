@@ -2,6 +2,7 @@ package kr.co.famfam.server.service.impl;
 
 import kr.co.famfam.server.domain.FamilyCalendar;
 import kr.co.famfam.server.domain.IndividualCalendar;
+import kr.co.famfam.server.model.CalendarReq;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.service.CalendarService;
 import kr.co.famfam.server.service.FamilyCalendarService;
@@ -26,7 +27,6 @@ public class CalendarServiceImpl implements CalendarService {
     }
 
     public DefaultRes findAllSchedule(final int year, final int month){
-
         // 가족 일정, 개인 일정 합치기
 
         List<IndividualCalendar> individualCalendars = individualCalendarService.findByYearAndMonth(year, month);
@@ -37,12 +37,10 @@ public class CalendarServiceImpl implements CalendarService {
         map.put("individual", individualCalendars);
         map.put("family", familyCalendars);
 
-
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, map);
     }
 
     public DefaultRes findDaySchedule(final int year, final int month, final int date){
-
         // 가족 일정, 개인 일정 합치기
 
         List<IndividualCalendar> individualCalendars = individualCalendarService.findByYearAndMonthAndDate(year, month, date);
@@ -53,25 +51,46 @@ public class CalendarServiceImpl implements CalendarService {
         map.put("individual", individualCalendars);
         map.put("family", familyCalendars);
 
-
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, map);
     }
-    public DefaultRes addSchedule(final int type){
-
+    public DefaultRes addSchedule(final int calendarType, final CalendarReq calendarReq){
         // 타입값에 따라서 가족/개인 캘린더서비스 불러서 일정 추가하기
+
+        if(calendarType == 1){
+            individualCalendarService.addSchedule(calendarReq);
+        }else if(calendarType == 2){
+            familyCalendarService.addSchedule(calendarReq);
+        }else{
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
+        }
+
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER);
     }
 
-    public DefaultRes updateSchedule(final int type, final int calendarIdx){
-
+    public DefaultRes updateSchedule(final int calendarType, final int calendarIdx, final CalendarReq calendarReq){
         // 타입값에 따라서 가족/개인 캘린더서비스 불러서 일정 수정하기
 
+        if(calendarType == 1){
+            individualCalendarService.updateSchedule(calendarIdx, calendarReq);
+        }else if(calendarType == 2){
+            familyCalendarService.updateSchedule(calendarIdx, calendarReq);
+        }else{
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
+        }
+
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER);
     }
 
-    public DefaultRes deleteSchedule(final int type, final int calendarIdx){
-
+    public DefaultRes deleteSchedule(final int calendarType, final int calendarIdx, final CalendarReq calendarReq){
         // 타입값에 따라서 가족/개인 캘린더서비스 불러서 일정 삭제하기
+
+        if(calendarType == 1){
+            individualCalendarService.deleteSchedule(calendarIdx, calendarReq);
+        }else if(calendarType == 2){
+            familyCalendarService.deleteSchedule(calendarIdx, calendarReq);
+        }else{
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
+        }
 
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER);
     }

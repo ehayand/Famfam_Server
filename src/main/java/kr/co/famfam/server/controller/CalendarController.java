@@ -1,5 +1,6 @@
 package kr.co.famfam.server.controller;
 
+import kr.co.famfam.server.model.CalendarReq;
 import kr.co.famfam.server.service.CalendarService;
 import kr.co.famfam.server.utils.auth.Auth;
 import org.springframework.http.HttpStatus;
@@ -52,10 +53,11 @@ public class CalendarController {
     }
 
     @Auth
-    @PostMapping("/{type}")
-    public ResponseEntity addSchedule(@PathVariable(value = "type") final int type){
+    @PostMapping("/{calendarType}")
+    public ResponseEntity addSchedule(@PathVariable(value = "calendarType") final int calendarType,
+                                      @RequestBody CalendarReq calendarReq){
         try{
-            return new ResponseEntity<>(calendarService.addSchedule(type), HttpStatus.OK);
+            return new ResponseEntity<>(calendarService.addSchedule(calendarType, calendarReq), HttpStatus.OK);
 
         }catch(Exception e){
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -63,11 +65,12 @@ public class CalendarController {
     }
 
     @Auth
-    @PutMapping("/{type}/{calendarIdx}")
-    public ResponseEntity updateSchedule(@PathVariable(value = "type") final int type,
-                                         @PathVariable(value = "calendarIdx") final int calendarIdx){
+    @PutMapping("/{calendarType}/{calendarIdx}")
+    public ResponseEntity updateSchedule(@PathVariable(value = "calendarType") final int calendarType,
+                                         @PathVariable(value = "calendarIdx") final int calendarIdx,
+                                         @RequestBody CalendarReq calendarReq){
         try{
-            return new ResponseEntity<>(calendarService.updateSchedule(type, calendarIdx), HttpStatus.OK);
+            return new ResponseEntity<>(calendarService.updateSchedule(calendarType, calendarIdx, calendarReq), HttpStatus.OK);
 
         }catch(Exception e){
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -75,11 +78,12 @@ public class CalendarController {
     }
 
     @Auth
-    @DeleteMapping("/{type}/{calendarIdx}")
-    public ResponseEntity deleteSchedule(@PathVariable(value = "type") final int type,
-                                         @PathVariable(value = "calendarIdx") final int calendarIdx){
+    @DeleteMapping("/{calendarType}/{calendarIdx}")
+    public ResponseEntity deleteSchedule(@PathVariable(value = "calendarType") final int calendarType,
+                                         @PathVariable(value = "calendarIdx") final int calendarIdx,
+                                         @RequestBody CalendarReq calendarReq){
         try{
-            return new ResponseEntity<>(calendarService.deleteSchedule(type, calendarIdx), HttpStatus.OK);
+            return new ResponseEntity<>(calendarService.deleteSchedule(calendarType, calendarIdx, calendarReq), HttpStatus.OK);
 
         }catch(Exception e){
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
