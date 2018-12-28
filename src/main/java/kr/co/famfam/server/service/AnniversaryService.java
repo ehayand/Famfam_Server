@@ -1,5 +1,7 @@
 package kr.co.famfam.server.service;
 
+import kr.co.famfam.server.model.DefaultRes;
+
 /**
  * Created by ehay@naver.com on 2018-12-25
  * Blog : http://ehay.tistory.com
@@ -7,4 +9,9 @@ package kr.co.famfam.server.service;
  */
 
 public interface AnniversaryService {
+    DefaultRes findAll(final int authUserIdx);
+    DefaultRes addAnniversary(final int anniversaryType);
+    DefaultRes deleteAnniversary(final int anniversaryIdx);
 }
+
+
