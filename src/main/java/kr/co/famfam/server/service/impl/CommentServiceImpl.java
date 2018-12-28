@@ -10,6 +10,7 @@ import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.List;
@@ -41,9 +42,10 @@ public class CommentServiceImpl implements CommentService {
 
         //정렬 미구현
 
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, comments);
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_COMMENT, comments);
     }
 
+    @Transactional
     public DefaultRes save(int contentIdx, Comment comment) {
         try {
             // 미구현
@@ -56,6 +58,7 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
+    @Transactional
     public DefaultRes update(int contentIdx, Comment comment) {
         try {
             // 미구현
@@ -68,6 +71,7 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
+    @Transactional
     public DefaultRes delete(int contentIdx) {
         try {
             // 미구현
