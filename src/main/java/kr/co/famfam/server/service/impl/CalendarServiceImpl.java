@@ -1,9 +1,11 @@
 package kr.co.famfam.server.service.impl;
 
+import kr.co.famfam.server.domain.Anniversary;
 import kr.co.famfam.server.domain.FamilyCalendar;
 import kr.co.famfam.server.domain.IndividualCalendar;
 import kr.co.famfam.server.model.CalendarReq;
 import kr.co.famfam.server.model.DefaultRes;
+import kr.co.famfam.server.service.AnniversaryService;
 import kr.co.famfam.server.service.CalendarService;
 import kr.co.famfam.server.service.FamilyCalendarService;
 import kr.co.famfam.server.service.IndividualCalendarService;
@@ -20,10 +22,12 @@ public class CalendarServiceImpl implements CalendarService {
 
     private final IndividualCalendarService individualCalendarService;
     private final FamilyCalendarService familyCalendarService;
+    private final AnniversaryService anniversaryService;
 
-    public CalendarServiceImpl(IndividualCalendarService individualCalendarService, FamilyCalendarService familyCalendarService){
+    public CalendarServiceImpl(IndividualCalendarService individualCalendarService, FamilyCalendarService familyCalendarService, AnniversaryService anniversaryService){
         this.individualCalendarService = individualCalendarService;
         this.familyCalendarService = familyCalendarService;
+        this.anniversaryService = anniversaryService;
     }
 
     public DefaultRes findAllSchedule(final int year, final int month){
@@ -31,11 +35,13 @@ public class CalendarServiceImpl implements CalendarService {
 
         List<IndividualCalendar> individualCalendars = individualCalendarService.findByYearAndMonth(year, month);
         List<FamilyCalendar> familyCalendars = familyCalendarService.findByYearAndMonth(year, month);
+        List<Anniversary> anniversaries = anniversaryService.findByYearAndMonth(year, month);
 
         Map<String, Object> map = new HashMap<>();
 
         map.put("individual", individualCalendars);
         map.put("family", familyCalendars);
+        map.put("anniversary", anniversaries);
 
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, map);
     }
@@ -45,11 +51,13 @@ public class CalendarServiceImpl implements CalendarService {
 
         List<IndividualCalendar> individualCalendars = individualCalendarService.findByYearAndMonthAndDate(year, month, date);
         List<FamilyCalendar> familyCalendars = familyCalendarService.findByYearAndMonthAndDate(year, month, date);
+        List<Anniversary> anniversaries = anniversaryService.findByYearAndMonthAndDate(year, month, date);
 
         Map<String, Object> map = new HashMap<>();
 
         map.put("individual", individualCalendars);
         map.put("family", familyCalendars);
+        map.put("anniversary", anniversaries);
 
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, map);
     }
