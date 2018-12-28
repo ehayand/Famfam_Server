@@ -2,12 +2,8 @@ package kr.co.famfam.server.domain;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -17,11 +13,12 @@ import java.util.List;
 
 @Data
 @Entity
+@Table(name = "individual_calendar")
 public class IndividualCalendar {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idx;
+    @SequenceGenerator(name = "calendar_seq_generator", sequenceName = "calendar_seq", allocationSize = 1)
+    private int calendarIdx;
 
     private Date startDate;
     private Date endDate;
@@ -29,6 +26,5 @@ public class IndividualCalendar {
     private int returningTime;
     private int dinner;
 
-    // 수정 필요
     private int userIdx;
 }

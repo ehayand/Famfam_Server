@@ -15,6 +15,7 @@ public class ResponseMessage {
     public static final String LOGIN_SUCCESS = "로그인 성공";
     public static final String LOGIN_FAIL = "로그인 실패";
 
+    public static final String READ_CONTENT = "게시글 조회 성공";
     public static final String NOT_FOUND_CONTENT = "게시글을 찾을 수 없습니다.";
     public static final String CREATED_CONTENT = "게시글 업로드 성공";
     public static final String UPDATE_CONTENT = "게시글 수정 성공";

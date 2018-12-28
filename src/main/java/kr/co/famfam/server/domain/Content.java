@@ -1,5 +1,6 @@
 package kr.co.famfam.server.domain;
 
+import kr.co.famfam.server.model.ContentReq;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -14,6 +15,7 @@ import java.util.Date;
 
 @Data
 @Entity
+@Table(name = "content")
 public class Content {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,8 +26,12 @@ public class Content {
     private int commentCount;
     private int feelCount;
 
-    @NotNull
     private int userIdx;
-    @NotNull
     private int groupIdx;
+
+    public Content(ContentReq contentReq) {
+        this.content = contentReq.getContent();
+        this.userIdx = contentReq.getUserIdx();
+        this.groupIdx = contentReq.getGroupIdx();
+    }
 }
