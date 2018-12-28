@@ -21,6 +21,7 @@ public class ResponseMessage {
     public static final String UPDATE_CONTENT = "게시글 수정 성공";
     public static final String DELETE_CONTENT = "게시글 삭제 성공";
 
+    public static final String READ_PHOTO = "사진 조회 성공";
     public static final String NOT_FOUND_PHOTO = "사진을 찾을 수 없습니다.";
 
     public static final String UNAUTHORIZED = "권한이 없습니다.";
