@@ -1,5 +1,6 @@
 package kr.co.famfam.server.domain;
 
+import kr.co.famfam.server.model.ContentReq;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -28,4 +29,10 @@ public class Content {
     private int userIdx;
     @NotNull
     private int groupIdx;
+
+    public Content(ContentReq contentReq) {
+        this.content = contentReq.getContent();
+        this.userIdx = contentReq.getUserIdx();
+        this.groupIdx = contentReq.getGroupIdx();
+    }
 }

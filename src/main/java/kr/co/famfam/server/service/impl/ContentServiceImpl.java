@@ -3,10 +3,13 @@ package kr.co.famfam.server.service.impl;
 import kr.co.famfam.server.domain.Content;
 import kr.co.famfam.server.domain.Photo;
 import kr.co.famfam.server.domain.User;
+import kr.co.famfam.server.model.ContentReq;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.repository.ContentRepository;
 import kr.co.famfam.server.repository.PhotoRepository;
 import kr.co.famfam.server.repository.UserRepository;
+import kr.co.famfam.server.service.ContentService;
+import kr.co.famfam.server.service.FileUploadService;
 import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
@@ -26,19 +30,33 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-public class ContentServiceImpl {
+public class ContentServiceImpl implements ContentService {
 
     private final ContentRepository contentRepository;
     private final PhotoRepository photoRepository;
     private final UserRepository userRepository;
+    private final FileUploadService fileUploadService;
 
-    public ContentServiceImpl(ContentRepository contentRepository, PhotoRepository photoRepository, UserRepository userRepository) {
+    public ContentServiceImpl(ContentRepository contentRepository, PhotoRepository photoRepository, UserRepository userRepository, FileUploadService fileUploadService) {
         this.contentRepository = contentRepository;
         this.photoRepository = photoRepository;
         this.userRepository = userRepository;
+        this.fileUploadService = fileUploadService;
     }
 
-    public DefaultRes getAllContents(int userIdx, Pageable pageable) {
+    public DefaultRes findContentsByUserIdx(int userIdx, Pageable pageable) {
+        Optional<User> user = userRepository.findById(userIdx);
+        if (!user.isPresent())
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+        Page<Content> contents = contentRepository.findContentsByUserIdx(userIdx, pageable);
+        if (contents.isEmpty())
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
+
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, contents.getContent());
+    }
+
+    public DefaultRes findContentsByGroupIdx(int userIdx, Pageable pageable) {
         Optional<User> user = userRepository.findById(userIdx);
         if (!user.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
@@ -47,18 +65,18 @@ public class ContentServiceImpl {
         if (contents.isEmpty())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
 
-        return DefaultRes.res(StatusCode.OK, "Message", contents.getContent());
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, contents.getContent());
     }
 
-    public DefaultRes getContentById(int contentIdx) {
+    public DefaultRes findContentById(int contentIdx) {
         Optional<Content> content = contentRepository.findById(contentIdx);
         if (!content.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
 
-        return DefaultRes.res(StatusCode.OK, "Message", content);
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, content);
     }
 
-    public DefaultRes getContentByPhotoId(int photoIdx) {
+    public DefaultRes findContentByPhotoId(int photoIdx) {
         Optional<Photo> photo = photoRepository.findById(photoIdx);
         if (!photo.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_PHOTO);
@@ -67,16 +85,29 @@ public class ContentServiceImpl {
         if (!content.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
 
-        return DefaultRes.res(StatusCode.OK, "Message", content);
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, content);
     }
 
     @Transactional
-    public DefaultRes save(final Content content) {
-        if (content == null)
+    public DefaultRes save(final ContentReq contentReq) {
+        if (contentReq == null)
             return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.NULL_POINTER);
 
         try {
-            contentRepository.save(content);
+            int groupIdx = userRepository.findById(contentReq.getUserIdx()).get().getGroupIdx();
+            contentReq.setGroupIdx(groupIdx);
+            Content content = new Content(contentReq);
+            int contentIdx = contentRepository.save(content).getContentIdx();
+
+            if (contentReq.getPhotos() != null) {
+                for (MultipartFile file : contentReq.getPhotos()) {
+                    Photo photo = new Photo();
+                    photo.setContentIdx(contentIdx);
+                    photo.setPhotoUrl(fileUploadService.upload(file));
+                    photoRepository.save(photo);
+                }
+            }
+
             return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_CONTENT);
         } catch (Exception e) {
             //Rollback
@@ -87,16 +118,16 @@ public class ContentServiceImpl {
     }
 
     @Transactional
-    public DefaultRes update(final int contentIdx, final Content content) {
+    public DefaultRes update(final int contentIdx, final ContentReq contentReq) {
         Optional<Content> oldContent = contentRepository.findById(contentIdx);
         if (!oldContent.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
 
-        if (content == null)
+        if (contentReq == null)
             return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.NULL_POINTER);
 
         try {
-            oldContent.get().setContent(content.getContent());
+            oldContent.get().setContent(contentReq.getContent());
             contentRepository.save(oldContent.get());
             return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.UPDATE_CONTENT);
         } catch (Exception e) {
