@@ -27,13 +27,13 @@ public class GroupController {
     }
 
     @Auth
-    @GetMapping("")
-    public ResponseEntity getGroup(@RequestHeader("Authorization") final String header) {
+    @PostMapping("")
+    public ResponseEntity createGroup(@RequestHeader("Authorization") final String header) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
             log.info("ID : " + authUserIdx);
 
-            return new ResponseEntity<>(authUserIdx, HttpStatus.OK);
+            return new ResponseEntity<>(groupService.save(authUserIdx), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -41,7 +41,7 @@ public class GroupController {
     }
 
     @Auth
-    @PostMapping("/{groupIdx}")
+    @PostMapping("/join")
     public ResponseEntity joinGroup(@RequestHeader("Authorization") final String header,
                                     @RequestBody final GroupJoinReq groupJoinReq) {
         try {
@@ -49,20 +49,6 @@ public class GroupController {
             log.info("ID : " + authUserIdx);
 
             return new ResponseEntity<>(groupService.joinGroup(authUserIdx, groupJoinReq.getCode()), HttpStatus.OK);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Auth
-    @PostMapping("")
-    public ResponseEntity saveGroup(@RequestHeader("Authorization") final String header) {
-        try {
-            int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
-
-            return new ResponseEntity<>(groupService.save(authUserIdx), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -88,8 +74,7 @@ public class GroupController {
 
     @Auth
     @DeleteMapping("")
-    public ResponseEntity deleteGroup(@RequestHeader("Authorization") final String header,
-                                      @PathVariable(value = "groupIdx") final int groupIdx) {
+    public ResponseEntity deleteGroup(@RequestHeader("Authorization") final String header) {
         try {
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
