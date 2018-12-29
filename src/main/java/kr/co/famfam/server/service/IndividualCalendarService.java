@@ -15,8 +15,8 @@ public interface IndividualCalendarService {
 
     List<IndividualCalendar> findByYearAndMonth(int year, int month);
     List<IndividualCalendar> findByYearAndMonthAndDate(final int year, final int month, final int date);
-    void addSchedule(final CalendarReq calendarReq);
+    void addSchedule(final CalendarReq calendarReq, final int authUserIdx);
     void updateSchedule(final int calendarIdx, final CalendarReq calendarReq);
-    void deleteSchedule(final int calendarIdx, final CalendarReq calendarReq);
+    void deleteSchedule(final int calendarIdx);
 
 }

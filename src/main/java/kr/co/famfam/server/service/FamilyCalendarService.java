@@ -15,8 +15,8 @@ public interface FamilyCalendarService {
 
     List<FamilyCalendar> findByYearAndMonth(int year, int month);
     List<FamilyCalendar> findByYearAndMonthAndDate(final int year, final int month, final int date);
-    void addSchedule(final CalendarReq calendarReq);
+    void addSchedule(final CalendarReq calendarReq, final int authUserIdx);
     void updateSchedule(final int calendarIdx, final CalendarReq calendarReq);
-    void deleteSchedule(final int calendarIdx, final CalendarReq calendarReq);
+    void deleteSchedule(final int calendarIdx);
 
 }
