@@ -6,11 +6,14 @@ import java.util.Date;
 
 @Data
 public class CalendarReq {
-    private Date startDate;
-    private Date endDate;
+    private int startYear;
+    private int startMonth;
+    private int startDate;
+    private int endYear;
+    private int endMonth;
+    private int endDate;
     private String content;
 
-    // 가족이랑 개인 같이 써도 되나?
     private int returningTime;
     private int dinner;
 }
