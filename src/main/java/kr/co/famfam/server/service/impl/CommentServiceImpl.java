@@ -1,6 +1,7 @@
 package kr.co.famfam.server.service.impl;
 
 import kr.co.famfam.server.domain.Comment;
+import kr.co.famfam.server.model.CommentDto;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.repository.CommentRepository;
 import kr.co.famfam.server.repository.ContentRepository;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -46,7 +48,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Transactional
-    public DefaultRes save(int contentIdx, Comment comment) {
+    public DefaultRes save(CommentDto commentDto) {
         try {
             // 미구현
             return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_COMMENT);
@@ -59,9 +61,12 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Transactional
-    public DefaultRes update(int contentIdx, Comment comment) {
+    public DefaultRes update(int commentIdx, CommentDto commentDto) {
         try {
-            // 미구현
+            Optional<Comment> comment = commentRepository.findById(commentIdx);
+            comment.get().setContent(commentDto.getContent());
+
+            commentRepository.save(comment.get());
             return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.UPDATE_COMMENT);
         } catch (Exception e) {
             //Rollback
