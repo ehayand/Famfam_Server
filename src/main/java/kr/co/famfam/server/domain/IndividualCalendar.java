@@ -3,7 +3,7 @@ package kr.co.famfam.server.domain;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.sql.Timestamp;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -20,12 +20,8 @@ public class IndividualCalendar {
     @SequenceGenerator(name = "calendar_seq_generator", sequenceName = "calendar_seq", allocationSize = 1)
     private int calendarIdx;
 
-    private int startYear;
-    private int startMonth;
-    private int startDate;
-    private int endYear;
-    private int endMonth;
-    private int endDate;
+    private Timestamp startDate;
+    private Timestamp endDate;
     private String content;
     private int returningTime;
     private int dinner;

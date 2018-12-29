@@ -3,7 +3,7 @@ package kr.co.famfam.server.domain;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.sql.Timestamp;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -21,7 +21,7 @@ public class Comment {
     private int commentIdx;
 
     private String content;
-    private Date createdDate;
+    private Timestamp createdDate;
     private int commentCount;
     private int feelCount;
 
