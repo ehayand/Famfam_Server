@@ -16,5 +16,5 @@ public interface CommentService {
 
     DefaultRes update(final int commentIdx, final CommentDto commentDto);
 
-    DefaultRes delete(final int contentIdx);
+    DefaultRes delete(final int commentIdx);
 }

@@ -22,9 +22,6 @@ public class Comment {
     private int commentIdx;
 
     private String content;
-    private int parent;
-    private int depth;
-    private int seq;
     private Date createdDate;
 
     private int contentIdx;

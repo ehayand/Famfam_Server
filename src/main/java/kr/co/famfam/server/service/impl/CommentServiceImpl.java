@@ -28,29 +28,28 @@ import java.util.Optional;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
-    private final ContentRepository contentRepository;
-    private final UserRepository userRepository;
 
-    public CommentServiceImpl(CommentRepository commentRepository, ContentRepository contentRepository, UserRepository userRepository) {
+    public CommentServiceImpl(CommentRepository commentRepository) {
         this.commentRepository = commentRepository;
-        this.contentRepository = contentRepository;
-        this.userRepository = userRepository;
     }
 
     public DefaultRes findCommentsByContentIdx(int contentIdx) {
-        final List<Comment> comments = commentRepository.findCommentsByContentIdx(contentIdx);
-        if (comments.isEmpty())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_COMMENT);
+        try {
+            final List<Comment> comments = commentRepository.findCommentsByContentIdxOrOrderByCreatedDateAsc(contentIdx);
+            if (comments.isEmpty())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_COMMENT);
 
-        //정렬 미구현
-
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_COMMENT, comments);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_COMMENT, comments);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
     }
 
     @Transactional
     public DefaultRes save(CommentDto commentDto) {
         try {
-            // 미구현
+            commentRepository.save(new Comment(commentDto));
             return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_COMMENT);
         } catch (Exception e) {
             //Rollback
@@ -64,6 +63,9 @@ public class CommentServiceImpl implements CommentService {
     public DefaultRes update(int commentIdx, CommentDto commentDto) {
         try {
             Optional<Comment> comment = commentRepository.findById(commentIdx);
+            if(!comment.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_COMMENT);
+
             comment.get().setContent(commentDto.getContent());
 
             commentRepository.save(comment.get());
@@ -77,9 +79,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Transactional
-    public DefaultRes delete(int contentIdx) {
+    public DefaultRes delete(int commentIdx) {
         try {
-            // 미구현
+            Optional<Comment> comment = commentRepository.findById(commentIdx);
+            if(!comment.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_COMMENT);
+
+            commentRepository.delete(comment.get());
             return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.DELETE_COMMENT);
         } catch (Exception e) {
             //Rollback
