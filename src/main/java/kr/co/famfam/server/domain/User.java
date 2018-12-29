@@ -25,9 +25,10 @@ public class User {
     private String userId;
     private String userPw;
     private String userName;
-    private String userNickName;
     private String userPhone;
-    private Date birthday;
+    private int birthYear;
+    private int birthMonth;
+    private int birthDate;
     private int sexType;
 
     private String statusMessage;

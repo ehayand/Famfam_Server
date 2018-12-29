@@ -21,8 +21,10 @@ public class Anniversary {
     private int anniversaryIdx;
 
     private String name;
-    private Date date;
-    private int type;
+    private int year;
+    private int month;
+    private int date;
+    private int anniversaryType;
 
     private int groupIdx;
 }

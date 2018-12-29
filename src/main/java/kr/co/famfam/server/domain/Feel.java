@@ -19,7 +19,7 @@ public class Feel {
     @SequenceGenerator(name = "feel_seq_generator", sequenceName = "feel_seq", allocationSize = 1)
     private int feelIdx;
 
-    private int type;
+    private int feelType;
 
     private int userIdx;
     private int contentIdx;
