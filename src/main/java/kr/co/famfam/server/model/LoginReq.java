@@ -12,4 +12,9 @@ import lombok.Data;
 public class LoginReq {
     private String userId;
     private String userPw;
+
+    public boolean isLogin() {
+        return (userId != null && userPw != null);
+    }
+
 }

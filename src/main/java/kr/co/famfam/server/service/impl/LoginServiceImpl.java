@@ -2,6 +2,7 @@ package kr.co.famfam.server.service.impl;
 
 import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.DefaultRes;
+import kr.co.famfam.server.model.LoginReq;
 import kr.co.famfam.server.model.SignUpReq;
 import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.JwtService;
@@ -24,15 +25,14 @@ public class LoginServiceImpl implements LoginService {
        this.jwtService=jwtService;
    }
 
-    /**
-     * 로그인
+    /***
      *
-     * @param signUpReq 로그인 폼
-     * @return DefaultRes
+     * @param loginReq
+     * @return
      */
-    public DefaultRes login(SignUpReq signUpReq) {
-        if (signUpReq.isLogin()) {
-            final Optional<User> user = userRepository.findUserByUserIdAndUserPw(signUpReq.getUserId(), signUpReq.getUserPw());
+    public DefaultRes login(LoginReq loginReq) {
+        if (loginReq.isLogin()) {
+            final Optional<User> user = userRepository.findUserByUserIdAndUserPw(loginReq.getUserId(), loginReq.getUserPw());
             if (user != null) {
                 final JwtService.TokenRes tokenRes = new JwtService.TokenRes(jwtService.create(user.get().getUserIdx()));
                 return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, tokenRes);
