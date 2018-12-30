@@ -20,4 +20,6 @@ public interface AnniversaryRepository extends JpaRepository<Anniversary, Intege
 
     @Query("SELECT a FROM anniversary a WHERE a.date LIKE :dateStr%")
     List<Anniversary> findByYearAndMonthAndDate(@Param("dateStr") final String dateStr);
+
+    List<Anniversary> findAnniversariesByGroupIdx(final int groupIdx);
 }
