@@ -66,7 +66,7 @@ public class AnniversaryServiceImpl implements AnniversaryService {
         // 기념일 삭제
 
         anniversaryRepository.deleteById(anniversaryIdx);
-        
+
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER);
     }
 
