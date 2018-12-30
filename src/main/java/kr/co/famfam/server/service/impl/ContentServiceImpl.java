@@ -103,7 +103,7 @@ public class ContentServiceImpl implements ContentService {
                 for (MultipartFile file : contentReq.getPhotos()) {
                     Photo photo = new Photo();
                     photo.setContentIdx(contentIdx);
-                    photo.setPhotoUrl(fileUploadService.upload(file));
+                    photo.setPhotoName(fileUploadService.upload(file));
                     photoRepository.save(photo);
                 }
             }
