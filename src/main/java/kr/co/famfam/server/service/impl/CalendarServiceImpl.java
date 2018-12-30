@@ -67,10 +67,12 @@ public class CalendarServiceImpl implements CalendarService {
     public DefaultRes addSchedule(final int calendarType, final CalendarReq calendarReq, final int authUserIdx){
         // 타입값에 따라서 가족/개인 캘린더서비스 불러서 일정 추가하기
 
+        String allDateStr = allDate(calendarReq);
+
         if(calendarType == 1){
-            individualCalendarService.addSchedule(calendarReq, authUserIdx);
+            individualCalendarService.addSchedule(calendarReq, authUserIdx, allDateStr);
         }else if(calendarType == 2){
-            familyCalendarService.addSchedule(calendarReq, authUserIdx);
+            familyCalendarService.addSchedule(calendarReq, authUserIdx, allDateStr);
         }else{
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
         }
@@ -81,10 +83,12 @@ public class CalendarServiceImpl implements CalendarService {
     public DefaultRes updateSchedule(final int calendarType, final int calendarIdx, final CalendarReq calendarReq){
         // 타입값에 따라서 가족/개인 캘린더서비스 불러서 일정 수정하기
 
+        String allDateStr = allDate(calendarReq);
+
         if(calendarType == 1){
-            individualCalendarService.updateSchedule(calendarIdx, calendarReq);
+            individualCalendarService.updateSchedule(calendarIdx, calendarReq, allDateStr);
         }else if(calendarType == 2){
-            familyCalendarService.updateSchedule(calendarIdx, calendarReq);
+            familyCalendarService.updateSchedule(calendarIdx, calendarReq, allDateStr);
         }else{
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
         }
@@ -107,18 +111,21 @@ public class CalendarServiceImpl implements CalendarService {
     }
 
     public String allDate(final CalendarReq calendarReq){
+
         String startDateStr = calendarReq.getStartDate();
         String endDateStr = calendarReq.getEndDate();
 
         LocalDateTime startDate = LocalDateTime.parse(startDateStr);
         LocalDateTime endDate = LocalDateTime.parse(endDateStr);
 
-        ArrayList<String> allDate = new ArrayList<String>();
+        ArrayList<String> allDate = new ArrayList<>();
 
+        LocalDateTime tempDate = startDate;
+        while (tempDate.compareTo(endDate) <= 0) {
+           allDate.add(tempDate.toString());
+           tempDate = tempDate.plusDays(1);
+        }
 
-
-
-
-        return "";
+        return allDate.toString();
     }
 }

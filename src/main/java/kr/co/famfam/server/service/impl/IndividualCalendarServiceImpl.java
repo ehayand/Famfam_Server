@@ -41,7 +41,7 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
         return individualCalendars;
     }
 
-    public void addSchedule(final CalendarReq calendarReq, final int authUserIdx){
+    public void addSchedule(final CalendarReq calendarReq, final int authUserIdx, final String allDateStr){
         // 일정 추가
 
         IndividualCalendar schedule = new IndividualCalendar();
@@ -49,19 +49,21 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
         schedule.setContent(calendarReq.getContent());
         schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
         schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
+        schedule.setAllDate(allDateStr);
         schedule.setReturningTime(calendarReq.getReturningTime());
         schedule.setDinner(calendarReq.getDinner());
 
         individualCalendarRepository.save(schedule);
     }
 
-    public void updateSchedule(final int calendarIdx, final CalendarReq calendarReq){
+    public void updateSchedule(final int calendarIdx, final CalendarReq calendarReq, final String allDateStr){
         // 일정 수정
 
         IndividualCalendar schedule = individualCalendarRepository.findById(calendarIdx).get();
         schedule.setContent(calendarReq.getContent());
         schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
         schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
+        schedule.setAllDate(allDateStr);
         schedule.setReturningTime(calendarReq.getReturningTime());
         schedule.setDinner(calendarReq.getDinner());
 
