@@ -13,9 +13,11 @@ import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Service
 public class CalendarServiceImpl implements CalendarService {
@@ -30,12 +32,12 @@ public class CalendarServiceImpl implements CalendarService {
         this.anniversaryService = anniversaryService;
     }
 
-    public DefaultRes findAllSchedule(final int year, final int month){
+    public DefaultRes findAllSchedule(final String dateStr){
         // 가족 일정, 개인 일정 합치기
 
-        List<IndividualCalendar> individualCalendars = individualCalendarService.findByYearAndMonth(year, month);
-        List<FamilyCalendar> familyCalendars = familyCalendarService.findByYearAndMonth(year, month);
-        List<Anniversary> anniversaries = anniversaryService.findByYearAndMonth(year, month);
+        List<IndividualCalendar> individualCalendars = individualCalendarService.findByYearAndMonth(dateStr);
+        List<FamilyCalendar> familyCalendars = familyCalendarService.findByYearAndMonth(dateStr);
+        List<Anniversary> anniversaries = anniversaryService.findByYearAndMonth(dateStr);
 
         Map<String, Object> map = new HashMap<>();
 
@@ -46,12 +48,13 @@ public class CalendarServiceImpl implements CalendarService {
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, map);
     }
 
-    public DefaultRes findDaySchedule(final int year, final int month, final int date){
+    public DefaultRes findDaySchedule(final String dateStr){
         // 가족 일정, 개인 일정 합치기
+        dateStr.substring(0, 10);
 
-        List<IndividualCalendar> individualCalendars = individualCalendarService.findByYearAndMonthAndDate(year, month, date);
-        List<FamilyCalendar> familyCalendars = familyCalendarService.findByYearAndMonthAndDate(year, month, date);
-        List<Anniversary> anniversaries = anniversaryService.findByYearAndMonthAndDate(year, month, date);
+        List<IndividualCalendar> individualCalendars = individualCalendarService.findByYearAndMonthAndDate(dateStr);
+        List<FamilyCalendar> familyCalendars = familyCalendarService.findByYearAndMonthAndDate(dateStr);
+        List<Anniversary> anniversaries = anniversaryService.findByYearAndMonthAndDate(dateStr);
 
         Map<String, Object> map = new HashMap<>();
 
@@ -61,13 +64,13 @@ public class CalendarServiceImpl implements CalendarService {
 
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, map);
     }
-    public DefaultRes addSchedule(final int calendarType, final CalendarReq calendarReq){
+    public DefaultRes addSchedule(final int calendarType, final CalendarReq calendarReq, final int authUserIdx){
         // 타입값에 따라서 가족/개인 캘린더서비스 불러서 일정 추가하기
 
         if(calendarType == 1){
-            individualCalendarService.addSchedule(calendarReq);
+            individualCalendarService.addSchedule(calendarReq, authUserIdx);
         }else if(calendarType == 2){
-            familyCalendarService.addSchedule(calendarReq);
+            familyCalendarService.addSchedule(calendarReq, authUserIdx);
         }else{
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
         }
@@ -89,17 +92,33 @@ public class CalendarServiceImpl implements CalendarService {
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER);
     }
 
-    public DefaultRes deleteSchedule(final int calendarType, final int calendarIdx, final CalendarReq calendarReq){
+    public DefaultRes deleteSchedule(final int calendarType, final int calendarIdx){
         // 타입값에 따라서 가족/개인 캘린더서비스 불러서 일정 삭제하기
 
         if(calendarType == 1){
-            individualCalendarService.deleteSchedule(calendarIdx, calendarReq);
+            individualCalendarService.deleteSchedule(calendarIdx);
         }else if(calendarType == 2){
-            familyCalendarService.deleteSchedule(calendarIdx, calendarReq);
+            familyCalendarService.deleteSchedule(calendarIdx);
         }else{
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
         }
 
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER);
+    }
+
+    public String allDate(final CalendarReq calendarReq){
+        String startDateStr = calendarReq.getStartDate();
+        String endDateStr = calendarReq.getEndDate();
+
+        LocalDateTime startDate = LocalDateTime.parse(startDateStr);
+        LocalDateTime endDate = LocalDateTime.parse(endDateStr);
+
+        ArrayList<String> allDate = new ArrayList<String>();
+
+
+
+
+
+        return "";
     }
 }

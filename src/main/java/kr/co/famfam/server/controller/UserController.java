@@ -4,6 +4,7 @@ import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.model.LoginReq;
 import kr.co.famfam.server.model.SignUpReq;
+import kr.co.famfam.server.model.UserRes;
 import kr.co.famfam.server.service.JwtService;
 import kr.co.famfam.server.service.UserService;
 import kr.co.famfam.server.utils.ResponseMessage;
@@ -48,8 +49,8 @@ public class UserController {
     public ResponseEntity<DefaultRes> getUser( @RequestHeader(value = "Authorization") final String header
                                                ,@PathVariable("userIdx") final int userIdx) {
         try {
-            DefaultRes<User> defaultRes = userService.findById(userIdx);
- //           if (jwtService.checkAuth(header, userIdx)) defaultRes.getData().setAuth(true);
+            DefaultRes<UserRes> defaultRes = userService.findById(userIdx);
+            if (jwtService.checkAuth(header, userIdx)) defaultRes.getData().setAuth(true);
             return new ResponseEntity<>(defaultRes, HttpStatus.OK);
 
         } catch (Exception e) {
@@ -59,9 +60,9 @@ public class UserController {
     }
 
     @PostMapping("")
-    public ResponseEntity<DefaultRes> signUp(final User user) {
+    public ResponseEntity<DefaultRes> signUp(final SignUpReq signUpReq) {
         try {
-            return new ResponseEntity<>(userService.save(user), HttpStatus.OK);
+            return new ResponseEntity<>(userService.save(signUpReq), HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);

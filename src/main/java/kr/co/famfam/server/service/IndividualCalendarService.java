@@ -3,6 +3,8 @@ package kr.co.famfam.server.service;
 import kr.co.famfam.server.domain.IndividualCalendar;
 import kr.co.famfam.server.model.CalendarReq;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -13,10 +15,10 @@ import java.util.List;
 
 public interface IndividualCalendarService {
 
-    List<IndividualCalendar> findByYearAndMonth(int year, int month);
-    List<IndividualCalendar> findByYearAndMonthAndDate(final int year, final int month, final int date);
-    void addSchedule(final CalendarReq calendarReq);
+    List<IndividualCalendar> findByYearAndMonth(final String dateStr);
+    List<IndividualCalendar> findByYearAndMonthAndDate(final String dateStr);
+    void addSchedule(final CalendarReq calendarReq, final int authUserIdx);
     void updateSchedule(final int calendarIdx, final CalendarReq calendarReq);
-    void deleteSchedule(final int calendarIdx, final CalendarReq calendarReq);
+    void deleteSchedule(final int calendarIdx);
 
 }

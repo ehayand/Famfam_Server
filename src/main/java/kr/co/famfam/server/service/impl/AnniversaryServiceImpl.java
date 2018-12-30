@@ -10,6 +10,8 @@ import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,20 +54,18 @@ public class AnniversaryServiceImpl implements AnniversaryService {
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER);
     }
 
-    public List<Anniversary> findByYearAndMonth(final int year, final int month){
+    public List<Anniversary> findByYearAndMonth(final String dateStr){
+        // 년, 월에 맞는 (앞달, 뒷달 포함)세달치 기념일 조회
 
-        List<Anniversary> anniversaries;
-
-        // 년, 월에 맞는 (앞달, 뒷달 포함)세달치 일정 조회
+        List<Anniversary> anniversaries = anniversaryRepository.findByYearAndMonth(dateStr);
 
         return anniversaries;
     }
 
-    public List<Anniversary> findByYearAndMonthAndDate(final int year, final int month, final int date){
+    public List<Anniversary> findByYearAndMonthAndDate(final String dateStr){
+        // 날짜에 맞는 기념일 조회
 
-        List<Anniversary> anniversaries;
-
-        // 날짜에 맞는 일정 조회
+        List<Anniversary> anniversaries = anniversaryRepository.findByYearAndMonthAndDate(dateStr);
 
         return anniversaries;
     }

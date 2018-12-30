@@ -2,6 +2,7 @@ package kr.co.famfam.server.service.impl;
 
 import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.DefaultRes;
+import kr.co.famfam.server.model.SignUpReq;
 import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.FileUploadService;
 import kr.co.famfam.server.service.UserService;
@@ -69,16 +70,16 @@ public class UserServiceImpl implements UserService {
     /**
      * 회원 가입
      *
-     * @param user 회원 데이터
+     * @param signUpReq 회원 데이터
      * @return DefaultRes
      */
     @Transactional
-    public DefaultRes save(final User user) {
+    public DefaultRes save(final SignUpReq signUpReq) {
         try {
             /*
                 null 검사
             */
-            userRepository.save(user);
+            userRepository.save(signUpReq);
             return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_USER);
         } catch (Exception e) {
             //Rollback
@@ -105,7 +106,7 @@ public class UserServiceImpl implements UserService {
             /*
                 null 검사
             */
-            temp.get().setUserNickName(user.getUserNickName());
+            temp.get().setUserName(user.getUserName());
             temp.get().setBirthday(user.getBirthday());
             temp.get().setSexType(user.getSexType());
             temp.get().setStatusMessage(user.getStatusMessage());

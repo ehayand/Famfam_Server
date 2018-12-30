@@ -1,6 +1,7 @@
 package kr.co.famfam.server.repository;
 
 import kr.co.famfam.server.domain.User;
+import kr.co.famfam.server.model.SignUpReq;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
@@ -17,4 +18,5 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findUserByUserIdAndUserPw(String userId, String userPw);
     List<User> findUsersByGroupIdx(int groupIdx);
+    Optional<User> save(SignUpReq signUpReq);
 }
