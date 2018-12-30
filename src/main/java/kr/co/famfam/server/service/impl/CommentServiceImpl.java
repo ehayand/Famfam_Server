@@ -35,7 +35,7 @@ public class CommentServiceImpl implements CommentService {
 
     public DefaultRes findCommentsByContentIdx(int contentIdx) {
         try {
-            final List<Comment> comments = commentRepository.findCommentsByContentIdxOrOrderByCreatedDateAsc(contentIdx);
+            final List<Comment> comments = commentRepository.findCommentsByContentIdxOrderByCreatedDateAsc(contentIdx);
             if (comments.isEmpty())
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_COMMENT);
 

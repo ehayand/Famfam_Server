@@ -16,10 +16,10 @@ import java.util.List;
 
 @Service
 public interface FamilyCalendarRepository extends JpaRepository<FamilyCalendar, Integer> {
-
-    @Query("SELECT f FROM familyCalendar f WHERE f.startDate > (:dateStr - INTERVAL 2 MONTH)")
-    List<FamilyCalendar> findByYearAndMonth(@Param("dateStr") final String dateStr);
-
-    @Query("SELECT f FROM familyCalendar f WHERE f.allDate LIKE %:dateStr%")
-    List<FamilyCalendar> findByYearAndMonthAndDate(@Param("dateStr") final String dateStr);
+//
+//    @Query("SELECT f FROM familyCalendar f WHERE f.startDate > (:dateStr - INTERVAL 2 MONTH)")
+//    List<FamilyCalendar> findByYearAndMonth(@Param("dateStr") final String dateStr);
+//
+//    @Query("SELECT f FROM familyCalendar f WHERE f.allDate LIKE %:dateStr%")
+//    List<FamilyCalendar> findByYearAndMonthAndDate(@Param("dateStr") final String dateStr);
 }

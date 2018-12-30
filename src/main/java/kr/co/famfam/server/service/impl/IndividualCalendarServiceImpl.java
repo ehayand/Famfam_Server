@@ -18,62 +18,62 @@ import java.util.List;
 
 @Service
 public class IndividualCalendarServiceImpl implements IndividualCalendarService {
-
-    private final IndividualCalendarRepository individualCalendarRepository;
-
-    public IndividualCalendarServiceImpl(IndividualCalendarRepository individualCalendarRepository){
-        this.individualCalendarRepository = individualCalendarRepository;
-    }
-
-    public List<IndividualCalendar> findByYearAndMonth(final String dateStr){
-        // 년, 월에 맞는 (앞달, 뒷달 포함)세달치 일정 조회
-
-        List<IndividualCalendar> individualCalendars = individualCalendarRepository.findByYearAndMonth(dateStr);
-
-        return individualCalendars;
-    }
-
-    public List<IndividualCalendar> findByYearAndMonthAndDate(final String dateStr){
-         // 날짜에 맞는 일정 조회
-
-        List<IndividualCalendar> individualCalendars = individualCalendarRepository.findByYearAndMonthAndDate(dateStr);
-
-        return individualCalendars;
-    }
-
-    public void addSchedule(final CalendarReq calendarReq, final int authUserIdx, final String allDateStr){
-        // 일정 추가
-
-        IndividualCalendar schedule = new IndividualCalendar();
-        schedule.setUserIdx(authUserIdx);
-        schedule.setContent(calendarReq.getContent());
-        schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
-        schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
-        schedule.setAllDate(allDateStr);
-        schedule.setReturningTime(calendarReq.getReturningTime());
-        schedule.setDinner(calendarReq.getDinner());
-
-        individualCalendarRepository.save(schedule);
-    }
-
-    public void updateSchedule(final int calendarIdx, final CalendarReq calendarReq, final String allDateStr){
-        // 일정 수정
-
-        IndividualCalendar schedule = individualCalendarRepository.findById(calendarIdx).get();
-        schedule.setContent(calendarReq.getContent());
-        schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
-        schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
-        schedule.setAllDate(allDateStr);
-        schedule.setReturningTime(calendarReq.getReturningTime());
-        schedule.setDinner(calendarReq.getDinner());
-
-        individualCalendarRepository.save(schedule);
-    }
-
-    public void deleteSchedule(final int calendarIdx){
-        // 일정 삭제
-
-        individualCalendarRepository.deleteById(calendarIdx);
-    }
+//
+//    private final IndividualCalendarRepository individualCalendarRepository;
+//
+//    public IndividualCalendarServiceImpl(IndividualCalendarRepository individualCalendarRepository){
+//        this.individualCalendarRepository = individualCalendarRepository;
+//    }
+//
+//    public List<IndividualCalendar> findByYearAndMonth(final String dateStr){
+//        // 년, 월에 맞는 (앞달, 뒷달 포함)세달치 일정 조회
+//
+//        List<IndividualCalendar> individualCalendars = individualCalendarRepository.findByYearAndMonth(dateStr);
+//
+//        return individualCalendars;
+//    }
+//
+//    public List<IndividualCalendar> findByYearAndMonthAndDate(final String dateStr){
+//         // 날짜에 맞는 일정 조회
+//
+//        List<IndividualCalendar> individualCalendars = individualCalendarRepository.findByYearAndMonthAndDate(dateStr);
+//
+//        return individualCalendars;
+//    }
+//
+//    public void addSchedule(final CalendarReq calendarReq, final int authUserIdx, final String allDateStr){
+//        // 일정 추가
+//
+//        IndividualCalendar schedule = new IndividualCalendar();
+//        schedule.setUserIdx(authUserIdx);
+//        schedule.setContent(calendarReq.getContent());
+//        schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
+//        schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
+//        schedule.setAllDate(allDateStr);
+//        schedule.setReturningTime(calendarReq.getReturningTime());
+//        schedule.setDinner(calendarReq.getDinner());
+//
+//        individualCalendarRepository.save(schedule);
+//    }
+//
+//    public void updateSchedule(final int calendarIdx, final CalendarReq calendarReq, final String allDateStr){
+//        // 일정 수정
+//
+//        IndividualCalendar schedule = individualCalendarRepository.findById(calendarIdx).get();
+//        schedule.setContent(calendarReq.getContent());
+//        schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
+//        schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
+//        schedule.setAllDate(allDateStr);
+//        schedule.setReturningTime(calendarReq.getReturningTime());
+//        schedule.setDinner(calendarReq.getDinner());
+//
+//        individualCalendarRepository.save(schedule);
+//    }
+//
+//    public void deleteSchedule(final int calendarIdx){
+//        // 일정 삭제
+//
+//        individualCalendarRepository.deleteById(calendarIdx);
+//    }
 
 }

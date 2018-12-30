@@ -2,10 +2,10 @@ package kr.co.famfam.server.domain;
 
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 
-import javax.persistence.Id;
 import java.time.LocalDateTime;
 
 /**
