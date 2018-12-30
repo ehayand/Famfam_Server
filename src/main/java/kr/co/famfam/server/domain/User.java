@@ -3,8 +3,7 @@ package kr.co.famfam.server.domain;
 import lombok.Data;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * Created by ehay@naver.com on 2018-12-24
@@ -24,11 +23,10 @@ public class User {
 
     private String userId;
     private String userPw;
-    private String userName; //닉네임
+    private String userName;
     private String userPhone;
-    private Date birthday;
+    private LocalDateTime birthday;
     private int sexType;
-    private  boolean Auth;
 
     private String statusMessage;
     private String profilePhoto;

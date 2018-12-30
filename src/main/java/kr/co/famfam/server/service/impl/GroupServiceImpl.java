@@ -1,9 +1,11 @@
 package kr.co.famfam.server.service.impl;
 
 import kr.co.famfam.server.domain.Group;
+import kr.co.famfam.server.domain.GroupInvitation;
 import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.model.HomePhotoReq;
+import kr.co.famfam.server.repository.GroupInvitationRepository;
 import kr.co.famfam.server.repository.GroupRepository;
 import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.GroupService;
@@ -14,7 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -26,12 +30,30 @@ import java.util.Optional;
 @Service
 public class GroupServiceImpl implements GroupService {
 
-    private static GroupRepository groupRepository;
-    private static UserRepository userRepository;
+    private final GroupRepository groupRepository;
+    private final UserRepository userRepository;
+    private final GroupInvitationRepository groupInvitationRepository;
 
-    public GroupServiceImpl(final GroupRepository groupRepository, final UserRepository userRepository) {
+    public GroupServiceImpl(GroupRepository groupRepository, UserRepository userRepository, GroupInvitationRepository groupInvitationRepository) {
         this.groupRepository = groupRepository;
         this.userRepository = userRepository;
+        this.groupInvitationRepository = groupInvitationRepository;
+    }
+
+    public DefaultRes getInvitationCode(int userIdx) {
+        Optional<User> user = userRepository.findById(userIdx);
+        if (!user.isPresent()) return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+        try {
+            int groupIdx = user.get().getGroupIdx();
+
+            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.JOIN_SUCCESS, check(groupIdx));
+        } catch (Exception e) {
+            //Rollback
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
     }
 
     @Transactional
@@ -40,13 +62,15 @@ public class GroupServiceImpl implements GroupService {
         if (!user.isPresent()) return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
         try {
-            // 인증 단계(임시)
-            int groupIdx = auth(code);
+            int groupIdx = check(code);
+
+            if(groupIdx == -1)
+                return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.NOT_FOUND_INVITATION);
 
             user.get().setGroupIdx(groupIdx);
             userRepository.save(user.get());
 
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.UPDATE_USER);
+            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.JOIN_SUCCESS);
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -77,17 +101,48 @@ public class GroupServiceImpl implements GroupService {
         }
     }
 
-    private int auth(String code) {
-        int groupIdx = -1;
-
-        // 인증 코드 확인 작업
-
-        return groupIdx;
-    }
-
     public DefaultRes photoUpdate(HomePhotoReq homePhotoReq){
 
         // S3에 사진 저장 후 디비에 경로 저장
         return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_CONTENT);
+    }
+
+    private GroupInvitation create(int groupIdx) {
+        String code = UUID.randomUUID().toString().split("-")[4];
+
+        Optional<GroupInvitation> overlapCheck = groupInvitationRepository.findById(code);
+        if (overlapCheck.isPresent()) {
+            return create(groupIdx);
+        }
+
+        LocalDateTime current = LocalDateTime.now();
+        GroupInvitation invitation = GroupInvitation.builder()
+                                    .code(code)
+                                    .groupIdx(groupIdx)
+                                    .created(current)
+                                    .expired(current.plusMinutes(10))
+                                    .build();
+
+        return invitation;
+    }
+
+    private GroupInvitation check(int groupIdx) {
+        Optional<GroupInvitation> invitation = groupInvitationRepository.findGroupInvitationByGroupIdx(groupIdx);
+        if(invitation.isPresent()) {
+            if (LocalDateTime.now().isBefore(invitation.get().getExpired()))
+                return invitation.get();
+        }
+
+        return create(groupIdx);
+    }
+
+    private int check(String code){
+        Optional<GroupInvitation> invitation = groupInvitationRepository.findById(code);
+        if (invitation.isPresent()) {
+            if (LocalDateTime.now().isBefore(invitation.get().getExpired()))
+                return invitation.get().getGroupIdx();
+        }
+
+        return -1;
     }
 }
