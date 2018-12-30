@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -16,10 +17,10 @@ import java.util.List;
 
 @Service
 public interface FamilyCalendarRepository extends JpaRepository<FamilyCalendar, Integer> {
-//
-//    @Query("SELECT f FROM familyCalendar f WHERE f.startDate > (:dateStr - INTERVAL 2 MONTH)")
-//    List<FamilyCalendar> findByYearAndMonth(@Param("dateStr") final String dateStr);
-//
-//    @Query("SELECT f FROM familyCalendar f WHERE f.allDate LIKE %:dateStr%")
-//    List<FamilyCalendar> findByYearAndMonthAndDate(@Param("dateStr") final String dateStr);
+
+    @Query("SELECT f FROM FamilyCalendar AS f WHERE f.startDate between :startDate and :endDate")
+    List<FamilyCalendar> findByYearAndMonth(@Param("startDate") final LocalDateTime startDate, @Param("endDate") final LocalDateTime endDate);
+
+    @Query(value = "SELECT f FROM familyCalendar f WHERE f.allDate LIKE :dateStr", nativeQuery = true)
+    List<FamilyCalendar> findByYearAndMonthAndDate(@Param("dateStr") final String dateStr);
 }

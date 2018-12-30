@@ -18,58 +18,62 @@ import java.util.List;
 
 @Service
 public class FamilyCalendarServiceImpl implements FamilyCalendarService {
-//
-//    private final FamilyCalendarRepository familyCalendarRepository;
-//
-//    public FamilyCalendarServiceImpl(FamilyCalendarRepository familyCalendarRepository){
-//        this.familyCalendarRepository = familyCalendarRepository;
-//    }
-//
-//    public List<FamilyCalendar> findByYearAndMonth(final String dateStr){
-//        // 년, 월에 맞는 (앞달, 뒷달 포함)세달치 일정 조회
-//
-//        List<FamilyCalendar> familyCalendars = familyCalendarRepository.findByYearAndMonth(dateStr);
-//
-//        return familyCalendars;
-//    }
-//
-//    public List<FamilyCalendar> findByYearAndMonthAndDate(final String dateStr){
-//        // 날짜에 맞는 일정 조회
-//
-//        List<FamilyCalendar> familyCalendars = familyCalendarRepository.findByYearAndMonthAndDate(dateStr);
-//
-//        return familyCalendars;
-//    }
-//
-//    public void addSchedule(final CalendarReq calendarReq, final int authUserIdx, final String allDateStr){
-//        // 일정 추가
-//
-//        FamilyCalendar schedule = new FamilyCalendar();
-//        schedule.setUserIdx(authUserIdx);
-//        schedule.setContent(calendarReq.getContent());
-//        schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
-//        schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
-//        schedule.setAllDate(allDateStr);
-//
-//        familyCalendarRepository.save(schedule);
-//    }
-//
-//    public void updateSchedule(final int calendarIdx, final CalendarReq calendarReq, final String allDateStr){
-//        // 일정 수정
-//
-//        FamilyCalendar schedule = familyCalendarRepository.findById(calendarIdx).get();
-//        schedule.setContent(calendarReq.getContent());
-//        schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
-//        schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
-//        schedule.setAllDate(allDateStr);
-//
-//        familyCalendarRepository.save(schedule);
-//    }
-//
-//    public void deleteSchedule(final int calendarIdx){
-//        // 일정 삭제
-//
-//        familyCalendarRepository.deleteById(calendarIdx);
-//    }
+
+    private final FamilyCalendarRepository familyCalendarRepository;
+
+    public FamilyCalendarServiceImpl(FamilyCalendarRepository familyCalendarRepository){
+        this.familyCalendarRepository = familyCalendarRepository;
+    }
+
+    public List<FamilyCalendar> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate){
+        // 년, 월에 맞는 (앞달, 뒷달 포함)세달치 일정 조회
+
+        List<FamilyCalendar> familyCalendars = familyCalendarRepository.findByYearAndMonth(startDate, endDate);
+
+        return familyCalendars;
+    }
+
+    public List<FamilyCalendar> findByYearAndMonthAndDate(final String dateStr){
+        // 날짜에 맞는 일정 조회
+
+        String per = "%";
+        String tempStr = per.concat(dateStr);
+        String result = tempStr.concat("%");
+
+        List<FamilyCalendar> familyCalendars = familyCalendarRepository.findByYearAndMonthAndDate(result);
+
+        return familyCalendars;
+    }
+
+    public void addSchedule(final CalendarReq calendarReq, final int authUserIdx, final String allDateStr){
+        // 일정 추가
+
+        FamilyCalendar schedule = new FamilyCalendar();
+        schedule.setUserIdx(authUserIdx);
+        schedule.setContent(calendarReq.getContent());
+        schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
+        schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
+        schedule.setAllDate(allDateStr);
+
+        familyCalendarRepository.save(schedule);
+    }
+
+    public void updateSchedule(final int calendarIdx, final CalendarReq calendarReq, final String allDateStr){
+        // 일정 수정
+
+        FamilyCalendar schedule = familyCalendarRepository.findById(calendarIdx).get();
+        schedule.setContent(calendarReq.getContent());
+        schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
+        schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
+        schedule.setAllDate(allDateStr);
+
+        familyCalendarRepository.save(schedule);
+    }
+
+    public void deleteSchedule(final int calendarIdx){
+        // 일정 삭제
+
+        familyCalendarRepository.deleteById(calendarIdx);
+    }
 
 }
