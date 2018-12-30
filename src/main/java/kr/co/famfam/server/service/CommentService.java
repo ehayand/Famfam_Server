@@ -1,6 +1,6 @@
 package kr.co.famfam.server.service;
 
-import kr.co.famfam.server.domain.Comment;
+import kr.co.famfam.server.model.CommentDto;
 import kr.co.famfam.server.model.DefaultRes;
 
 /**
@@ -11,7 +11,10 @@ import kr.co.famfam.server.model.DefaultRes;
 
 public interface CommentService {
     DefaultRes findCommentsByContentIdx(final int contentIdx);
-    DefaultRes save(final int contentIdx, final Comment comment);
-    DefaultRes update(final int contentIdx, final Comment comment);
-    DefaultRes delete(final int contentIdx);
+
+    DefaultRes save(final CommentDto commentDto);
+
+    DefaultRes update(final int commentIdx, final CommentDto commentDto);
+
+    DefaultRes delete(final int commentIdx);
 }

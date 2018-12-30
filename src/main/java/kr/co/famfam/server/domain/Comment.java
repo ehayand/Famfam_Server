@@ -1,5 +1,6 @@
 package kr.co.famfam.server.domain;
 
+import kr.co.famfam.server.model.CommentDto;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -22,9 +23,13 @@ public class Comment {
 
     private String content;
     private Date createdDate;
-    private int commentCount;
-    private int feelCount;
 
     private int contentIdx;
     private int userIdx;
+
+    public Comment(CommentDto commentDto) {
+        this.content = commentDto.getContent();
+        this.contentIdx = commentDto.getContentIdx();
+        this.userIdx = commentDto.getUserIdx();
+    }
 }
