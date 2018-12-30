@@ -79,7 +79,8 @@ public class UserServiceImpl implements UserService {
             /*
                 null 검사
             */
-            userRepository.save(signUpReq);
+
+            userRepository.save(new User(signUpReq));
             return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_USER);
         } catch (Exception e) {
             //Rollback

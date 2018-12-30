@@ -32,7 +32,10 @@ public class LoginServiceImpl implements LoginService {
      */
     public DefaultRes login(LoginReq loginReq) {
         if (loginReq.isLogin()) {
-            final Optional<User> user = userRepository.findUserByUserIdAndUserPw(loginReq.getUserId(), loginReq.getUserPw());
+            User loginUser = new User(loginReq);
+
+            final Optional<User> user = userRepository.findUserByUserIdAndUserPw(loginUser.getUserId(), loginUser.getUserPw());
+
             if (user != null) {
                 final JwtService.TokenRes tokenRes = new JwtService.TokenRes(jwtService.create(user.get().getUserIdx()));
                 return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, tokenRes);

@@ -9,10 +9,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import static kr.co.famfam.server.model.DefaultRes.FAIL_DEFAULT_RES;
 
 @Slf4j
+@RestController
+@RequestMapping("")
 public class LoginController {
     private final LoginService loginService;
     private final JwtService jwtService;
