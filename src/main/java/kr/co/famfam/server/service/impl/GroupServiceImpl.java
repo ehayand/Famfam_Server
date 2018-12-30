@@ -34,6 +34,11 @@ public class GroupServiceImpl implements GroupService {
         this.userRepository = userRepository;
     }
 
+    @Override
+    public DefaultRes getInvitationCode(int userIdx) {
+        return null;
+    }
+
     @Transactional
     public DefaultRes joinGroup(int userIdx, String code) {
         Optional<User> user = userRepository.findById(userIdx);

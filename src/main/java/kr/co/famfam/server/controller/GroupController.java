@@ -21,9 +21,23 @@ public class GroupController {
     private final GroupService groupService;
     private final JwtService jwtService;
 
-    public GroupController(final GroupService groupService, final JwtService jwtService){
+    public GroupController(final GroupService groupService, final JwtService jwtService) {
         this.groupService = groupService;
         this.jwtService = jwtService;
+    }
+
+    @Auth
+    @GetMapping("")
+    public ResponseEntity createInvitationCode(@RequestHeader("Authorization") final String header) {
+        try {
+            int authUserIdx = jwtService.decode(header).getUser_idx();
+            log.info("ID : " + authUserIdx);
+
+            return new ResponseEntity<>(groupService.getInvitationCode(authUserIdx), HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Auth
@@ -59,14 +73,14 @@ public class GroupController {
     @PutMapping("")
     public ResponseEntity updateGroup(@RequestHeader("Authorization") final String header,
                                       HomePhotoReq homePhotoReq,
-                                      @RequestPart(value = "photo", required = false) final MultipartFile photo){
-        try{
+                                      @RequestPart(value = "photo", required = false) final MultipartFile photo) {
+        try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
             log.info("ID : " + authUserIdx);
 
-            if(photo != null) homePhotoReq.setPhoto(photo);
+            if (photo != null) homePhotoReq.setPhoto(photo);
             return new ResponseEntity<>(groupService.photoUpdate(homePhotoReq), HttpStatus.OK);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
