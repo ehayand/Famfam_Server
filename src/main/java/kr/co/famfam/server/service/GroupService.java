@@ -14,6 +14,8 @@ public interface GroupService {
 
     DefaultRes save(int userIdx);
 
+    DefaultRes delete(int groupIdx, int userIdx);
+
     DefaultRes joinGroup(int userIdx, String code);
 
     DefaultRes photoUpdate(HomePhotoReq homePhotoReq);
