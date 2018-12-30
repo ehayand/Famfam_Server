@@ -2,6 +2,8 @@ package kr.co.famfam.server.repository;
 
 import kr.co.famfam.server.domain.FamilyCalendar;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -13,6 +15,9 @@ import java.util.List;
 
 public interface FamilyCalendarRepository extends JpaRepository<FamilyCalendar, Integer> {
 
-    List<FamilyCalendar> findFamilyCalendarsByStartYearAndStartMonth(final int startYear, final int startMonth);
-    List<FamilyCalendar> findFamilyCalendarsByStartYearAndStartMonthAndStartDate(final int startYear, final int startMonth, final int startDate);
+    @Query("SELECT f FROM familyCalendar f WHERE f.startDate > (:dateStr - INTERVAL 2 MONTH)")
+    List<FamilyCalendar> findByYearAndMonth(@Param("dateStr") final String dateStr);
+
+    @Query("SELECT f FROM familyCalendar f WHERE f.allDate LIKE %:dateStr%")
+    List<FamilyCalendar> findByYearAndMonthAndDate(@Param("dateStr") final String dateStr);
 }

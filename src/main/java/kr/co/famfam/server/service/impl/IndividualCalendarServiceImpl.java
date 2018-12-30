@@ -6,6 +6,8 @@ import kr.co.famfam.server.repository.IndividualCalendarRepository;
 import kr.co.famfam.server.service.IndividualCalendarService;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -23,35 +25,20 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
         this.individualCalendarRepository = individualCalendarRepository;
     }
 
-    public List<IndividualCalendar> findByYearAndMonth(final int year, final int month){
+    public List<IndividualCalendar> findByYearAndMonth(final String dateStr){
         // 년, 월에 맞는 (앞달, 뒷달 포함)세달치 일정 조회
 
-        int tempMonth = month, tempYear = year;
-        if(month-1 == 0) {
-            tempMonth = 12;
-            --tempYear;
-        }
-        else if(month+1 == 13) {
-            tempMonth = 1;
-            ++tempYear;
-        }
+        List<IndividualCalendar> individualCalendars = individualCalendarRepository.findByYearAndMonth(dateStr);
 
-        List<IndividualCalendar> current = individualCalendarRepository.findIndividualCalendarsByStartYearAndStartMonth(year, month);
-        List<IndividualCalendar> before = individualCalendarRepository.findIndividualCalendarsByStartYearAndStartMonth(tempYear, tempMonth);
-        List<IndividualCalendar> after = individualCalendarRepository.findIndividualCalendarsByStartYearAndStartMonth(tempYear, tempMonth);
-
-        current.addAll(before);
-        current.addAll(after);
-
-        return current;
+        return individualCalendars;
     }
 
-    public List<IndividualCalendar> findByYearAndMonthAndDate(final int year, final int month, final int date){
+    public List<IndividualCalendar> findByYearAndMonthAndDate(final String dateStr){
          // 날짜에 맞는 일정 조회
 
-        List<IndividualCalendar> oneday = individualCalendarRepository.findIndividualCalendarsByStartYearAndStartMonthAndStartDate(year, month, date);
+        List<IndividualCalendar> individualCalendars = individualCalendarRepository.findByYearAndMonthAndDate(dateStr);
 
-        return oneday;
+        return individualCalendars;
     }
 
     public void addSchedule(final CalendarReq calendarReq, final int authUserIdx){
@@ -60,12 +47,8 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
         IndividualCalendar schedule = new IndividualCalendar();
         schedule.setUserIdx(authUserIdx);
         schedule.setContent(calendarReq.getContent());
-        schedule.setStartYear(calendarReq.getStartYear());
-        schedule.setStartMonth(calendarReq.getStartMonth());
-        schedule.setStartDate(calendarReq.getStartDate());
-        schedule.setEndYear(calendarReq.getEndYear());
-        schedule.setEndMonth(calendarReq.getEndMonth());
-        schedule.setEndDate(calendarReq.getEndDate());
+        schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
+        schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
         schedule.setReturningTime(calendarReq.getReturningTime());
         schedule.setDinner(calendarReq.getDinner());
 
@@ -77,12 +60,8 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
 
         IndividualCalendar schedule = individualCalendarRepository.findById(calendarIdx).get();
         schedule.setContent(calendarReq.getContent());
-        schedule.setStartYear(calendarReq.getStartYear());
-        schedule.setStartMonth(calendarReq.getStartMonth());
-        schedule.setStartDate(calendarReq.getStartDate());
-        schedule.setEndYear(calendarReq.getEndYear());
-        schedule.setEndMonth(calendarReq.getEndMonth());
-        schedule.setEndDate(calendarReq.getEndDate());
+        schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
+        schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
         schedule.setReturningTime(calendarReq.getReturningTime());
         schedule.setDinner(calendarReq.getDinner());
 

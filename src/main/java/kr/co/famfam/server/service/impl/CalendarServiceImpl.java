@@ -13,9 +13,11 @@ import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Service
 public class CalendarServiceImpl implements CalendarService {
@@ -30,12 +32,12 @@ public class CalendarServiceImpl implements CalendarService {
         this.anniversaryService = anniversaryService;
     }
 
-    public DefaultRes findAllSchedule(final int year, final int month){
+    public DefaultRes findAllSchedule(final String dateStr){
         // 가족 일정, 개인 일정 합치기
 
-        List<IndividualCalendar> individualCalendars = individualCalendarService.findByYearAndMonth(year, month);
-        List<FamilyCalendar> familyCalendars = familyCalendarService.findByYearAndMonth(year, month);
-        List<Anniversary> anniversaries = anniversaryService.findByYearAndMonth(year, month);
+        List<IndividualCalendar> individualCalendars = individualCalendarService.findByYearAndMonth(dateStr);
+        List<FamilyCalendar> familyCalendars = familyCalendarService.findByYearAndMonth(dateStr);
+        List<Anniversary> anniversaries = anniversaryService.findByYearAndMonth(dateStr);
 
         Map<String, Object> map = new HashMap<>();
 
@@ -46,12 +48,13 @@ public class CalendarServiceImpl implements CalendarService {
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, map);
     }
 
-    public DefaultRes findDaySchedule(final int year, final int month, final int date){
+    public DefaultRes findDaySchedule(final String dateStr){
         // 가족 일정, 개인 일정 합치기
+        dateStr.substring(0, 10);
 
-        List<IndividualCalendar> individualCalendars = individualCalendarService.findByYearAndMonthAndDate(year, month, date);
-        List<FamilyCalendar> familyCalendars = familyCalendarService.findByYearAndMonthAndDate(year, month, date);
-        List<Anniversary> anniversaries = anniversaryService.findByYearAndMonthAndDate(year, month, date);
+        List<IndividualCalendar> individualCalendars = individualCalendarService.findByYearAndMonthAndDate(dateStr);
+        List<FamilyCalendar> familyCalendars = familyCalendarService.findByYearAndMonthAndDate(dateStr);
+        List<Anniversary> anniversaries = anniversaryService.findByYearAndMonthAndDate(dateStr);
 
         Map<String, Object> map = new HashMap<>();
 
@@ -101,5 +104,21 @@ public class CalendarServiceImpl implements CalendarService {
         }
 
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER);
+    }
+
+    public String allDate(final CalendarReq calendarReq){
+        String startDateStr = calendarReq.getStartDate();
+        String endDateStr = calendarReq.getEndDate();
+
+        LocalDateTime startDate = LocalDateTime.parse(startDateStr);
+        LocalDateTime endDate = LocalDateTime.parse(endDateStr);
+
+        ArrayList<String> allDate = new ArrayList<String>();
+
+
+
+
+
+        return "";
     }
 }

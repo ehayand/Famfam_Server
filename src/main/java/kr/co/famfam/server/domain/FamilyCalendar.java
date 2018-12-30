@@ -25,6 +25,7 @@ public class FamilyCalendar {
 
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+    private String allDate;
     private String content;
 
     private int userIdx;

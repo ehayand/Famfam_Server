@@ -25,15 +25,10 @@ public class CalendarController {
     }
 
     @Auth
-    @GetMapping("")
-    public ResponseEntity getMonthSchedule(@RequestParam(value = "year", defaultValue = "-1") final int year,
-                                           @RequestParam(value = "month", defaultValue = "-1") final int month){
+    @GetMapping("/month/{dateStr}")
+    public ResponseEntity getMonthSchedule(@PathVariable(value = "dateStr") final String dateStr){
         try{
-            // defaultValue값이 string으로 들어가는지 알아서 int형으로 변환 되는지 확인 해야함
-            if(year == -1 || month == -1){
-                return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.BAD_REQUEST);  // status 값 임의로 해뒀음
-            }
-            return new ResponseEntity<>(calendarService.findAllSchedule(year, month), HttpStatus.OK);
+            return new ResponseEntity<>(calendarService.findAllSchedule(dateStr), HttpStatus.OK);
 
         }catch (Exception e){
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -41,16 +36,10 @@ public class CalendarController {
     }
 
     @Auth
-    @GetMapping("")
-    public ResponseEntity getDaySchedule(@RequestParam(value = "year", defaultValue = "-1") final int year,
-                                         @RequestParam(value = "month", defaultValue = "-1") final int month,
-                                         @RequestParam(value = "date", defaultValue = "-1") final int date){
+    @GetMapping("/oneday/{dateStr}")
+    public ResponseEntity getDaySchedule(@PathVariable(value = "dateStr") final String dateStr){
         try{
-            // defaultValue값이 string으로 들어가는지 알아서 int형으로 변환 되는지 확인 해야함
-            if(year == -1 || month == -1){
-                return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.BAD_REQUEST);  // status 값 임의로 해뒀음
-            }
-            return new ResponseEntity<>(calendarService.findDaySchedule(year, month, date), HttpStatus.OK);
+            return new ResponseEntity<>(calendarService.findDaySchedule(dateStr), HttpStatus.OK);
 
         }catch (Exception e){
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
