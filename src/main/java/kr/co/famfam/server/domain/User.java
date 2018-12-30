@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 /**
  * Created by ehay@naver.com on 2018-12-24
@@ -25,7 +26,7 @@ public class User {
     private String userPw;
     private String userName;
     private String userPhone;
-    private Timestamp birthday;
+    private LocalDateTime birthday;
     private int sexType;
 
     private String statusMessage;

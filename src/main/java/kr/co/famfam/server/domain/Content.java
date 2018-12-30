@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -21,7 +22,7 @@ public class Content {
     @SequenceGenerator(name = "content_seq_generator", sequenceName = "content_seq", allocationSize = 1)
     private int contentIdx;
     private String content;
-    private Timestamp createdDate;
+    private LocalDateTime createdDate;
     private int commentCount;
     private int feelCount;
 

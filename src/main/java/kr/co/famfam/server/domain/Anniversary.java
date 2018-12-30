@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -21,7 +22,7 @@ public class Anniversary {
     private int anniversaryIdx;
 
     private String content;
-    private Timestamp date;
+    private LocalDateTime date;
     private int anniversaryType;
 
     private int groupIdx;
