@@ -4,6 +4,7 @@ import kr.co.famfam.server.domain.Anniversary;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
  * Github : http://github.com/ehayand
  */
 
+@Service
 public interface AnniversaryRepository extends JpaRepository<Anniversary, Integer> {
 
     @Query("SELECT a FROM anniversary a WHERE a.date > (:dateStr - INTERVAL 2 MONTH)")
