@@ -24,11 +24,11 @@ public class User {
 
     private String userId;
     private String userPw;
-    private String userName;
-    private String userNickName;
+    private String userName; //닉네임
     private String userPhone;
     private Date birthday;
     private int sexType;
+    private  boolean Auth;
 
     private String statusMessage;
     private String profilePhoto;
