@@ -61,13 +61,13 @@ public class CalendarServiceImpl implements CalendarService {
 
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, map);
     }
-    public DefaultRes addSchedule(final int calendarType, final CalendarReq calendarReq){
+    public DefaultRes addSchedule(final int calendarType, final CalendarReq calendarReq, final int authUserIdx){
         // 타입값에 따라서 가족/개인 캘린더서비스 불러서 일정 추가하기
 
         if(calendarType == 1){
-            individualCalendarService.addSchedule(calendarReq);
+            individualCalendarService.addSchedule(calendarReq, authUserIdx);
         }else if(calendarType == 2){
-            familyCalendarService.addSchedule(calendarReq);
+            familyCalendarService.addSchedule(calendarReq, authUserIdx);
         }else{
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
         }
@@ -89,13 +89,13 @@ public class CalendarServiceImpl implements CalendarService {
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER);
     }
 
-    public DefaultRes deleteSchedule(final int calendarType, final int calendarIdx, final CalendarReq calendarReq){
+    public DefaultRes deleteSchedule(final int calendarType, final int calendarIdx){
         // 타입값에 따라서 가족/개인 캘린더서비스 불러서 일정 삭제하기
 
         if(calendarType == 1){
-            individualCalendarService.deleteSchedule(calendarIdx, calendarReq);
+            individualCalendarService.deleteSchedule(calendarIdx);
         }else if(calendarType == 2){
-            familyCalendarService.deleteSchedule(calendarIdx, calendarReq);
+            familyCalendarService.deleteSchedule(calendarIdx);
         }else{
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
         }

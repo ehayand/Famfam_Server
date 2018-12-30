@@ -4,8 +4,8 @@ import kr.co.famfam.server.model.ContentReq;
 import lombok.Data;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import java.util.Date;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -22,7 +22,7 @@ public class Content {
     @SequenceGenerator(name = "content_seq_generator", sequenceName = "content_seq", allocationSize = 1)
     private int contentIdx;
     private String content;
-    private Date createdDate;
+    private LocalDateTime createdDate;
     private int commentCount;
     private int feelCount;
 

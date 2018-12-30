@@ -3,7 +3,8 @@ package kr.co.famfam.server.domain;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -20,9 +21,9 @@ public class Anniversary {
     @SequenceGenerator(name = "anniversary_seq_generator", sequenceName = "anniversary_seq", allocationSize = 1)
     private int anniversaryIdx;
 
-    private String name;
-    private Date date;
-    private int type;
+    private String content;
+    private LocalDateTime date;
+    private int anniversaryType;
 
     private int groupIdx;
 }
