@@ -2,6 +2,7 @@ package kr.co.famfam.server.service.impl;
 
 import kr.co.famfam.server.domain.Anniversary;
 import kr.co.famfam.server.domain.User;
+import kr.co.famfam.server.model.AnniversaryReq;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.repository.AnniversaryRepository;
 import kr.co.famfam.server.repository.UserRepository;
@@ -38,18 +39,33 @@ public class AnniversaryServiceImpl implements AnniversaryService {
         Optional<User> user = userRepository.findById(authUserIdx);
         int groupIdx = user.get().getGroupIdx();
 
+        List<Anniversary> anniversaries = anniversaryRepository.findAnniversariesByGroupIdx(groupIdx);
 
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER);
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, anniversaries);
     }
 
-    public DefaultRes addAnniversary(final int anniversaryType){
+    public DefaultRes addAnniversary(final int anniversaryType, final AnniversaryReq anniversaryReq){
         // 타입값에 따라 기념일 추가
+
+        Anniversary anniversary = new Anniversary();
+
+        if(anniversaryType == 1 || anniversaryType == 2 || anniversaryType == 3){
+            anniversary.setAnniversaryType(anniversaryReq.getAnniversaryType());
+            anniversary.setContent(anniversaryReq.getContent());
+            anniversary.setDate(anniversaryReq.getDate());
+
+            anniversaryRepository.save(anniversary);
+        }else {
+            return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.NOT_FOUND_CONTENT);
+        }
 
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER);
     }
 
     public DefaultRes deleteAnniversary(final int anniversaryIdx){
         // 기념일 삭제
+
+        anniversaryRepository.deleteById(anniversaryIdx);
 
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER);
     }

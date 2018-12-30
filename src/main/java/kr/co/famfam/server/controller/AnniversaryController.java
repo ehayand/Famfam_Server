@@ -1,5 +1,6 @@
 package kr.co.famfam.server.controller;
 
+import kr.co.famfam.server.model.AnniversaryReq;
 import kr.co.famfam.server.service.AnniversaryService;
 import kr.co.famfam.server.service.JwtService;
 import kr.co.famfam.server.utils.auth.Auth;
@@ -34,9 +35,10 @@ public class AnniversaryController {
 
     @Auth
     @PostMapping("/{anniversaryType}")
-    public ResponseEntity addAnniversary(@PathVariable(value = "anniversaryType") final int anniversaryType){
+    public ResponseEntity addAnniversary(@PathVariable(value = "anniversaryType") final int anniversaryType,
+                                         @RequestBody AnniversaryReq anniversaryReq){
         try{
-            return new ResponseEntity<>(anniversaryService.addAnniversary(anniversaryType), HttpStatus.OK);
+            return new ResponseEntity<>(anniversaryService.addAnniversary(anniversaryType, anniversaryReq), HttpStatus.OK);
 
         }catch(Exception e){
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);

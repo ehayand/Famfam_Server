@@ -41,7 +41,7 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
         return familyCalendars;
     }
 
-    public void addSchedule(final CalendarReq calendarReq, final int authUserIdx){
+    public void addSchedule(final CalendarReq calendarReq, final int authUserIdx, final String allDateStr){
         // 일정 추가
 
         FamilyCalendar schedule = new FamilyCalendar();
@@ -49,18 +49,19 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
         schedule.setContent(calendarReq.getContent());
         schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
         schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
+        schedule.setAllDate(allDateStr);
 
         familyCalendarRepository.save(schedule);
     }
 
-    public void updateSchedule(final int calendarIdx, final CalendarReq calendarReq){
+    public void updateSchedule(final int calendarIdx, final CalendarReq calendarReq, final String allDateStr){
         // 일정 수정
 
         FamilyCalendar schedule = familyCalendarRepository.findById(calendarIdx).get();
         schedule.setContent(calendarReq.getContent());
         schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
         schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
-
+        schedule.setAllDate(allDateStr);
 
         familyCalendarRepository.save(schedule);
     }
