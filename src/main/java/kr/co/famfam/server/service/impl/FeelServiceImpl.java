@@ -1,9 +1,11 @@
 package kr.co.famfam.server.service.impl;
 
 import kr.co.famfam.server.domain.Feel;
+import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.DefaultRes;
-import kr.co.famfam.server.repository.ContentRepository;
+import kr.co.famfam.server.model.FeelRes;
 import kr.co.famfam.server.repository.FeelRepository;
+import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.FeelService;
 import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
@@ -12,7 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -25,25 +29,49 @@ import java.util.List;
 public class FeelServiceImpl implements FeelService {
 
     private final FeelRepository feelRepository;
-    private final ContentRepository contentRepository;
+    private final UserRepository userRepository;
 
-    public FeelServiceImpl(FeelRepository feelRepository, ContentRepository contentRepository) {
+    public FeelServiceImpl(FeelRepository feelRepository, UserRepository userRepository) {
         this.feelRepository = feelRepository;
-        this.contentRepository = contentRepository;
+        this.userRepository = userRepository;
     }
 
     public DefaultRes findFeelsByContentIdx(int contentIdx) {
-        final List<Feel> feels = feelRepository.findFeelsByContentIdx(contentIdx);
-        if (feels.isEmpty())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_FEEL);
+        try {
+            final List<Feel> feels = feelRepository.findFeelsByContentIdxOrderByCreatedDateAsc(contentIdx);
 
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_FEEL, feels);
+            if (feels.isEmpty())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_FEEL);
+
+            List<Integer> types = new ArrayList<>();
+            for (Feel feel : feels)
+                types.add(feel.getType());
+
+            Optional<User> firstUser = userRepository.findById(feels.get(0).getUserIdx());
+            if (!firstUser.isPresent())
+                return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.INTERNAL_SERVER_ERROR);
+
+            FeelRes feelRes = new FeelRes();
+            feelRes.setTypes(types);
+            feelRes.setFirstUserName(firstUser.get().getUserName());
+            feelRes.setFeelCount(feels.size());
+
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_FEEL, feelRes);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
     }
 
     @Transactional
-    public DefaultRes save(int contentIdx, int type) {
+    public DefaultRes save(int contentIdx, int userIdx, int type) {
         try {
-            // 미구현
+            Feel feel = new Feel();
+            feel.setContentIdx(contentIdx);
+            feel.setType(type);
+            feel.setUserIdx(userIdx);
+
+            feelRepository.save(feel);
             return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.CREATED_FEEL);
         } catch (Exception e) {
             //Rollback
@@ -56,7 +84,11 @@ public class FeelServiceImpl implements FeelService {
     @Transactional
     public DefaultRes delete(int feelIdx) {
         try {
-            // 미구현
+            Optional<Feel> feel = feelRepository.findById(feelIdx);
+            if (!feel.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_FEEL);
+
+            feelRepository.delete(feel.get());
             return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.DELETE_FEEL);
         } catch (Exception e) {
             //Rollback

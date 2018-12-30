@@ -3,6 +3,7 @@ package kr.co.famfam.server.domain;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -20,6 +21,7 @@ public class Feel {
     private int feelIdx;
 
     private int type;
+    private LocalDateTime createdDate;
 
     private int userIdx;
     private int contentIdx;
