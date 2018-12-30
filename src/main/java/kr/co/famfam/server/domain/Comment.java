@@ -1,10 +1,10 @@
 package kr.co.famfam.server.domain;
 
+import kr.co.famfam.server.model.CommentDto;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -22,10 +22,14 @@ public class Comment {
     private int commentIdx;
 
     private String content;
-    private LocalDateTime createdDate;
-    private int commentCount;
-    private int feelCount;
+    private Date createdDate;
 
     private int contentIdx;
     private int userIdx;
+
+    public Comment(CommentDto commentDto) {
+        this.content = commentDto.getContent();
+        this.contentIdx = commentDto.getContentIdx();
+        this.userIdx = commentDto.getUserIdx();
+    }
 }

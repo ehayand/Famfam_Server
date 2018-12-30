@@ -49,7 +49,7 @@ public class FeelController {
             int authUserIdx = jwtService.decode(header).getUser_idx();
             log.info("ID : " + authUserIdx);
 
-            return new ResponseEntity<>(feelService.save(contentIdx, type), HttpStatus.OK);
+            return new ResponseEntity<>(feelService.save(contentIdx, authUserIdx, type), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);

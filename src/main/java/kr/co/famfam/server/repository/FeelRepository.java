@@ -14,5 +14,5 @@ import java.util.List;
 
 @Service
 public interface FeelRepository extends JpaRepository<Feel, Integer> {
-    List<Feel> findFeelsByContentIdx(int contentIdx);
+    List<Feel> findFeelsByContentIdxOrderByCreatedDateAsc(int contentIdx);
 }

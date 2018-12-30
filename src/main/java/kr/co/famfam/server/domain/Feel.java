@@ -3,6 +3,7 @@ package kr.co.famfam.server.domain;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -19,7 +20,8 @@ public class Feel {
     @SequenceGenerator(name = "feel_seq_generator", sequenceName = "feel_seq", allocationSize = 1)
     private int feelIdx;
 
-    private int feelType;
+    private int type;
+    private LocalDateTime createdDate;
 
     private int userIdx;
     private int contentIdx;

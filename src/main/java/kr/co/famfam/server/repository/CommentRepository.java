@@ -14,5 +14,5 @@ import java.util.List;
 
 @Service
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
-    List<Comment> findCommentsByContentIdx(int contentIdx);
+    List<Comment> findCommentsByContentIdxOrOrderByCreatedDateAsc(int contentIdx);
 }
