@@ -16,12 +16,12 @@ import java.util.List;
 
 @Service
 public interface AnniversaryRepository extends JpaRepository<Anniversary, Integer> {
-
-    @Query("SELECT a FROM anniversary a WHERE a.date > (:dateStr - INTERVAL 2 MONTH)")
-    List<Anniversary> findByYearAndMonth(@Param("dateStr") final String dateStr);
-
-    @Query("SELECT a FROM anniversary a WHERE a.date LIKE :dateStr%")
-    List<Anniversary> findByYearAndMonthAndDate(@Param("dateStr") final String dateStr);
-
-    List<Anniversary> findAnniversariesByGroupIdx(final int groupIdx);
+//
+//    @Query("SELECT a FROM anniversary a WHERE a.date > (:dateStr - INTERVAL 2 MONTH)")
+//    List<Anniversary> findByYearAndMonth(@Param("dateStr") final String dateStr);
+//
+//    @Query("SELECT a FROM anniversary a WHERE a.date LIKE :dateStr%")
+//    List<Anniversary> findByYearAndMonthAndDate(@Param("dateStr") final String dateStr);
+//
+//    List<Anniversary> findAnniversariesByGroupIdx(final int groupIdx);
 }

@@ -14,11 +14,11 @@ import java.util.List;
  */
 
 public interface FamilyCalendarService {
-
-    List<FamilyCalendar> findByYearAndMonth(final String dateStr);
-    List<FamilyCalendar> findByYearAndMonthAndDate(final String dateStr);
-    void addSchedule(final CalendarReq calendarReq, final int authUserIdx, final String allDateStr);
-    void updateSchedule(final int calendarIdx, final CalendarReq calendarReq, final String allDateStr);
-    void deleteSchedule(final int calendarIdx);
+//
+//    List<FamilyCalendar> findByYearAndMonth(final String dateStr);
+//    List<FamilyCalendar> findByYearAndMonthAndDate(final String dateStr);
+//    void addSchedule(final CalendarReq calendarReq, final int authUserIdx, final String allDateStr);
+//    void updateSchedule(final int calendarIdx, final CalendarReq calendarReq, final String allDateStr);
+//    void deleteSchedule(final int calendarIdx);
 
 }
