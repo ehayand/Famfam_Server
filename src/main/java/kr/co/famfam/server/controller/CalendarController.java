@@ -39,6 +39,7 @@ public class CalendarController {
     @GetMapping("/oneday/{dateStr}")
     public ResponseEntity getDaySchedule(@PathVariable(value = "dateStr") final String dateStr){
         try{
+            log.error(dateStr);
             return new ResponseEntity<>(calendarService.findDaySchedule(dateStr), HttpStatus.OK);
 
         }catch (Exception e){

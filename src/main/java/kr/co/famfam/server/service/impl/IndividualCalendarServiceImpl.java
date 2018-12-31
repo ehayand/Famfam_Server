@@ -6,7 +6,6 @@ import kr.co.famfam.server.repository.IndividualCalendarRepository;
 import kr.co.famfam.server.service.IndividualCalendarService;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 

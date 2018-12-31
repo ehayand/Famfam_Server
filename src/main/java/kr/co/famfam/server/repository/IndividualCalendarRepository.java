@@ -22,6 +22,6 @@ public interface IndividualCalendarRepository extends JpaRepository<IndividualCa
     @Query("SELECT i FROM IndividualCalendar AS i WHERE i.startDate between :startDate and :endDate")
     List<IndividualCalendar> findByYearAndMonth(@Param("startDate") final LocalDateTime startDate, @Param("endDate") final LocalDateTime endDate);
 
-    @Query(value = "SELECT i FROM individualCalendar i WHERE i.allDate LIKE :dateStr", nativeQuery = true)
+    @Query(value = "SELECT * FROM individualCalendar WHERE allDate LIKE :dateStr", nativeQuery = true)
     List<IndividualCalendar> findByYearAndMonthAndDate(@Param("dateStr") final String dateStr);
 }

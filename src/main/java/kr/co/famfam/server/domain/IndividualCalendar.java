@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "individual_calendar")
+@Table(name = "individualcalendar")
 public class IndividualCalendar {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

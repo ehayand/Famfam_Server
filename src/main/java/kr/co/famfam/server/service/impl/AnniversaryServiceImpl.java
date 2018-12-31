@@ -11,9 +11,7 @@ import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,7 +40,7 @@ public class AnniversaryServiceImpl implements AnniversaryService {
 
         List<Anniversary> anniversaries = anniversaryRepository.findAnniversariesByGroupIdx(groupIdx);
 
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, anniversaries);
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_ANNIVERSARY, anniversaries);
     }
 
     public DefaultRes addAnniversary(final int anniversaryType, final AnniversaryReq anniversaryReq){
@@ -51,16 +49,16 @@ public class AnniversaryServiceImpl implements AnniversaryService {
         Anniversary anniversary = new Anniversary();
 
         if(anniversaryType == 1 || anniversaryType == 2 || anniversaryType == 3){
-            anniversary.setAnniversaryType(anniversaryReq.getAnniversaryType());
+            anniversary.setAnniversaryType(anniversaryType);
             anniversary.setContent(anniversaryReq.getContent());
             anniversary.setDate(anniversaryReq.getDate());
 
             anniversaryRepository.save(anniversary);
         }else {
-            return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.NOT_FOUND_CONTENT);
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_ANNIVERSARYTYPE);
         }
 
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER);
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.CREATED_ANNIVERSARY);
     }
 
     public DefaultRes deleteAnniversary(final int anniversaryIdx){
@@ -68,27 +66,9 @@ public class AnniversaryServiceImpl implements AnniversaryService {
 
         anniversaryRepository.deleteById(anniversaryIdx);
 
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER);
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_ANNIVERSARY);
     }
 
-    //    public String allDate(final CalendarReq calendarReq){
-//
-//        String startDateStr = calendarReq.getStartDate();
-//        String endDateStr = calendarReq.getEndDate();
-//
-//        LocalDateTime startDate = LocalDateTime.parse(startDateStr);
-//        LocalDateTime endDate = LocalDateTime.parse(endDateStr);
-//
-//        ArrayList<String> allDate = new ArrayList<>();
-//
-//        LocalDateTime tempDate = startDate;
-//        while (tempDate.compareTo(endDate) <= 0) {
-//           allDate.add(tempDate.toString());
-//           tempDate = tempDate.plusDays(1);
-//        }
-//
-//        return allDate.toString();
-//    }
     public List<Anniversary> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate){
         // 년, 월에 맞는 (앞달, 뒷달 포함)세달치 기념일 조회
 
