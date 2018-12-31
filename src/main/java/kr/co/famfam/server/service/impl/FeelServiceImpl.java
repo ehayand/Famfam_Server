@@ -72,7 +72,7 @@ public class FeelServiceImpl implements FeelService {
             feel.setUserIdx(userIdx);
 
             feelRepository.save(feel);
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.CREATED_FEEL);
+            return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_FEEL);
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
