@@ -173,7 +173,7 @@ public class GroupServiceImpl implements GroupService {
                 .expired(current.plusMinutes(10))
                 .build();
 
-        return invitation;
+        return groupInvitationRepository.save(invitation);
     }
 
     private GroupInvitation check(int groupIdx) {
