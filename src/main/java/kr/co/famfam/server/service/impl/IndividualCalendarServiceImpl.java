@@ -6,6 +6,7 @@ import kr.co.famfam.server.repository.IndividualCalendarRepository;
 import kr.co.famfam.server.service.IndividualCalendarService;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -44,6 +45,7 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
         return individualCalendars;
     }
 
+    @Transactional
     public void addSchedule(final CalendarReq calendarReq, final int authUserIdx, final String allDateStr){
         // 일정 추가
 
@@ -59,6 +61,7 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
         individualCalendarRepository.save(schedule);
     }
 
+    @Transactional
     public void updateSchedule(final int calendarIdx, final CalendarReq calendarReq, final String allDateStr){
         // 일정 수정
 
@@ -73,6 +76,7 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
         individualCalendarRepository.save(schedule);
     }
 
+    @Transactional
     public void deleteSchedule(final int calendarIdx){
         // 일정 삭제
 

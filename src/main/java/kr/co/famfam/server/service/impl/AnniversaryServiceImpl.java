@@ -11,6 +11,7 @@ import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -43,6 +44,7 @@ public class AnniversaryServiceImpl implements AnniversaryService {
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_ANNIVERSARY, anniversaries);
     }
 
+    @Transactional
     public DefaultRes addAnniversary(final int anniversaryType, final AnniversaryReq anniversaryReq){
         // 타입값에 따라 기념일 추가
 
@@ -61,6 +63,7 @@ public class AnniversaryServiceImpl implements AnniversaryService {
         return DefaultRes.res(StatusCode.OK, ResponseMessage.CREATED_ANNIVERSARY);
     }
 
+    @Transactional
     public DefaultRes deleteAnniversary(final int anniversaryIdx){
         // 기념일 삭제
 
