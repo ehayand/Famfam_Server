@@ -181,6 +181,10 @@ public class GroupServiceImpl implements GroupService {
         if (invitation.isPresent()) {
             if (LocalDateTime.now().isBefore(invitation.get().getExpired()))
                 return invitation.get();
+            else {
+                Optional<GroupInvitation> delete = groupInvitationRepository.findById(invitation.get().getCode());
+                groupInvitationRepository.delete(delete.get());
+            }
         }
 
         return create(groupIdx);

@@ -18,10 +18,10 @@ import java.util.List;
 
 @Service
 public interface IndividualCalendarRepository extends JpaRepository<IndividualCalendar, Integer> {
-//
-//    @Query("SELECT i FROM individualCalendar i WHERE i.startDate > (:dateStr - INTERVAL 2 MONTH)")
-//    List<IndividualCalendar> findByYearAndMonth(@Param("dateStr") final String dateStr);
-//
-//    @Query("SELECT i FROM individualCalendar i WHERE i.allDate LIKE %:dateStr%")
-//    List<IndividualCalendar> findByYearAndMonthAndDate(@Param("dateStr") final String dateStr);
+
+    @Query("SELECT i FROM IndividualCalendar AS i WHERE i.startDate between :startDate and :endDate")
+    List<IndividualCalendar> findByYearAndMonth(@Param("startDate") final LocalDateTime startDate, @Param("endDate") final LocalDateTime endDate);
+
+    @Query(value = "SELECT * FROM Individual_calendar WHERE all_date LIKE :dateStr", nativeQuery = true)
+    List<IndividualCalendar> findByYearAndMonthAndDate(@Param("dateStr") final String dateStr);
 }
