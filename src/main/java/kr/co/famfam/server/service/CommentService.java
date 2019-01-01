@@ -12,6 +12,8 @@ import kr.co.famfam.server.model.DefaultRes;
 public interface CommentService {
     DefaultRes findCommentsByContentIdx(final int contentIdx);
 
+    DefaultRes countThisWeek(int userIdx);
+
     DefaultRes save(final CommentDto commentDto);
 
     DefaultRes update(final int commentIdx, final CommentDto commentDto);
