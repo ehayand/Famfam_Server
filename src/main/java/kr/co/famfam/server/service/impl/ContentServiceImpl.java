@@ -101,7 +101,7 @@ public class ContentServiceImpl implements ContentService {
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
         LocalDateTime startDateTime = getStartDateTime();
-        LocalDateTime endDateTime = startDateTime.plusDays(6);
+        LocalDateTime endDateTime = LocalDateTime.of(startDateTime.plusDays(6).toLocalDate(), LocalTime.of(23, 59, 59));
 
         long count = contentRepository.countByGroupIdxAndCreatedDateBetween(user.get().getGroupIdx(), startDateTime, endDateTime);
 

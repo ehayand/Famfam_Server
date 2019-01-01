@@ -77,7 +77,7 @@ public class FeelServiceImpl implements FeelService {
 
         try {
             LocalDateTime startDateTime = getStartDateTime();
-            LocalDateTime endDateTime = startDateTime.plusDays(6);
+            LocalDateTime endDateTime = LocalDateTime.of(startDateTime.plusDays(6).toLocalDate(), LocalTime.of(23, 59, 59));
             long count = 0;
 
             for (User u : groupUsers) {
