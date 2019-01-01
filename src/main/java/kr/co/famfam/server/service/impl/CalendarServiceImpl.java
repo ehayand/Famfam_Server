@@ -34,7 +34,7 @@ public class CalendarServiceImpl implements CalendarService {
 
         LocalDateTime date = LocalDateTime.parse(dateStr);
         LocalDateTime startDate = date.minusMonths(1);
-        LocalDateTime endDate = date.minusMonths(1);
+        LocalDateTime endDate = date.plusMonths(1);
 
         List<IndividualCalendar> individualCalendars = individualCalendarService.findByYearAndMonth(startDate, endDate);
         List<FamilyCalendar> familyCalendars = familyCalendarService.findByYearAndMonth(startDate, endDate);

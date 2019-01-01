@@ -21,12 +21,18 @@ public class FamilyCalendar {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @SequenceGenerator(name = "calendar_seq_generator", sequenceName = "calendar_seq", allocationSize = 1)
+    @Column(name = "calendar_idx")
     private int calendarIdx;
 
+    @Column(name = "start_date")
     private LocalDateTime startDate;
+    @Column(name = "end_date")
     private LocalDateTime endDate;
+
+    @Column(name = "all_date")
     private String allDate;
     private String content;
 
+    @Column(name = "user_idx")
     private int userIdx;
 }

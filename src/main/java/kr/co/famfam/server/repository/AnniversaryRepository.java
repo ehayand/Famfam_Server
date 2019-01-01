@@ -21,7 +21,7 @@ public interface AnniversaryRepository extends JpaRepository<Anniversary, Intege
     @Query("SELECT a FROM Anniversary AS a WHERE a.date between :startDate and :endDate")
     List<Anniversary> findByYearAndMonth(@Param("startDate") final LocalDateTime startDate, @Param("endDate") final LocalDateTime endDate);
 
-    @Query(value = "SELECT a FROM anniversary a WHERE a.date LIKE :dateStr", nativeQuery = true)
+    @Query(value = "SELECT * FROM anniversary WHERE date LIKE :dateStr", nativeQuery = true)
     List<Anniversary> findByYearAndMonthAndDate(@Param("dateStr") final String dateStr);
 
     List<Anniversary> findAnniversariesByGroupIdx(final int groupIdx);

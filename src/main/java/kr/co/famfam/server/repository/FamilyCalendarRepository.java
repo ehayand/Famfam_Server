@@ -21,6 +21,6 @@ public interface FamilyCalendarRepository extends JpaRepository<FamilyCalendar, 
     @Query("SELECT f FROM FamilyCalendar AS f WHERE f.startDate between :startDate and :endDate")
     List<FamilyCalendar> findByYearAndMonth(@Param("startDate") final LocalDateTime startDate, @Param("endDate") final LocalDateTime endDate);
 
-    @Query(value = "SELECT f FROM familyCalendar f WHERE f.allDate LIKE :dateStr", nativeQuery = true)
+    @Query(value = "SELECT * FROM family_calendar WHERE all_date LIKE :dateStr", nativeQuery = true)
     List<FamilyCalendar> findByYearAndMonthAndDate(@Param("dateStr") final String dateStr);
 }

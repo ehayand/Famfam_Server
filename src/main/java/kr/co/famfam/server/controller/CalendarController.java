@@ -1,6 +1,7 @@
 package kr.co.famfam.server.controller;
 
 import kr.co.famfam.server.model.CalendarReq;
+import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.service.CalendarService;
 import kr.co.famfam.server.service.JwtService;
 import kr.co.famfam.server.utils.auth.Auth;
@@ -8,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.swing.*;
 
 import static kr.co.famfam.server.model.DefaultRes.FAIL_DEFAULT_RES;
 
@@ -26,11 +29,12 @@ public class CalendarController {
 
     @Auth
     @GetMapping("/month/{dateStr}")
-    public ResponseEntity getMonthSchedule(@PathVariable(value = "dateStr") final String dateStr){
+    public ResponseEntity<DefaultRes> getMonthSchedule(@PathVariable(value = "dateStr") final String dateStr){
         try{
             return new ResponseEntity<>(calendarService.findAllSchedule(dateStr), HttpStatus.OK);
 
         }catch (Exception e){
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -39,7 +43,6 @@ public class CalendarController {
     @GetMapping("/oneday/{dateStr}")
     public ResponseEntity getDaySchedule(@PathVariable(value = "dateStr") final String dateStr){
         try{
-            log.error(dateStr);
             return new ResponseEntity<>(calendarService.findDaySchedule(dateStr), HttpStatus.OK);
 
         }catch (Exception e){

@@ -3,7 +3,6 @@ package kr.co.famfam.server.domain;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 /**
@@ -14,19 +13,27 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "individualcalendar")
+@Table(name = "individual_calendar")
 public class IndividualCalendar {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @SequenceGenerator(name = "calendar_seq_generator", sequenceName = "calendar_seq", allocationSize = 1)
+    @Column(name = "calendar_idx")
     private int calendarIdx;
 
+    @Column(name = "start_date")
     private LocalDateTime startDate;
+    @Column(name = "end_date")
     private LocalDateTime endDate;
+
+    @Column(name = "all_date")
     private String allDate;
     private String content;
+
+    @Column(name = "returning_time")
     private int returningTime;
     private int dinner;
 
+    @Column(name = "user_idx")
     private int userIdx;
 }

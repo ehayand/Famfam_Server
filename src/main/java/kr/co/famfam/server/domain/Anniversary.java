@@ -19,11 +19,15 @@ public class Anniversary {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @SequenceGenerator(name = "anniversary_seq_generator", sequenceName = "anniversary_seq", allocationSize = 1)
+    @Column(name = "anniversary_idx")
     private int anniversaryIdx;
 
     private String content;
     private LocalDateTime date;
+
+    @Column(name = "anniversary_type")
     private int anniversaryType;
 
+    @Column(name = "group_idx")
     private int groupIdx;
 }
