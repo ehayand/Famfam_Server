@@ -3,7 +3,6 @@ package kr.co.famfam.server.domain;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 /**

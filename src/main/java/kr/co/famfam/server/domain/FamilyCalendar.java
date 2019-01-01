@@ -1,11 +1,8 @@
 package kr.co.famfam.server.domain;
 
 import lombok.Data;
-import org.apache.tomcat.jni.Local;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**

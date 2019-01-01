@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 public class AnniversaryReq {
     private String content;
     private LocalDateTime date;
-    private int anniversaryType;
 
     private int groupIdx;
 }

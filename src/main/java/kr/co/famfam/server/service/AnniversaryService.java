@@ -15,11 +15,11 @@ import java.util.List;
  */
 
 public interface AnniversaryService {
-//    DefaultRes findAll(final int authUserIdx);
-//    DefaultRes addAnniversary(final int anniversaryType, final AnniversaryReq anniversaryReq);
-//    DefaultRes deleteAnniversary(final int anniversaryIdx);
-//    List<Anniversary> findByYearAndMonth(final String dateStr);
-//    List<Anniversary> findByYearAndMonthAndDate(final String dateStr);
+    DefaultRes findAll(final int authUserIdx);
+    DefaultRes addAnniversary(final int anniversaryType, final AnniversaryReq anniversaryReq);
+    DefaultRes deleteAnniversary(final int anniversaryIdx);
+    List<Anniversary> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate);
+    List<Anniversary> findByYearAndMonthAndDate(final String dateStr);
 }
 
 
