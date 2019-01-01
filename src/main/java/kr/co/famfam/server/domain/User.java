@@ -1,6 +1,8 @@
 package kr.co.famfam.server.domain;
 
-import lombok.Data;
+import kr.co.famfam.server.model.LoginReq;
+import kr.co.famfam.server.model.SignUpReq;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -13,6 +15,8 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "user")
 public class User {
 
@@ -44,4 +48,20 @@ public class User {
 
     @Column(name = "groupIdx")
     private int groupIdx;
+
+    public User(SignUpReq signUpReq) {
+        this.userId = signUpReq.getUserId();
+        this.userPw = signUpReq.getUserPw();
+        this.userName = signUpReq.getUserName();
+        this.birthday = LocalDateTime.parse(signUpReq.getBirthday());
+        this.userPhone = signUpReq.getUserPhone();
+        this.sexType = signUpReq.getSexType();
+    }
+
+    public User(LoginReq loginReq) {
+        this.userId = loginReq.getUserId();
+        this.userPw = loginReq.getUserPw();
+    }
+
+
 }
