@@ -1,5 +1,6 @@
 package kr.co.famfam.server.controller;
 
+import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.service.FeelService;
 import kr.co.famfam.server.service.JwtService;
 import kr.co.famfam.server.utils.auth.Auth;
@@ -33,6 +34,21 @@ public class FeelController {
             log.info("ID : " + authUserIdx);
 
             return new ResponseEntity<>(feelService.findFeelsByContentIdx(contentIdx), HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Auth
+    @GetMapping("/count/week")
+    public ResponseEntity<DefaultRes> getCountThisWeek(
+            @RequestHeader("Authorization") final String header) {
+        try {
+            int authUserIdx = jwtService.decode(header).getUser_idx();
+            log.info("ID : " + authUserIdx);
+
+            return new ResponseEntity<>(feelService.countThisWeek(authUserIdx), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
