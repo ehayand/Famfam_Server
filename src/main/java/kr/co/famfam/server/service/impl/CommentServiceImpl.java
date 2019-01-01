@@ -1,10 +1,10 @@
 package kr.co.famfam.server.service.impl;
 
 import kr.co.famfam.server.domain.Comment;
+import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.CommentDto;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.repository.CommentRepository;
-import kr.co.famfam.server.repository.ContentRepository;
 import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.CommentService;
 import kr.co.famfam.server.utils.ResponseMessage;
@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,9 +31,11 @@ import java.util.Optional;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
 
-    public CommentServiceImpl(CommentRepository commentRepository) {
+    public CommentServiceImpl(CommentRepository commentRepository, UserRepository userRepository) {
         this.commentRepository = commentRepository;
+        this.userRepository = userRepository;
     }
 
     public DefaultRes findCommentsByContentIdx(int contentIdx) {
@@ -40,6 +45,31 @@ public class CommentServiceImpl implements CommentService {
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_COMMENT);
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_COMMENT, comments);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
+    }
+
+    public DefaultRes countThisWeek(int userIdx) {
+        Optional<User> user = userRepository.findById(userIdx);
+        if (!user.isPresent())
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+        final List<User> groupUsers = userRepository.findUsersByGroupIdx(user.get().getGroupIdx());
+        if (groupUsers.isEmpty())
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+        try {
+            LocalDateTime startDateTime = getStartDateTime();
+            LocalDateTime endDateTime = startDateTime.plusDays(6);
+            long count = 0;
+
+            for(User u : groupUsers) {
+                count += commentRepository.countByUserIdxAndCreatedDateBetween(u.getUserIdx(), startDateTime, endDateTime);
+            }
+
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_COMMENT, count);
         } catch (Exception e) {
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
@@ -93,5 +123,12 @@ public class CommentServiceImpl implements CommentService {
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
+    }
+
+    private LocalDateTime getStartDateTime() {
+        LocalDate today = LocalDate.now();
+        LocalDateTime startDateTime =
+                LocalDateTime.of(today.minusDays(today.getDayOfWeek().getValue()-1), LocalTime.of(0, 0, 0));
+        return startDateTime;
     }
 }

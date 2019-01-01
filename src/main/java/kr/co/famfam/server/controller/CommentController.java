@@ -42,6 +42,21 @@ public class CommentController {
     }
 
     @Auth
+    @GetMapping("/count/week")
+    public ResponseEntity<DefaultRes> getCountThisWeek(
+            @RequestHeader("Authorization") final String header) {
+        try {
+            int authUserIdx = jwtService.decode(header).getUser_idx();
+            log.info("ID : " + authUserIdx);
+
+            return new ResponseEntity<>(commentService.countThisWeek(authUserIdx), HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Auth
     @PostMapping("/contents/{contentIdx}")
     public ResponseEntity<DefaultRes> saveComment(
             @RequestHeader("Authorization") final String header,
