@@ -41,7 +41,8 @@ public class ContentController {
             int authUserIdx = jwtService.decode(header).getUser_idx();
             log.info("ID : " + authUserIdx);
 
-            if(userIdx.isPresent()) return new ResponseEntity<>(contentService.findContentsByUserIdx(userIdx.get(), pageable), HttpStatus.OK);
+            if (userIdx.isPresent())
+                return new ResponseEntity<>(contentService.findContentsByUserIdx(userIdx.get(), pageable), HttpStatus.OK);
 
             return new ResponseEntity<>(contentService.findContentsByGroupIdx(authUserIdx, pageable), HttpStatus.OK);
         } catch (Exception e) {
@@ -83,6 +84,21 @@ public class ContentController {
     }
 
     @Auth
+    @GetMapping("/count/week")
+    public ResponseEntity<DefaultRes> getCountThisWeek(
+            @RequestHeader("Authorization") final String header) {
+        try {
+            int authUserIdx = jwtService.decode(header).getUser_idx();
+            log.info("ID : " + authUserIdx);
+
+            return new ResponseEntity<>(contentService.countThisWeek(authUserIdx), HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Auth
     @PostMapping("")
     public ResponseEntity<DefaultRes> save(
             @RequestHeader("Authorization") final String header,
@@ -94,7 +110,7 @@ public class ContentController {
 
             contentReq.setUserIdx(authUserIdx);
 
-            if(files != null) contentReq.setPhotos(files);
+            if (files != null) contentReq.setPhotos(files);
             return new ResponseEntity<>(contentService.save(contentReq), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
