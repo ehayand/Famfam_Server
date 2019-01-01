@@ -49,9 +49,9 @@ public class CalendarServiceImpl implements CalendarService {
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CALENDAR, map);
     }
 
-    public DefaultRes findDaySchedule(final String dateStr){
+    public DefaultRes findDaySchedule(final String dateStrTemp){
         // 가족 일정, 개인 일정 합치기
-        dateStr.substring(0, 10);
+        String dateStr = dateStrTemp.substring(0, 10);
 
         List<IndividualCalendar> individualCalendars = individualCalendarService.findByYearAndMonthAndDate(dateStr);
         List<FamilyCalendar> familyCalendars = familyCalendarService.findByYearAndMonthAndDate(dateStr);
