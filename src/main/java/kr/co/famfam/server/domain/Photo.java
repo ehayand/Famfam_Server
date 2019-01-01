@@ -17,10 +17,14 @@ public class Photo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @SequenceGenerator(name = "photo_seq_generator", sequenceName = "photo_seq", allocationSize = 1)
+    @Column(name = "photoIdx")
     private int photoIdx;
 
+    @Column(name = "photoName")
     private String photoName;
 
+    @Column(name = "contentIdx")
     private int contentIdx;
+    @Column(name = "userIdx")
     private int userIdx;
 }

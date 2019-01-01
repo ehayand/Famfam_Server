@@ -20,13 +20,21 @@ public class Content {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @SequenceGenerator(name = "content_seq_generator", sequenceName = "content_seq", allocationSize = 1)
+    @Column(name = "contentIdx")
     private int contentIdx;
+
+    @Column(name = "content")
     private String content;
+    @Column(name = "createdDate")
     private LocalDateTime createdDate;
+    @Column(name = "commentCount")
     private int commentCount;
+    @Column(name = "feelCount")
     private int feelCount;
 
+    @Column(name = "userIdx")
     private int userIdx;
+    @Column(name = "groupIdx")
     private int groupIdx;
 
     public Content(ContentReq contentReq) {
