@@ -10,6 +10,8 @@ import kr.co.famfam.server.model.HomePhotoReq;
  */
 
 public interface GroupService {
+    DefaultRes findGroupByUserIdx(int userIdx);
+
     DefaultRes getInvitationCode(int userIdx);
 
     DefaultRes save(int userIdx);
@@ -19,4 +21,6 @@ public interface GroupService {
     DefaultRes joinGroup(int userIdx, String code);
 
     DefaultRes photoUpdate(HomePhotoReq homePhotoReq);
+
+    DefaultRes withdraw(final int userIdx);
 }

@@ -16,10 +16,16 @@ public class ResponseMessage {
     public static final String LOGIN_FAIL = "로그인 실패";
     public static final String DUPLICATED_ID="아이디 중복";
 
-    public static final String NOT_FOUND_GROUP = "그룹을 찾을 수 없습니다.";
-    public static final String UPDATE_GROUP = "그룹 정보 수정 성공";
     public static final String NOT_FOUND_INVITATION = "인증코드가 유효하지 않습니다.";
-    public static final String JOIN_SUCCESS = "그룹 참여 성공";
+    public static final String JOIN_SUCCESS_GROUP = "그룹 참여 성공";
+    public static final String WITHDRAW_SUCCESS_GROUP = "그룹 탈퇴 성공";
+    public static final String NOT_JOIN_GROUP = "참여된 그룹이 없습니다.";
+    public static final String NOT_FOUND_GROUP = "그룹을 찾을 수 없습니다.";
+    public static final String READ_GROUP = "그룹 조회 성공";
+    public static final String CREATED_GROUP = "그룹 생성 성공";
+    public static final String UPDATE_GROUP = "그룹 정보 수정 성공";
+    public static final String DELETE_GROUP = "그룹 삭제 성공";
+
 
     public static final String READ_CONTENT = "게시글 조회 성공";
     public static final String NOT_FOUND_CONTENT = "게시글을 찾을 수 없습니다.";
