@@ -1,10 +1,7 @@
 package kr.co.famfam.server.controller;
 
 import kr.co.famfam.server.domain.User;
-import kr.co.famfam.server.model.DefaultRes;
-import kr.co.famfam.server.model.LoginReq;
-import kr.co.famfam.server.model.SignUpReq;
-import kr.co.famfam.server.model.UserRes;
+import kr.co.famfam.server.model.*;
 import kr.co.famfam.server.service.JwtService;
 import kr.co.famfam.server.service.UserService;
 import kr.co.famfam.server.utils.ResponseMessage;
@@ -60,6 +57,23 @@ public class UserController {
         }
     }
 
+    /*@Auth
+    @RequestMapping("/groups")
+    @GetMapping("/{groupIdx}")
+    public ResponseEntity<DefaultRes> getGroup( @RequestHeader(value = "Authorization") final String header) {
+        try {
+            System.out.println(header);
+
+            int authIdx=jwtService.decode(header).getUser_idx();
+            return new ResponseEntity<>(userService.findById(authIdx), HttpStatus.OK);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            //  TODO multivalue 수정
+            return new ResponseEntity<>((MultiValueMap<String, String>) FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }*/
+
     @PostMapping("")
     public ResponseEntity<DefaultRes> signUp(@RequestBody final SignUpReq signUpReq) {
         try {
@@ -70,17 +84,18 @@ public class UserController {
         }
     }
 
+
     @Auth
     @PutMapping("/{userIdx}")
     public ResponseEntity<DefaultRes> updateUser(@RequestHeader(value = "Authorization") final String header,
                                                  @PathVariable("userIdx") final int userIdx,
-                                                 final User user) {
+                                                 @RequestBody final UserinfoReq userinfoReq) {
 
         try {
             int authIdx = jwtService.decode(header).getUser_idx();
             if (authIdx == userIdx) {
             }
-            return new ResponseEntity<>(userService.update(userIdx, user), HttpStatus.OK);
+            return new ResponseEntity<>(userService.update(userIdx, userinfoReq), HttpStatus.OK);
 
         } catch (Exception e) {
 
@@ -111,6 +126,7 @@ public class UserController {
         }
 
     }
+
 
 }
 

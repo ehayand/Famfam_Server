@@ -16,14 +16,14 @@ import java.util.Optional;
 @Service
 public class LoginServiceImpl implements LoginService {
 
-   private final UserRepository userRepository;
-   private  final JwtService jwtService;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
 
-   public  LoginServiceImpl(UserRepository userRepository, JwtService jwtService){
+    public LoginServiceImpl(UserRepository userRepository, JwtService jwtService) {
 
-       this.userRepository=userRepository;
-       this.jwtService=jwtService;
-   }
+        this.userRepository = userRepository;
+        this.jwtService = jwtService;
+    }
 
     /***
      *
@@ -36,11 +36,22 @@ public class LoginServiceImpl implements LoginService {
 
             final Optional<User> user = userRepository.findUserByUserIdAndUserPw(loginUser.getUserId(), loginUser.getUserPw());
 
-            if (user != null) {
+            if (user.isPresent()) {
                 final JwtService.TokenRes tokenRes = new JwtService.TokenRes(jwtService.create(user.get().getUserIdx()));
                 return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, tokenRes);
             }
         }
+        return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.LOGIN_FAIL);
+    }
+
+    public DefaultRes login(final int userIdx) {
+        final Optional<User> user = userRepository.findById(userIdx);
+
+        if (user.isPresent()) {
+            final JwtService.TokenRes tokenRes = new JwtService.TokenRes(jwtService.create(user.get().getUserIdx()));
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, tokenRes);
+        }
+
         return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.LOGIN_FAIL);
     }
 }

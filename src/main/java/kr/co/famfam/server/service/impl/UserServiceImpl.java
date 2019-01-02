@@ -3,6 +3,8 @@ package kr.co.famfam.server.service.impl;
 import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.model.SignUpReq;
+import kr.co.famfam.server.model.UserRes;
+import kr.co.famfam.server.model.UserinfoReq;
 import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.FileUploadService;
 import kr.co.famfam.server.service.UserService;
@@ -64,7 +66,10 @@ public class UserServiceImpl implements UserService {
         final Optional<User> user = userRepository.findById(userIdx);
         if (!user.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, user);
+
+        UserRes userRes = new UserRes(user.get());
+
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, userRes);
     }
 
     /**
@@ -98,11 +103,11 @@ public class UserServiceImpl implements UserService {
      * 회원 정보 수정
      *
      * @param userIdx 회원 고유 번호
-     * @param user    수정할 회원 데이터
+     * @param userinfoReq    수정할 회원 데이터
      * @return DefaultRes
      */
     @Transactional
-    public DefaultRes update(final int userIdx, final User user) {
+    public DefaultRes update(final int userIdx, final UserinfoReq userinfoReq) {
         Optional<User> temp = userRepository.findById(userIdx);
         if (!temp.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
@@ -111,12 +116,12 @@ public class UserServiceImpl implements UserService {
             /*
                 null 검사
             */
-            temp.get().setUserName(user.getUserName());
-            temp.get().setBirthday(user.getBirthday());
-            temp.get().setSexType(user.getSexType());
-            temp.get().setStatusMessage(user.getStatusMessage());
-            temp.get().setProfilePhoto(user.getProfilePhoto());
-            temp.get().setBackPhoto(user.getBackPhoto());
+            temp.get().setUserName(userinfoReq.getUserName());
+            temp.get().setBirthday(userinfoReq.getBirthday());
+            temp.get().setSexType(userinfoReq.getSexType());
+            temp.get().setStatusMessage(userinfoReq.getStatusMessage());
+            temp.get().setProfilePhoto(userinfoReq.getProfilePhoto());
+            temp.get().setBackPhoto(userinfoReq.getBackPhoto());
             userRepository.save(temp.get());
             return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.UPDATE_USER);
         } catch (Exception e) {

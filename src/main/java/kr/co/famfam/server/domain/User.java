@@ -2,6 +2,7 @@ package kr.co.famfam.server.domain;
 
 import kr.co.famfam.server.model.LoginReq;
 import kr.co.famfam.server.model.SignUpReq;
+import kr.co.famfam.server.model.UserinfoReq;
 import lombok.*;
 
 import javax.persistence.*;
@@ -56,6 +57,7 @@ public class User {
         this.birthday = LocalDateTime.parse(signUpReq.getBirthday());
         this.userPhone = signUpReq.getUserPhone();
         this.sexType = signUpReq.getSexType();
+        this.groupIdx=-1;
     }
 
     public User(LoginReq loginReq) {
@@ -63,5 +65,15 @@ public class User {
         this.userPw = loginReq.getUserPw();
     }
 
+    public User(UserinfoReq userinfoReq) {
+
+        this.userName = userinfoReq.getUserName();
+        this.birthday = userinfoReq.getBirthday();
+        this.userPhone =userinfoReq.getUserPhone();
+        this.sexType = userinfoReq.getSexType();
+        this.statusMessage=userinfoReq.getStatusMessage();
+        this.profilePhoto=userinfoReq.getProfilePhoto();
+        this.backPhoto=userinfoReq.getBackPhoto();
+    }
 
 }

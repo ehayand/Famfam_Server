@@ -10,4 +10,5 @@ import kr.co.famfam.server.utils.StatusCode;
 
 public interface LoginService {
     DefaultRes login(final LoginReq loginReq);
+    DefaultRes login(final int userIdx);
 }
