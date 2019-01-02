@@ -13,7 +13,6 @@ import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -85,104 +84,59 @@ public class CalendarServiceImpl implements CalendarService {
         // 타입값에 따라서 가족/개인 캘린더서비스 불러서 일정 추가하기
 
         String allDateStr = allDate(calendarReq);
-        try {
-            String allDateStr = allDate(calendarReq);
 
-            if (calendarType == 1) {
-                return individualCalendarService.addSchedule(calendarReq, authUserIdx, allDateStr);
-            } else if (calendarType == 2) {
-                return familyCalendarService.addSchedule(calendarReq, authUserIdx, allDateStr);
-            } else {
-                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDARTYPE);
-                if (calendarType == 1) {
-                    individualCalendarService.addSchedule(calendarReq, authUserIdx, allDateStr);
-                } else if (calendarType == 2) {
-                    familyCalendarService.addSchedule(calendarReq, authUserIdx, allDateStr);
-                } else {
-                    return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDARTYPE);
-                }
-                return DefaultRes.res(StatusCode.OK, ResponseMessage.CREATED_CALENDAR);
-            } catch(Exception e){
-                //Rollback
-                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                log.error(e.getMessage());
-                return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
-            }
+        if (calendarType == 1) {
+            return individualCalendarService.addSchedule(calendarReq, authUserIdx, allDateStr);
+        } else if (calendarType == 2) {
+            return familyCalendarService.addSchedule(calendarReq, authUserIdx, allDateStr);
+        } else {
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDARTYPE);
+        }
+    }
+
+    @Transactional
+    public DefaultRes updateSchedule(final int calendarType, final int calendarIdx, final CalendarReq calendarReq) {
+        // 타입값에 따라서 가족/개인 캘린더서비스 불러서 일정 수정하기
+
+        String allDateStr = allDate(calendarReq);
+
+        if (calendarType == 1) {
+            return individualCalendarService.updateSchedule(calendarIdx, calendarReq, allDateStr);
+        } else if (calendarType == 2) {
+            return familyCalendarService.updateSchedule(calendarIdx, calendarReq, allDateStr);
+        } else {
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDARTYPE);
+        }
+    }
+
+    @Transactional
+    public DefaultRes deleteSchedule(final int calendarType, final int calendarIdx) {
+        // 타입값에 따라서 가족/개인 캘린더서비스 불러서 일정 삭제하기
+        if (calendarType == 1) {
+            return individualCalendarService.deleteSchedule(calendarIdx);
+        } else if (calendarType == 2) {
+            return familyCalendarService.deleteSchedule(calendarIdx);
+        } else {
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDARTYPE);
+        }
+    }
+
+    public String allDate(final CalendarReq calendarReq) {
+
+        String startDateStr = calendarReq.getStartDate();
+        String endDateStr = calendarReq.getEndDate();
+
+        LocalDateTime startDate = LocalDateTime.parse(startDateStr);
+        LocalDateTime endDate = LocalDateTime.parse(endDateStr);
+
+        ArrayList<String> allDate = new ArrayList<>();
+
+        LocalDateTime tempDate = startDate;
+        while (tempDate.compareTo(endDate) <= 0) {
+            allDate.add(tempDate.toString());
+            tempDate = tempDate.plusDays(1);
         }
 
-        @Transactional
-        public DefaultRes updateSchedule ( final int calendarType, final int calendarIdx, final CalendarReq calendarReq)
-        {
-            // 타입값에 따라서 가족/개인 캘린더서비스 불러서 일정 수정하기
-
-            String allDateStr = allDate(calendarReq);
-            try {
-                String allDateStr = allDate(calendarReq);
-
-                if (calendarType == 1) {
-                    return individualCalendarService.updateSchedule(calendarIdx, calendarReq, allDateStr);
-                } else if (calendarType == 2) {
-                    return familyCalendarService.updateSchedule(calendarIdx, calendarReq, allDateStr);
-                } else {
-                    return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDARTYPE);
-                    if (calendarType == 1) {
-                        individualCalendarService.updateSchedule(calendarIdx, calendarReq, allDateStr);
-                    } else if (calendarType == 2) {
-                        familyCalendarService.updateSchedule(calendarIdx, calendarReq, allDateStr);
-                    } else {
-                        return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDARTYPE);
-                    }
-                    return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_CALENDAR);
-                } catch(Exception e){
-                    //Rollback
-                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                    log.error(e.getMessage());
-                    return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
-                }
-            }
-
-            @Transactional
-            public DefaultRes deleteSchedule ( final int calendarType, final int calendarIdx){
-            // 타입값에 따라서 가족/개인 캘린더서비스 불러서 일정 삭제하기
-            if (calendarType == 1) {
-                return individualCalendarService.deleteSchedule(calendarIdx);
-            } else if (calendarType == 2) {
-                return familyCalendarService.deleteSchedule(calendarIdx);
-            } else {
-                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDARTYPE);
-                try {
-                    if (calendarType == 1) {
-                        individualCalendarService.deleteSchedule(calendarIdx);
-                    } else if (calendarType == 2) {
-                        familyCalendarService.deleteSchedule(calendarIdx);
-                    } else {
-                        return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDARTYPE);
-                    }
-                    return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_CALENDAR);
-                } catch (Exception e) {
-                    //Rollback
-                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                    log.error(e.getMessage());
-                    return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
-                }
-            }
-
-            public String allDate ( final CalendarReq calendarReq){
-
-                String startDateStr = calendarReq.getStartDate();
-                String endDateStr = calendarReq.getEndDate();
-
-                LocalDateTime startDate = LocalDateTime.parse(startDateStr);
-                LocalDateTime endDate = LocalDateTime.parse(endDateStr);
-
-                ArrayList<String> allDate = new ArrayList<>();
-
-                LocalDateTime tempDate = startDate;
-                while (tempDate.compareTo(endDate) <= 0) {
-                    allDate.add(tempDate.toString());
-                    tempDate = tempDate.plusDays(1);
-                }
-
-                return allDate.toString();
-            }
-        }
+        return allDate.toString();
+    }
+}
