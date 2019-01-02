@@ -11,11 +11,15 @@ import kr.co.famfam.server.service.FamilyCalendarService;
 import kr.co.famfam.server.service.IndividualCalendarService;
 import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
 
+@Slf4j
 @Service
 public class CalendarServiceImpl implements CalendarService {
 
@@ -32,31 +36,38 @@ public class CalendarServiceImpl implements CalendarService {
     public DefaultRes findAllSchedule(final String dateStr){
         // 가족 일정, 개인 일정 합치기
 
-        LocalDateTime date = LocalDateTime.parse(dateStr);
-        LocalDateTime startDate = date.minusMonths(1);
-        LocalDateTime endDate = date.plusMonths(1);
+            LocalDateTime date = LocalDateTime.parse(dateStr);
+            LocalDateTime startDate = date.minusMonths(1);
+            LocalDateTime endDate = date.plusMonths(1);
 
-        List<IndividualCalendar> individualCalendars = individualCalendarService.findByYearAndMonth(startDate, endDate);
-        List<FamilyCalendar> familyCalendars = familyCalendarService.findByYearAndMonth(startDate, endDate);
-        List<Anniversary> anniversaries = anniversaryService.findByYearAndMonth(startDate, endDate);
+            List<IndividualCalendar> individualCalendars = individualCalendarService.findByYearAndMonth(startDate, endDate);
+            List<FamilyCalendar> familyCalendars = familyCalendarService.findByYearAndMonth(startDate, endDate);
+            List<Anniversary> anniversaries = anniversaryService.findByYearAndMonth(startDate, endDate);
 
-        Map<String, Object> map = new HashMap<>();
+            if(anniversaries == null || individualCalendars == null || familyCalendars == null)
+                return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
 
-        map.put("individual", individualCalendars);
-        map.put("family", familyCalendars);
-        map.put("anniversary", anniversaries);
+            Map<String, Object> map = new HashMap<>();
 
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CALENDAR, map);
+            map.put("individual", individualCalendars);
+            map.put("family", familyCalendars);
+            map.put("anniversary", anniversaries);
+
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CALENDAR, map);
     }
 
     public DefaultRes findDaySchedule(final String dateStrTemp){
         // 가족 일정, 개인 일정 합치기
+
         String dateStr = dateStrTemp.substring(0, 10);
 
         List<IndividualCalendar> individualCalendars = individualCalendarService.findByYearAndMonthAndDate(dateStr);
         List<FamilyCalendar> familyCalendars = familyCalendarService.findByYearAndMonthAndDate(dateStr);
         List<Anniversary> anniversaries = anniversaryService.findByYearAndMonthAndDate(dateStr);
 
+        if(anniversaries == null || individualCalendars == null || familyCalendars == null)
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+
         Map<String, Object> map = new HashMap<>();
 
         map.put("individual", individualCalendars);
@@ -65,50 +76,69 @@ public class CalendarServiceImpl implements CalendarService {
 
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CALENDAR, map);
     }
+
+    @Transactional
     public DefaultRes addSchedule(final int calendarType, final CalendarReq calendarReq, final int authUserIdx){
         // 타입값에 따라서 가족/개인 캘린더서비스 불러서 일정 추가하기
+        try{
+            String allDateStr = allDate(calendarReq);
 
-        String allDateStr = allDate(calendarReq);
-
-        if(calendarType == 1){
-            individualCalendarService.addSchedule(calendarReq, authUserIdx, allDateStr);
-        }else if(calendarType == 2){
-            familyCalendarService.addSchedule(calendarReq, authUserIdx, allDateStr);
-        }else{
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDARTYPE);
+            if(calendarType == 1){
+                individualCalendarService.addSchedule(calendarReq, authUserIdx, allDateStr);
+            }else if(calendarType == 2){
+                familyCalendarService.addSchedule(calendarReq, authUserIdx, allDateStr);
+            }else{
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDARTYPE);
+            }
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.CREATED_CALENDAR);
+        }catch (Exception e){
+            //Rollback
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
-
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.CREATED_CALENDAR);
     }
 
+    @Transactional
     public DefaultRes updateSchedule(final int calendarType, final int calendarIdx, final CalendarReq calendarReq){
         // 타입값에 따라서 가족/개인 캘린더서비스 불러서 일정 수정하기
+        try{
+            String allDateStr = allDate(calendarReq);
 
-        String allDateStr = allDate(calendarReq);
-
-        if(calendarType == 1){
-            individualCalendarService.updateSchedule(calendarIdx, calendarReq, allDateStr);
-        }else if(calendarType == 2){
-            familyCalendarService.updateSchedule(calendarIdx, calendarReq, allDateStr);
-        }else{
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDARTYPE);
+            if(calendarType == 1){
+                individualCalendarService.updateSchedule(calendarIdx, calendarReq, allDateStr);
+            }else if(calendarType == 2){
+                familyCalendarService.updateSchedule(calendarIdx, calendarReq, allDateStr);
+            }else{
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDARTYPE);
+            }
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_CALENDAR);
+        }catch (Exception e){
+            //Rollback
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
-
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_CALENDAR);
     }
 
+    @Transactional
     public DefaultRes deleteSchedule(final int calendarType, final int calendarIdx){
         // 타입값에 따라서 가족/개인 캘린더서비스 불러서 일정 삭제하기
-
-        if(calendarType == 1){
-            individualCalendarService.deleteSchedule(calendarIdx);
-        }else if(calendarType == 2){
-            familyCalendarService.deleteSchedule(calendarIdx);
-        }else{
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDARTYPE);
+        try{
+            if(calendarType == 1){
+                individualCalendarService.deleteSchedule(calendarIdx);
+            }else if(calendarType == 2){
+                familyCalendarService.deleteSchedule(calendarIdx);
+            }else{
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDARTYPE);
+            }
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_CALENDAR);
+        }catch (Exception e){
+            //Rollback
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
-
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_CALENDAR);
     }
 
     public String allDate(final CalendarReq calendarReq){
