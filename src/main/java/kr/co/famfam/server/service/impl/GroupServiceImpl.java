@@ -15,6 +15,7 @@ import kr.co.famfam.server.service.GroupService;
 import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -33,6 +34,9 @@ import java.util.UUID;
 @Slf4j
 @Service
 public class GroupServiceImpl implements GroupService {
+
+    @Value("${cloud.aws.s3.bucket.default.home}")
+    private String defaultHomeUrl;
 
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
@@ -55,11 +59,11 @@ public class GroupServiceImpl implements GroupService {
         try {
             int groupIdx = user.get().getGroupIdx();
 
-            if(groupIdx == -1)
+            if (groupIdx == -1)
                 return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.NOT_JOIN_GROUP);
 
             Optional<Group> group = groupRepository.findById(groupIdx);
-            if(!group.isPresent())
+            if (!group.isPresent())
                 return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.NOT_FOUND_GROUP);
 
             return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.READ_GROUP, group.get());
@@ -80,7 +84,7 @@ public class GroupServiceImpl implements GroupService {
         try {
             int groupIdx = user.get().getGroupIdx();
 
-            if(groupIdx == -1)
+            if (groupIdx == -1)
                 return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.NOT_JOIN_GROUP);
 
             return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.JOIN_SUCCESS_GROUP, check(groupIdx));
@@ -120,7 +124,7 @@ public class GroupServiceImpl implements GroupService {
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
         try {
-            Group group = new Group();
+            Group group = new Group(defaultHomeUrl);
             group.setUserIdx(userIdx);
             int groupIdx = groupRepository.save(group).getGroupIdx();
 
@@ -142,7 +146,7 @@ public class GroupServiceImpl implements GroupService {
         if (!user.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
-        if(user.get().getGroupIdx() == -1)
+        if (user.get().getGroupIdx() == -1)
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_JOIN_GROUP);
 
         try {
@@ -150,7 +154,7 @@ public class GroupServiceImpl implements GroupService {
             userRepository.save(user.get());
 
             List<User> groupUsers = userRepository.findUsersByGroupIdx(groupIdx);
-            if(groupUsers.isEmpty()) {
+            if (groupUsers.isEmpty()) {
                 Optional<Group> group = groupRepository.findById(groupIdx);
                 groupRepository.delete(group.get());
             }
@@ -167,10 +171,10 @@ public class GroupServiceImpl implements GroupService {
     @Transactional
     public DefaultRes withdraw(final int userIdx) {
         final Optional<User> user = userRepository.findById(userIdx);
-        if(!user.isPresent())
+        if (!user.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
-        try{
+        try {
             user.get().setGroupIdx(-1);
             userRepository.save(user.get());
             return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.WITHDRAW_SUCCESS_GROUP);

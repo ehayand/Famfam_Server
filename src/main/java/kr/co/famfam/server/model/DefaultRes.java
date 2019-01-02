@@ -1,10 +1,10 @@
 package kr.co.famfam.server.model;
 
+import kr.co.famfam.server.utils.ResponseMessage;
+import kr.co.famfam.server.utils.StatusCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import kr.co.famfam.server.utils.ResponseMessage;
-import kr.co.famfam.server.utils.StatusCode;
 
 /**
  * Created by ehay@naver.com on 2018-12-24

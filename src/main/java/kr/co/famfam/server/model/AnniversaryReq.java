@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class AnniversaryReq {
+
     private String content;
     private LocalDateTime date;
 

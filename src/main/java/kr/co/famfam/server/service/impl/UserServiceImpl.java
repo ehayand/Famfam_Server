@@ -9,6 +9,7 @@ import kr.co.famfam.server.service.UserService;
 import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -25,6 +26,11 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class UserServiceImpl implements UserService {
+
+    @Value("${cloud.aws.s3.bucket.default.profile}")
+    private String defaultProfileUrl;
+    @Value("${cloud.aws.s3.bucket.default.back}")
+    private String defaultBackUrl;
 
     private final UserRepository userRepository;
     private final FileUploadService fileUploadService;
@@ -79,11 +85,11 @@ public class UserServiceImpl implements UserService {
 
             User tempUser = userRepository.findUserByUserId(signUpReq.getUserId());
 
-            if(tempUser != null) {
+            if (tempUser != null) {
                 return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.DUPLICATED_ID);
             }
 
-            userRepository.save(new User(signUpReq));
+            userRepository.save(new User(signUpReq, defaultProfileUrl, defaultBackUrl));
             return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_USER);
 
         } catch (Exception e) {

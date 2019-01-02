@@ -24,17 +24,17 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
 
     private final IndividualCalendarRepository individualCalendarRepository;
 
-    public IndividualCalendarServiceImpl(IndividualCalendarRepository individualCalendarRepository){
+    public IndividualCalendarServiceImpl(IndividualCalendarRepository individualCalendarRepository) {
         this.individualCalendarRepository = individualCalendarRepository;
     }
 
-    public List<IndividualCalendar> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate){
+    public List<IndividualCalendar> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate) {
         // 년, 월에 맞는 (앞달, 뒷달 포함)세달치 일정 조회
-        try{
+        try {
             List<IndividualCalendar> individualCalendars = individualCalendarRepository.findByYearAndMonth(startDate, endDate);
 
             return individualCalendars;
-        }catch (Exception e){
+        } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
@@ -42,9 +42,9 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
         }
     }
 
-    public List<IndividualCalendar> findByYearAndMonthAndDate(final String dateStr){
-         // 날짜에 맞는 일정 조회
-        try{
+    public List<IndividualCalendar> findByYearAndMonthAndDate(final String dateStr) {
+        // 날짜에 맞는 일정 조회
+        try {
             String per = "%";
             String tempStr = per.concat(dateStr);
             String result = tempStr.concat("%");
@@ -52,7 +52,7 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
             List<IndividualCalendar> individualCalendars = individualCalendarRepository.findByYearAndMonthAndDate(result);
 
             return individualCalendars;
-        }catch (Exception e){
+        } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
@@ -61,7 +61,7 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
     }
 
     @Transactional
-    public void addSchedule(final CalendarReq calendarReq, final int authUserIdx, final String allDateStr){
+    public void addSchedule(final CalendarReq calendarReq, final int authUserIdx, final String allDateStr) {
         // 일정 추가
 
         IndividualCalendar schedule = new IndividualCalendar();
@@ -77,7 +77,7 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
     }
 
     @Transactional
-    public void updateSchedule(final int calendarIdx, final CalendarReq calendarReq, final String allDateStr){
+    public void updateSchedule(final int calendarIdx, final CalendarReq calendarReq, final String allDateStr) {
         // 일정 수정
 
         IndividualCalendar schedule = individualCalendarRepository.findById(calendarIdx).get();
@@ -92,7 +92,7 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
     }
 
     @Transactional
-    public void deleteSchedule(final int calendarIdx){
+    public void deleteSchedule(final int calendarIdx) {
         // 일정 삭제
         // 일정 삭제
         individualCalendarRepository.deleteById(calendarIdx);

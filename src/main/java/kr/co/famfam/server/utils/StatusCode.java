@@ -6,8 +6,8 @@ package kr.co.famfam.server.utils;
  * Github : http://github.com/ehayand
  */
 
-//재정의한 StatusCode
 public class StatusCode {
+
     public static final int OK = 200;
     public static final int CREATED = 201;
     public static final int NO_CONTENT = 204;

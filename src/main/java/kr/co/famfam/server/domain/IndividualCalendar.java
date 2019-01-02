@@ -1,6 +1,7 @@
 package kr.co.famfam.server.domain;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
+@NoArgsConstructor
 @Table(name = "individual_calendar")
 public class IndividualCalendar {
     @Id

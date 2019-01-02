@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class GroupJoinReq {
-    private String code;
 
+    private String code;
 }

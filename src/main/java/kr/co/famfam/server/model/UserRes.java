@@ -12,9 +12,8 @@ public class UserRes {
     private String userPhone;
     private Date birthday;
     private int sexType;
-    private  boolean Auth;
+    private boolean Auth;
     private String statusMessage;
     private String profilePhoto;
     private String backPhoto;
-
 }

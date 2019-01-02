@@ -10,6 +10,7 @@ import kr.co.famfam.server.model.DefaultRes;
  */
 
 public interface CommentService {
+
     DefaultRes findCommentsByContentIdx(final int contentIdx);
 
     DefaultRes countThisWeek(int userIdx);

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
  */
 
 public interface ContentService {
+
     DefaultRes findContentsByUserIdx(int userIdx, Pageable pageable);
 
     DefaultRes findContentsByGroupIdx(int userIdx, Pageable pageable);
