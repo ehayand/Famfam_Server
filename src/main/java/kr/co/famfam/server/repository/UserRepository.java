@@ -19,4 +19,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findUserByUserIdAndUserPw(String userId, String userPw);
     List<User> findUsersByGroupIdx(int groupIdx);
 //    Optional<User> save(SignUpReq signUpReq);
+    User findUserByUserId(String userId);
 }
