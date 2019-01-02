@@ -1,5 +1,6 @@
 package kr.co.famfam.server.service.impl;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import kr.co.famfam.server.domain.Content;
 import kr.co.famfam.server.domain.Photo;
 import kr.co.famfam.server.domain.User;
@@ -20,6 +21,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalQuery;
 import java.util.Optional;
 
 /**
@@ -86,6 +93,19 @@ public class ContentServiceImpl implements ContentService {
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
 
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, content);
+    }
+
+    public DefaultRes countThisWeek(int userIdx) {
+        Optional<User> user = userRepository.findById(userIdx);
+        if (!user.isPresent())
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+        LocalDateTime startDateTime = getStartDateTime();
+        LocalDateTime endDateTime = LocalDateTime.of(startDateTime.plusDays(6).toLocalDate(), LocalTime.of(23, 59, 59));
+
+        long count = contentRepository.countByGroupIdxAndCreatedDateBetween(user.get().getGroupIdx(), startDateTime, endDateTime);
+
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, count);
     }
 
     @Transactional
@@ -156,5 +176,12 @@ public class ContentServiceImpl implements ContentService {
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
+    }
+
+    private LocalDateTime getStartDateTime() {
+        LocalDate today = LocalDate.now();
+        LocalDateTime startDateTime =
+                LocalDateTime.of(today.minusDays(today.getDayOfWeek().getValue()-1), LocalTime.of(0, 0, 0));
+        return startDateTime;
     }
 }

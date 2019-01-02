@@ -19,12 +19,17 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @SequenceGenerator(name = "comment_seq_generator", sequenceName = "comment_seq", allocationSize = 1)
+    @Column(name = "commentIdx")
     private int commentIdx;
 
+    @Column(name = "content")
     private String content;
+    @Column(name = "createdDate")
     private Date createdDate;
 
+    @Column(name = "contentIdx")
     private int contentIdx;
+    @Column(name = "userIdx")
     private int userIdx;
 
     public Comment(CommentDto commentDto) {

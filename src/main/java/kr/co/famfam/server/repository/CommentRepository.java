@@ -4,6 +4,7 @@ import kr.co.famfam.server.domain.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -15,4 +16,5 @@ import java.util.List;
 @Service
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
     List<Comment> findCommentsByContentIdxOrderByCreatedDateAsc(int contentIdx);
+    long countByUserIdxAndCreatedDateBetween(int userIdx, LocalDateTime startDateTime, LocalDateTime endDateTime);
 }

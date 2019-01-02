@@ -7,7 +7,6 @@ package kr.co.famfam.server.utils;
  */
 
 public class ResponseMessage {
-
     public static final String READ_USER = "회원 정보 조회 성공";
     public static final String NOT_FOUND_USER = "회원을 찾을 수 없습니다.";
     public static final String CREATED_USER = "회원 가입 성공";
@@ -16,6 +15,9 @@ public class ResponseMessage {
     public static final String LOGIN_SUCCESS = "로그인 성공";
     public static final String LOGIN_FAIL = "로그인 실패";
     public static final String DUPLICATED_ID="아이디 중복";
+
+    public static final String NOT_FOUND_GROUP = "그룹을 찾을 수 없습니다.";
+    public static final String UPDATE_GROUP = "그룹 정보 수정 성공";
     public static final String NOT_FOUND_INVITATION = "인증코드가 유효하지 않습니다.";
     public static final String JOIN_SUCCESS = "그룹 참여 성공";
 
@@ -36,6 +38,19 @@ public class ResponseMessage {
     public static final String CREATED_FEEL = "감정표현 추가 성공";
     public static final String UPDATE_FEEL = "감정표현 수정 성공";
     public static final String DELETE_FEEL = "감정표현 삭제 성공";
+
+    public static final String READ_ANNIVERSARY = "기념일 조회 성공";
+    public static final String NOT_FOUND_ANNIVERSARYTYPE = "잘못된 기념일 타입입니다.";
+    public static final String NOT_FOUND_ANNIVERSARY = "기념일을 찾을 수 없습니다.";
+    public static final String CREATED_ANNIVERSARY = "기념일 추가 성공";
+    public static final String DELETE_ANNIVERSARY = "기념일 삭제 성공";
+
+    public static final String READ_CALENDAR = "일정 조회 성공";
+    public static final String NOT_FOUND_CALENDARTYPE = "잘못된 일정 타입입니다.";
+    public static final String NOT_FOUND_CALENDAR = "일정을 찾을 수 없습니다.";
+    public static final String CREATED_CALENDAR = "일정 추가 성공";
+    public static final String UPDATE_CALENDAR = "일정 수정 성공";
+    public static final String DELETE_CALENDAR = "일정 삭제 성공";
 
     public static final String READ_PHOTO = "사진 조회 성공";
     public static final String NOT_FOUND_PHOTO = "사진을 찾을 수 없습니다.";

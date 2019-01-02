@@ -61,7 +61,7 @@ public class UserController {
     }
 
     @PostMapping("")
-    public ResponseEntity<DefaultRes> signUp(final SignUpReq signUpReq) {
+    public ResponseEntity<DefaultRes> signUp(@RequestBody final SignUpReq signUpReq) {
         try {
             return new ResponseEntity<>(userService.save(signUpReq), HttpStatus.OK);
         } catch (Exception e) {

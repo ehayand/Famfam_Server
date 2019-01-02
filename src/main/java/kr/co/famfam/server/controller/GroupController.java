@@ -87,10 +87,14 @@ public class GroupController {
     }
 
     @Auth
-    @DeleteMapping("")
-    public ResponseEntity deleteGroup(@RequestHeader("Authorization") final String header) {
+    @DeleteMapping("/{groupIdx}")
+    public ResponseEntity deleteGroup(@RequestHeader("Authorization") final String header,
+                                      @PathVariable("groupIdx") final int groupIdx) {
         try {
-            return new ResponseEntity<>(HttpStatus.OK);
+            int authUserIdx = jwtService.decode(header).getUser_idx();
+            log.info("ID : " + authUserIdx);
+
+            return new ResponseEntity<>(groupService.delete(groupIdx, authUserIdx), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);

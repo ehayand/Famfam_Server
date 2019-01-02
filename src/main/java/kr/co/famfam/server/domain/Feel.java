@@ -18,11 +18,16 @@ public class Feel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @SequenceGenerator(name = "feel_seq_generator", sequenceName = "feel_seq", allocationSize = 1)
+    @Column(name = "feelIdx")
     private int feelIdx;
 
+    @Column(name = "type")
     private int type;
+    @Column(name = "createdDate")
     private LocalDateTime createdDate;
 
+    @Column(name = "userIdx")
     private int userIdx;
+    @Column(name = "contentIdx")
     private int contentIdx;
 }

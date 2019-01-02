@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -63,6 +66,31 @@ public class FeelServiceImpl implements FeelService {
         }
     }
 
+    public DefaultRes countThisWeek(int userIdx) {
+        Optional<User> user = userRepository.findById(userIdx);
+        if (!user.isPresent())
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+        final List<User> groupUsers = userRepository.findUsersByGroupIdx(user.get().getGroupIdx());
+        if (groupUsers.isEmpty())
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+        try {
+            LocalDateTime startDateTime = getStartDateTime();
+            LocalDateTime endDateTime = LocalDateTime.of(startDateTime.plusDays(6).toLocalDate(), LocalTime.of(23, 59, 59));
+            long count = 0;
+
+            for (User u : groupUsers) {
+                count += feelRepository.countByUserIdxAndCreatedDateBetween(u.getUserIdx(), startDateTime, endDateTime);
+            }
+
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_COMMENT, count);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
+    }
+
     @Transactional
     public DefaultRes save(int contentIdx, int userIdx, int type) {
         try {
@@ -72,7 +100,7 @@ public class FeelServiceImpl implements FeelService {
             feel.setUserIdx(userIdx);
 
             feelRepository.save(feel);
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.CREATED_FEEL);
+            return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_FEEL);
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -96,5 +124,12 @@ public class FeelServiceImpl implements FeelService {
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
+    }
+
+    private LocalDateTime getStartDateTime() {
+        LocalDate today = LocalDate.now();
+        LocalDateTime startDateTime =
+                LocalDateTime.of(today.minusDays(today.getDayOfWeek().getValue() - 1), LocalTime.of(0, 0, 0));
+        return startDateTime;
     }
 }

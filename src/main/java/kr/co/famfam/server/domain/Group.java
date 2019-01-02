@@ -18,9 +18,12 @@ public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @SequenceGenerator(name = "group_seq_generator", sequenceName = "group_seq", allocationSize = 1)
+    @Column(name = "groupIdx")
     private int groupIdx;
 
+    @Column(name = "homePhoto")
     private String homePhoto;
 
+    @Column(name = "userIdx")
     private int userIdx;
 }
