@@ -30,7 +30,6 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
 
     public List<FamilyCalendar> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate){
         // 년, 월에 맞는 (앞달, 뒷달 포함)세달치 일정 조회
-
         try{
             List<FamilyCalendar> familyCalendars = familyCalendarRepository.findByYearAndMonth(startDate, endDate);
 
@@ -41,19 +40,24 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
             log.error(e.getMessage());
             return null;
         }
-
     }
 
     public List<FamilyCalendar> findByYearAndMonthAndDate(final String dateStr){
         // 날짜에 맞는 일정 조회
+        try{
+            String per = "%";
+            String tempStr = per.concat(dateStr);
+            String result = tempStr.concat("%");
 
-        String per = "%";
-        String tempStr = per.concat(dateStr);
-        String result = tempStr.concat("%");
+            List<FamilyCalendar> familyCalendars = familyCalendarRepository.findByYearAndMonthAndDate(result);
 
-        List<FamilyCalendar> familyCalendars = familyCalendarRepository.findByYearAndMonthAndDate(result);
-
-        return familyCalendars;
+            return familyCalendars;
+        }catch (Exception e){
+            //Rollback
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return null;
+        }
     }
 
     @Transactional
@@ -86,8 +90,6 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
     @Transactional
     public void deleteSchedule(final int calendarIdx){
         // 일정 삭제
-
         familyCalendarRepository.deleteById(calendarIdx);
     }
-
 }

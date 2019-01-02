@@ -41,7 +41,7 @@ public class AnniversaryServiceImpl implements AnniversaryService {
         try{
             Optional<User> user = userRepository.findById(authUserIdx);
             if(!user.isPresent()){
-                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_ANNIVERSARY);
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
             }
             int groupIdx = user.get().getGroupIdx();
 
