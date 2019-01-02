@@ -2,6 +2,7 @@ package kr.co.famfam.server.service;
 
 import kr.co.famfam.server.domain.FamilyCalendar;
 import kr.co.famfam.server.model.CalendarReq;
+import kr.co.famfam.server.model.DefaultRes;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -17,8 +18,8 @@ public interface FamilyCalendarService {
 
     List<FamilyCalendar> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate);
     List<FamilyCalendar> findByYearAndMonthAndDate(final String dateStr);
-    void addSchedule(final CalendarReq calendarReq, final int authUserIdx, final String allDateStr);
-    void updateSchedule(final int calendarIdx, final CalendarReq calendarReq, final String allDateStr);
-    void deleteSchedule(final int calendarIdx);
+    DefaultRes addSchedule(final CalendarReq calendarReq, final int authUserIdx, final String allDateStr);
+    DefaultRes updateSchedule(final int calendarIdx, final CalendarReq calendarReq, final String allDateStr);
+    DefaultRes deleteSchedule(final int calendarIdx);
 
 }
