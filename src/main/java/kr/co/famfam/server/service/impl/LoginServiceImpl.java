@@ -3,7 +3,6 @@ package kr.co.famfam.server.service.impl;
 import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.model.LoginReq;
-import kr.co.famfam.server.model.SignUpReq;
 import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.JwtService;
 import kr.co.famfam.server.service.LoginService;
@@ -16,14 +15,14 @@ import java.util.Optional;
 @Service
 public class LoginServiceImpl implements LoginService {
 
-   private final UserRepository userRepository;
-   private  final JwtService jwtService;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
 
-   public  LoginServiceImpl(UserRepository userRepository, JwtService jwtService){
+    public LoginServiceImpl(UserRepository userRepository, JwtService jwtService) {
 
-       this.userRepository=userRepository;
-       this.jwtService=jwtService;
-   }
+        this.userRepository = userRepository;
+        this.jwtService = jwtService;
+    }
 
     /***
      *

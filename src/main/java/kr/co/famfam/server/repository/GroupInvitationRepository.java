@@ -14,5 +14,6 @@ import java.util.Optional;
 
 @Service
 public interface GroupInvitationRepository extends JpaRepository<GroupInvitation, String> {
+
     Optional<GroupInvitation> findGroupInvitationByGroupIdx(int groupIdx);
 }

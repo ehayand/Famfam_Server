@@ -2,6 +2,7 @@ package kr.co.famfam.server.domain;
 
 import kr.co.famfam.server.model.CommentDto;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -14,6 +15,7 @@ import java.util.Date;
 
 @Data
 @Entity
+@NoArgsConstructor
 @Table(name = "comment")
 public class Comment {
     @Id

@@ -31,16 +31,16 @@ public class AnniversaryServiceImpl implements AnniversaryService {
     private final AnniversaryRepository anniversaryRepository;
     private final UserRepository userRepository;
 
-    public AnniversaryServiceImpl(AnniversaryRepository anniversaryRepository, UserRepository userRepository){
+    public AnniversaryServiceImpl(AnniversaryRepository anniversaryRepository, UserRepository userRepository) {
         this.anniversaryRepository = anniversaryRepository;
         this.userRepository = userRepository;
     }
 
-    public DefaultRes findAll(final int authUserIdx){
+    public DefaultRes findAll(final int authUserIdx) {
         // groupIdx로 기념일 조회
-        try{
+        try {
             Optional<User> user = userRepository.findById(authUserIdx);
-            if(!user.isPresent()){
+            if (!user.isPresent()) {
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
             }
             int groupIdx = user.get().getGroupIdx();
@@ -48,7 +48,7 @@ public class AnniversaryServiceImpl implements AnniversaryService {
             List<Anniversary> anniversaries = anniversaryRepository.findAnniversariesByGroupIdx(groupIdx);
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_ANNIVERSARY, anniversaries);
-        }catch(Exception e){
+        } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
@@ -57,21 +57,21 @@ public class AnniversaryServiceImpl implements AnniversaryService {
     }
 
     @Transactional
-    public DefaultRes addAnniversary(final int anniversaryType, final AnniversaryReq anniversaryReq){
+    public DefaultRes addAnniversary(final int anniversaryType, final AnniversaryReq anniversaryReq) {
         // 타입값에 따라 기념일 추가
-        try{
+        try {
             Anniversary anniversary = new Anniversary();
-            if(anniversaryType == 1 || anniversaryType == 2 || anniversaryType == 3){
+            if (anniversaryType == 1 || anniversaryType == 2 || anniversaryType == 3) {
                 anniversary.setAnniversaryType(anniversaryType);
                 anniversary.setContent(anniversaryReq.getContent());
                 anniversary.setDate(anniversaryReq.getDate());
 
                 anniversaryRepository.save(anniversary);
-            }else {
+            } else {
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_ANNIVERSARYTYPE);
             }
             return DefaultRes.res(StatusCode.OK, ResponseMessage.CREATED_ANNIVERSARY);
-        }catch(Exception e){
+        } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
@@ -80,13 +80,22 @@ public class AnniversaryServiceImpl implements AnniversaryService {
     }
 
     @Transactional
-    public DefaultRes deleteAnniversary(final int anniversaryIdx){
+    public DefaultRes deleteAnniversary(final int anniversaryIdx) {
         // 기념일 삭제
-        try{
-            anniversaryRepository.deleteById(anniversaryIdx);
+        try {
+            Optional<Anniversary> anniversary = anniversaryRepository.findById(anniversaryIdx);
+            if (!anniversary.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_ANNIVERSARY);
+            int anniversaryType = anniversary.get().getAnniversaryType();
 
-            return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_ANNIVERSARY);
-        }catch(Exception e){
+            if (anniversaryType == 1 || anniversaryType == 2 || anniversaryType == 3) {
+                anniversaryRepository.deleteById(anniversaryIdx);
+
+                return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_ANNIVERSARY);
+            } else {
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_ANNIVERSARYTYPE);
+            }
+        } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
@@ -94,13 +103,13 @@ public class AnniversaryServiceImpl implements AnniversaryService {
         }
     }
 
-    public List<Anniversary> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate){
+    public List<Anniversary> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate) {
         // 년, 월에 맞는 (앞달, 뒷달 포함)세달치 기념일 조회
-        try{
+        try {
             List<Anniversary> anniversaries = anniversaryRepository.findByYearAndMonth(startDate, endDate);
 
             return anniversaries;
-        }catch(Exception e){
+        } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
@@ -108,14 +117,14 @@ public class AnniversaryServiceImpl implements AnniversaryService {
         }
     }
 
-    public List<Anniversary> findByYearAndMonthAndDate(final String dateStr){
+    public List<Anniversary> findByYearAndMonthAndDate(final String dateStr) {
         // 날짜에 맞는 기념일 조회
         try {
             String tempStr = dateStr.concat("%");
             List<Anniversary> anniversaries = anniversaryRepository.findByYearAndMonthAndDate(tempStr);
 
             return anniversaries;
-        }catch(Exception e){
+        } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
@@ -123,4 +132,3 @@ public class AnniversaryServiceImpl implements AnniversaryService {
         }
     }
 }
-

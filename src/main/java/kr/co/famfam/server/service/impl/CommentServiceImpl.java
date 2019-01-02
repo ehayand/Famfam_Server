@@ -65,7 +65,7 @@ public class CommentServiceImpl implements CommentService {
             LocalDateTime endDateTime = LocalDateTime.of(startDateTime.plusDays(6).toLocalDate(), LocalTime.of(23, 59, 59));
             long count = 0;
 
-            for(User u : groupUsers) {
+            for (User u : groupUsers) {
                 count += commentRepository.countByUserIdxAndCreatedDateBetween(u.getUserIdx(), startDateTime, endDateTime);
             }
 
@@ -93,7 +93,7 @@ public class CommentServiceImpl implements CommentService {
     public DefaultRes update(int commentIdx, CommentDto commentDto) {
         try {
             Optional<Comment> comment = commentRepository.findById(commentIdx);
-            if(!comment.isPresent())
+            if (!comment.isPresent())
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_COMMENT);
 
             comment.get().setContent(commentDto.getContent());
@@ -112,7 +112,7 @@ public class CommentServiceImpl implements CommentService {
     public DefaultRes delete(int commentIdx) {
         try {
             Optional<Comment> comment = commentRepository.findById(commentIdx);
-            if(!comment.isPresent())
+            if (!comment.isPresent())
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_COMMENT);
 
             commentRepository.delete(comment.get());
@@ -128,7 +128,7 @@ public class CommentServiceImpl implements CommentService {
     private LocalDateTime getStartDateTime() {
         LocalDate today = LocalDate.now();
         LocalDateTime startDateTime =
-                LocalDateTime.of(today.minusDays(today.getDayOfWeek().getValue()-1), LocalTime.of(0, 0, 0));
+                LocalDateTime.of(today.minusDays(today.getDayOfWeek().getValue() - 1), LocalTime.of(0, 0, 0));
         return startDateTime;
     }
 }

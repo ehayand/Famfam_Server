@@ -16,7 +16,10 @@ import java.time.LocalDateTime;
 
 @Service
 public interface ContentRepository extends JpaRepository<Content, Integer> {
+
     Page<Content> findContentsByGroupIdx(int groupIdx, Pageable pageable);
+
     Page<Content> findContentsByUserIdx(int userIdx, Pageable pageable);
+
     long countByGroupIdxAndCreatedDateBetween(int groupIdx, LocalDateTime startDateTime, LocalDateTime endDateTime);
 }

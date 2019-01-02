@@ -10,8 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.*;
-
 import static kr.co.famfam.server.model.DefaultRes.FAIL_DEFAULT_RES;
 
 @Slf4j
@@ -22,18 +20,18 @@ public class CalendarController {
     private final CalendarService calendarService;
     private final JwtService jwtService;
 
-    public CalendarController(CalendarService calendarService, JwtService jwtService){
+    public CalendarController(CalendarService calendarService, JwtService jwtService) {
         this.calendarService = calendarService;
         this.jwtService = jwtService;
     }
 
     @Auth
     @GetMapping("/month/{dateStr}")
-    public ResponseEntity<DefaultRes> getMonthSchedule(@PathVariable(value = "dateStr") final String dateStr){
-        try{
+    public ResponseEntity<DefaultRes> getMonthSchedule(@PathVariable(value = "dateStr") final String dateStr) {
+        try {
             return new ResponseEntity<>(calendarService.findAllSchedule(dateStr), HttpStatus.OK);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -41,11 +39,11 @@ public class CalendarController {
 
     @Auth
     @GetMapping("/oneday/{dateStr}")
-    public ResponseEntity getDaySchedule(@PathVariable(value = "dateStr") final String dateStr){
-        try{
+    public ResponseEntity getDaySchedule(@PathVariable(value = "dateStr") final String dateStr) {
+        try {
             return new ResponseEntity<>(calendarService.findDaySchedule(dateStr), HttpStatus.OK);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -54,14 +52,14 @@ public class CalendarController {
     @PostMapping("/{calendarType}")
     public ResponseEntity addSchedule(@PathVariable(value = "calendarType") final int calendarType,
                                       @RequestBody CalendarReq calendarReq,
-                                      @RequestHeader("Authorization") final String header){
-        try{
+                                      @RequestHeader("Authorization") final String header) {
+        try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
             log.info("ID : " + authUserIdx);
 
             return new ResponseEntity<>(calendarService.addSchedule(calendarType, calendarReq, authUserIdx), HttpStatus.OK);
 
-        }catch(Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -70,11 +68,11 @@ public class CalendarController {
     @PutMapping("/{calendarType}/{calendarIdx}")
     public ResponseEntity updateSchedule(@PathVariable(value = "calendarType") final int calendarType,
                                          @PathVariable(value = "calendarIdx") final int calendarIdx,
-                                         @RequestBody CalendarReq calendarReq){
-        try{
+                                         @RequestBody CalendarReq calendarReq) {
+        try {
             return new ResponseEntity<>(calendarService.updateSchedule(calendarType, calendarIdx, calendarReq), HttpStatus.OK);
 
-        }catch(Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -82,11 +80,11 @@ public class CalendarController {
     @Auth
     @DeleteMapping("/{calendarType}/{calendarIdx}")
     public ResponseEntity deleteSchedule(@PathVariable(value = "calendarType") final int calendarType,
-                                         @PathVariable(value = "calendarIdx") final int calendarIdx){
-        try{
+                                         @PathVariable(value = "calendarIdx") final int calendarIdx) {
+        try {
             return new ResponseEntity<>(calendarService.deleteSchedule(calendarType, calendarIdx), HttpStatus.OK);
 
-        }catch(Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

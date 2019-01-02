@@ -9,6 +9,7 @@ import kr.co.famfam.server.model.DefaultRes;
  */
 
 public interface FeelService {
+
     DefaultRes findFeelsByContentIdx(int contentIdx);
 
     DefaultRes countThisWeek(int userIdx);

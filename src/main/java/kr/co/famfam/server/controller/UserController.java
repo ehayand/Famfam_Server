@@ -2,9 +2,7 @@ package kr.co.famfam.server.controller;
 
 import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.DefaultRes;
-import kr.co.famfam.server.model.LoginReq;
 import kr.co.famfam.server.model.SignUpReq;
-import kr.co.famfam.server.model.UserRes;
 import kr.co.famfam.server.service.JwtService;
 import kr.co.famfam.server.service.UserService;
 import kr.co.famfam.server.utils.ResponseMessage;
@@ -22,8 +20,8 @@ import static kr.co.famfam.server.model.DefaultRes.FAIL_DEFAULT_RES;
  * Blog : http://ehay.tistory.com
  * Github : http://github.com/ehayand
  */
-@RestController
 
+@RestController
 @RequestMapping("/users")
 public class UserController {
     private static final DefaultRes<User> UNAUTHORIZED_RES = new DefaultRes(StatusCode.INTERNAL_SERVER_ERROR, ResponseMessage.INTERNAL_SERVER_ERROR);
@@ -40,17 +38,16 @@ public class UserController {
     /**
      * 회원 조회
      *
-     * @param header  jwt token
-     *
+     * @param header jwt token
      * @return ResponseEntity
      */
     @Auth
     @GetMapping("")
-    public ResponseEntity<DefaultRes> getUser( @RequestHeader(value = "Authorization") final String header) {
+    public ResponseEntity<DefaultRes> getUser(@RequestHeader(value = "Authorization") final String header) {
         try {
             System.out.println(header);
 
-            int authIdx=jwtService.decode(header).getUser_idx();
+            int authIdx = jwtService.decode(header).getUser_idx();
             return new ResponseEntity<>(userService.findById(authIdx), HttpStatus.OK);
 
         } catch (Exception e) {
@@ -93,8 +90,8 @@ public class UserController {
 
     @Auth
     @DeleteMapping("/{userIdx}")
-    public ResponseEntity deleteUser( @RequestHeader(value = "Authorization") final String header,
-                                      @PathVariable("userIdx") final int userIdx) {
+    public ResponseEntity deleteUser(@RequestHeader(value = "Authorization") final String header,
+                                     @PathVariable("userIdx") final int userIdx) {
 
         try {
 

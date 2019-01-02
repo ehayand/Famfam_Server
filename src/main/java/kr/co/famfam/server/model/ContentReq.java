@@ -11,8 +11,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class ContentReq {
-    private int userIdx;
-    private int groupIdx;
+
     private String content;
     private MultipartFile[] photos;
+
+    private int userIdx;
+    private int groupIdx;
 }

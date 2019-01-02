@@ -12,6 +12,7 @@ import java.util.List;
 
 @Data
 public class FeelRes {
+
     private List<Integer> types;
     private String firstUserName;
     private int feelCount;

@@ -10,5 +10,6 @@ import org.springframework.data.domain.Pageable;
  */
 
 public interface PhotoService {
+
     DefaultRes findPhotosByUserIdx(int userIdx, Pageable pageable);
 }

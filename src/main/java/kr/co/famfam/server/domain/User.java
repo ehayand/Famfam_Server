@@ -2,7 +2,9 @@ package kr.co.famfam.server.domain;
 
 import kr.co.famfam.server.model.LoginReq;
 import kr.co.famfam.server.model.SignUpReq;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -49,13 +51,16 @@ public class User {
     @Column(name = "groupIdx")
     private int groupIdx;
 
-    public User(SignUpReq signUpReq) {
+    public User(SignUpReq signUpReq, String profilePhoto, String backPhoto) {
         this.userId = signUpReq.getUserId();
         this.userPw = signUpReq.getUserPw();
         this.userName = signUpReq.getUserName();
         this.birthday = LocalDateTime.parse(signUpReq.getBirthday());
         this.userPhone = signUpReq.getUserPhone();
         this.sexType = signUpReq.getSexType();
+        this.statusMessage = "상태메세지를 등록하세요.";
+        this.profilePhoto = profilePhoto;
+        this.backPhoto = backPhoto;
     }
 
     public User(LoginReq loginReq) {

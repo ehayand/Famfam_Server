@@ -2,8 +2,11 @@ package kr.co.famfam.server.service.impl;
 
 import kr.co.famfam.server.domain.FamilyCalendar;
 import kr.co.famfam.server.model.CalendarReq;
+import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.repository.FamilyCalendarRepository;
 import kr.co.famfam.server.service.FamilyCalendarService;
+import kr.co.famfam.server.utils.ResponseMessage;
+import kr.co.famfam.server.utils.StatusCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -24,17 +27,17 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
 
     private final FamilyCalendarRepository familyCalendarRepository;
 
-    public FamilyCalendarServiceImpl(FamilyCalendarRepository familyCalendarRepository){
+    public FamilyCalendarServiceImpl(FamilyCalendarRepository familyCalendarRepository) {
         this.familyCalendarRepository = familyCalendarRepository;
     }
 
-    public List<FamilyCalendar> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate){
+    public List<FamilyCalendar> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate) {
         // 년, 월에 맞는 (앞달, 뒷달 포함)세달치 일정 조회
-        try{
+        try {
             List<FamilyCalendar> familyCalendars = familyCalendarRepository.findByYearAndMonth(startDate, endDate);
 
             return familyCalendars;
-        }catch (Exception e){
+        } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
@@ -42,9 +45,9 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
         }
     }
 
-    public List<FamilyCalendar> findByYearAndMonthAndDate(final String dateStr){
+    public List<FamilyCalendar> findByYearAndMonthAndDate(final String dateStr) {
         // 날짜에 맞는 일정 조회
-        try{
+        try {
             String per = "%";
             String tempStr = per.concat(dateStr);
             String result = tempStr.concat("%");
@@ -52,7 +55,7 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
             List<FamilyCalendar> familyCalendars = familyCalendarRepository.findByYearAndMonthAndDate(result);
 
             return familyCalendars;
-        }catch (Exception e){
+        } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
@@ -61,35 +64,66 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
     }
 
     @Transactional
-    public void addSchedule(final CalendarReq calendarReq, final int authUserIdx, final String allDateStr){
+    public DefaultRes addSchedule(final CalendarReq calendarReq, final int authUserIdx, final String allDateStr) {
         // 일정 추가
+        try {
+            FamilyCalendar schedule = new FamilyCalendar();
+            schedule.setUserIdx(authUserIdx);
+            schedule.setContent(calendarReq.getContent());
+            schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
+            schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
+            schedule.setAllDate(allDateStr);
 
-        FamilyCalendar schedule = new FamilyCalendar();
-        schedule.setUserIdx(authUserIdx);
-        schedule.setContent(calendarReq.getContent());
-        schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
-        schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
-        schedule.setAllDate(allDateStr);
+            familyCalendarRepository.save(schedule);
 
-        familyCalendarRepository.save(schedule);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.CREATED_CALENDAR);
+        } catch (Exception e) {
+            //Rollback
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
     }
 
     @Transactional
-    public void updateSchedule(final int calendarIdx, final CalendarReq calendarReq, final String allDateStr){
+    public DefaultRes updateSchedule(final int calendarIdx, final CalendarReq calendarReq, final String allDateStr) {
         // 일정 수정
+        try {
+            if (!familyCalendarRepository.findById(calendarIdx).isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDAR);
 
-        FamilyCalendar schedule = familyCalendarRepository.findById(calendarIdx).get();
-        schedule.setContent(calendarReq.getContent());
-        schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
-        schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
-        schedule.setAllDate(allDateStr);
+            FamilyCalendar schedule = familyCalendarRepository.findById(calendarIdx).get();
+            schedule.setContent(calendarReq.getContent());
+            schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
+            schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
+            schedule.setAllDate(allDateStr);
 
-        familyCalendarRepository.save(schedule);
+            familyCalendarRepository.save(schedule);
+
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_CALENDAR);
+        } catch (Exception e) {
+            //Rollback
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
     }
 
     @Transactional
-    public void deleteSchedule(final int calendarIdx){
+    public DefaultRes deleteSchedule(final int calendarIdx) {
         // 일정 삭제
-        familyCalendarRepository.deleteById(calendarIdx);
+        try {
+            if (!familyCalendarRepository.findById(calendarIdx).isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDAR);
+
+            familyCalendarRepository.deleteById(calendarIdx);
+
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_CALENDAR);
+        } catch (Exception e) {
+            //Rollback
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
     }
 }
