@@ -72,6 +72,14 @@ public class UserServiceImpl implements UserService {
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, userRes);
     }
 
+    public DefaultRes findusersById(final int groupIdx) {
+        List<User> groupUsers = userRepository.findUsersByGroupIdx(groupIdx);
+        if (groupUsers.isEmpty())
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, groupUsers);
+    }
     /**
      * 회원 가입
      *

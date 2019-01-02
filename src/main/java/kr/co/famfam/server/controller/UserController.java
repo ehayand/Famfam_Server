@@ -1,5 +1,6 @@
 package kr.co.famfam.server.controller;
 
+import kr.co.famfam.server.domain.Group;
 import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.*;
 import kr.co.famfam.server.service.JwtService;
@@ -57,22 +58,21 @@ public class UserController {
         }
     }
 
-    /*@Auth
-    @RequestMapping("/groups")
-    @GetMapping("/{groupIdx}")
-    public ResponseEntity<DefaultRes> getGroup( @RequestHeader(value = "Authorization") final String header) {
+    @Auth
+    @GetMapping("/groups/{groupIdx}")
+
+    public ResponseEntity<DefaultRes> getGroup( @RequestHeader(value = "Authorization")final String header,
+                                                @PathVariable("groupIdx") final int groupIdx) {
         try {
             System.out.println(header);
-
-            int authIdx=jwtService.decode(header).getUser_idx();
-            return new ResponseEntity<>(userService.findById(authIdx), HttpStatus.OK);
+            return new ResponseEntity<>(userService.findusersById(groupIdx), HttpStatus.OK);
 
         } catch (Exception e) {
             e.printStackTrace();
             //  TODO multivalue 수정
             return new ResponseEntity<>((MultiValueMap<String, String>) FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }*/
+    }
 
     @PostMapping("")
     public ResponseEntity<DefaultRes> signUp(@RequestBody final SignUpReq signUpReq) {

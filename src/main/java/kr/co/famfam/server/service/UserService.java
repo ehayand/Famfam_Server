@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 public interface UserService {
     DefaultRes getAllUsers();
     DefaultRes findById(final int userIdx);
+    DefaultRes findusersById(final int groupIdx);
     DefaultRes save(final SignUpReq signUpReq);
     DefaultRes update(final int userIdx, final UserinfoReq userinfoReq);
     DefaultRes deleteByUserIdx(final int userIdx);
