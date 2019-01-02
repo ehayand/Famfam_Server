@@ -44,6 +44,9 @@ public class CalendarServiceImpl implements CalendarService {
         List<FamilyCalendar> familyCalendars = familyCalendarService.findByYearAndMonth(startDate, endDate);
         List<Anniversary> anniversaries = anniversaryService.findByYearAndMonth(startDate, endDate);
 
+        if(anniversaries == null)
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_ANNIVERSARY);
+
         Map<String, Object> map = new HashMap<>();
 
         map.put("individual", individualCalendars);
