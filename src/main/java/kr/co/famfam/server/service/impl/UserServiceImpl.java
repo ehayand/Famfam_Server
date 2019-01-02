@@ -76,12 +76,16 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public DefaultRes save(final SignUpReq signUpReq) {
         try {
-            /*
-                null 검사
-            */
+
+            User tempUser = userRepository.findUserByUserId(signUpReq.getUserId());
+
+            if(tempUser != null) {
+                return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.DUPLICATED_ID);
+            }
 
             userRepository.save(new User(signUpReq));
             return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_USER);
+
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

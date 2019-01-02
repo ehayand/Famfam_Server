@@ -41,20 +41,21 @@ public class UserController {
      * 회원 조회
      *
      * @param header  jwt token
-     * @param userIdx 회원 고유 번호
+     *
      * @return ResponseEntity
      */
     @Auth
-    @GetMapping("/{userIdx}")
-    public ResponseEntity<DefaultRes> getUser( @RequestHeader(value = "Authorization") final String header
-                                               ,@PathVariable("userIdx") final int userIdx) {
+    @GetMapping("")
+    public ResponseEntity<DefaultRes> getUser( @RequestHeader(value = "Authorization") final String header) {
         try {
-            DefaultRes<UserRes> defaultRes = userService.findById(userIdx);
-            if (jwtService.checkAuth(header, userIdx)) defaultRes.getData().setAuth(true);
-            return new ResponseEntity<>(defaultRes, HttpStatus.OK);
+            System.out.println(header);
+
+            int authIdx=jwtService.decode(header).getUser_idx();
+            return new ResponseEntity<>(userService.findById(authIdx), HttpStatus.OK);
 
         } catch (Exception e) {
             e.printStackTrace();
+            //  TODO multivalue 수정
             return new ResponseEntity<>((MultiValueMap<String, String>) FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -73,12 +74,13 @@ public class UserController {
     @PutMapping("/{userIdx}")
     public ResponseEntity<DefaultRes> updateUser(@RequestHeader(value = "Authorization") final String header,
                                                  @PathVariable("userIdx") final int userIdx,
-                                                 final User user){
+                                                 final User user) {
 
         try {
-            if (jwtService.checkAuth(header, userIdx))
-                return new ResponseEntity<>(userService.update(userIdx, user), HttpStatus.OK);
-            return new ResponseEntity<>( UNAUTHORIZED_RES, HttpStatus.OK);
+            int authIdx = jwtService.decode(header).getUser_idx();
+            if (authIdx == userIdx) {
+            }
+            return new ResponseEntity<>(userService.update(userIdx, user), HttpStatus.OK);
 
         } catch (Exception e) {
 
@@ -86,8 +88,8 @@ public class UserController {
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
-
     }
+
 
     @Auth
     @DeleteMapping("/{userIdx}")
