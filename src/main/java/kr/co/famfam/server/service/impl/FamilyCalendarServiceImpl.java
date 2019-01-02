@@ -89,6 +89,9 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
     public DefaultRes updateSchedule(final int calendarIdx, final CalendarReq calendarReq, final String allDateStr){
         // 일정 수정
         try{
+            if(!familyCalendarRepository.findById(calendarIdx).isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDAR);
+
             FamilyCalendar schedule = familyCalendarRepository.findById(calendarIdx).get();
             schedule.setContent(calendarReq.getContent());
             schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
@@ -110,9 +113,12 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
     public DefaultRes deleteSchedule(final int calendarIdx){
         // 일정 삭제
         try{
-        familyCalendarRepository.deleteById(calendarIdx);
+            if(!familyCalendarRepository.findById(calendarIdx).isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDAR);
 
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_CALENDAR);
+            familyCalendarRepository.deleteById(calendarIdx);
+
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_CALENDAR);
         }catch (Exception e){
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

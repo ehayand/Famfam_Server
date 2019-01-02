@@ -91,6 +91,9 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
     public DefaultRes updateSchedule(final int calendarIdx, final CalendarReq calendarReq, final String allDateStr){
         // 일정 수정
         try{
+            if(!individualCalendarRepository.findById(calendarIdx).isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDAR);
+
             IndividualCalendar schedule = individualCalendarRepository.findById(calendarIdx).get();
             schedule.setContent(calendarReq.getContent());
             schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
@@ -114,6 +117,9 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
     public DefaultRes deleteSchedule(final int calendarIdx){
         // 일정 삭제
         try{
+            if(!individualCalendarRepository.findById(calendarIdx).isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDAR);
+
             individualCalendarRepository.deleteById(calendarIdx);
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_CALENDAR);
