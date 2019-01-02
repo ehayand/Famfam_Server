@@ -83,9 +83,18 @@ public class AnniversaryServiceImpl implements AnniversaryService {
     public DefaultRes deleteAnniversary(final int anniversaryIdx) {
         // 기념일 삭제
         try {
-            anniversaryRepository.deleteById(anniversaryIdx);
+            Optional<Anniversary> anniversary = anniversaryRepository.findById(anniversaryIdx);
+            if (!anniversary.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_ANNIVERSARY);
+            int anniversaryType = anniversary.get().getAnniversaryType();
 
-            return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_ANNIVERSARY);
+            if (anniversaryType == 1 || anniversaryType == 2 || anniversaryType == 3) {
+                anniversaryRepository.deleteById(anniversaryIdx);
+
+                return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_ANNIVERSARY);
+            } else {
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_ANNIVERSARYTYPE);
+            }
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

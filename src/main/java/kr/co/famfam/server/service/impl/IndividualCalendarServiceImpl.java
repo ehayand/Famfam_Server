@@ -2,8 +2,11 @@ package kr.co.famfam.server.service.impl;
 
 import kr.co.famfam.server.domain.IndividualCalendar;
 import kr.co.famfam.server.model.CalendarReq;
+import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.repository.IndividualCalendarRepository;
 import kr.co.famfam.server.service.IndividualCalendarService;
+import kr.co.famfam.server.utils.ResponseMessage;
+import kr.co.famfam.server.utils.StatusCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -61,40 +64,70 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
     }
 
     @Transactional
-    public void addSchedule(final CalendarReq calendarReq, final int authUserIdx, final String allDateStr) {
+    public DefaultRes addSchedule(final CalendarReq calendarReq, final int authUserIdx, final String allDateStr) {
         // 일정 추가
+        try {
+            IndividualCalendar schedule = new IndividualCalendar();
+            schedule.setUserIdx(authUserIdx);
+            schedule.setContent(calendarReq.getContent());
+            schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
+            schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
+            schedule.setAllDate(allDateStr);
+            schedule.setReturningTime(calendarReq.getReturningTime());
+            schedule.setDinner(calendarReq.getDinner());
 
-        IndividualCalendar schedule = new IndividualCalendar();
-        schedule.setUserIdx(authUserIdx);
-        schedule.setContent(calendarReq.getContent());
-        schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
-        schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
-        schedule.setAllDate(allDateStr);
-        schedule.setReturningTime(calendarReq.getReturningTime());
-        schedule.setDinner(calendarReq.getDinner());
+            individualCalendarRepository.save(schedule);
 
-        individualCalendarRepository.save(schedule);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.CREATED_CALENDAR);
+        } catch (Exception e) {
+            //Rollback
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
     }
 
     @Transactional
-    public void updateSchedule(final int calendarIdx, final CalendarReq calendarReq, final String allDateStr) {
+    public DefaultRes updateSchedule(final int calendarIdx, final CalendarReq calendarReq, final String allDateStr) {
         // 일정 수정
+        try {
+            if (!individualCalendarRepository.findById(calendarIdx).isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDAR);
 
-        IndividualCalendar schedule = individualCalendarRepository.findById(calendarIdx).get();
-        schedule.setContent(calendarReq.getContent());
-        schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
-        schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
-        schedule.setAllDate(allDateStr);
-        schedule.setReturningTime(calendarReq.getReturningTime());
-        schedule.setDinner(calendarReq.getDinner());
+            IndividualCalendar schedule = individualCalendarRepository.findById(calendarIdx).get();
+            schedule.setContent(calendarReq.getContent());
+            schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
+            schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
+            schedule.setAllDate(allDateStr);
+            schedule.setReturningTime(calendarReq.getReturningTime());
+            schedule.setDinner(calendarReq.getDinner());
 
-        individualCalendarRepository.save(schedule);
+            individualCalendarRepository.save(schedule);
+
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_CALENDAR);
+        } catch (Exception e) {
+            //Rollback
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
     }
 
     @Transactional
-    public void deleteSchedule(final int calendarIdx) {
+    public DefaultRes deleteSchedule(final int calendarIdx) {
         // 일정 삭제
-        // 일정 삭제
-        individualCalendarRepository.deleteById(calendarIdx);
+        try {
+            if (!individualCalendarRepository.findById(calendarIdx).isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDAR);
+
+            individualCalendarRepository.deleteById(calendarIdx);
+
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_CALENDAR);
+        } catch (Exception e) {
+            //Rollback
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
     }
 }
