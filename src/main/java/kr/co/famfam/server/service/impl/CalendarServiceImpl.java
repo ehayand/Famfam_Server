@@ -144,7 +144,7 @@ public class CalendarServiceImpl implements CalendarService {
         map.put("family", familyCalendars);
         map.put("anniversary", anniversaries);
 
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CALENDAR, map);
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.SEARCH_CALENDAR, map);
     }
 
     public String allDate(final CalendarReq calendarReq) {
