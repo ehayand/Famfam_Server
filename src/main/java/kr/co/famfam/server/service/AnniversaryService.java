@@ -19,6 +19,8 @@ public interface AnniversaryService {
 
     DefaultRes addAnniversary(final int anniversaryType, final AnniversaryReq anniversaryReq);
 
+    DefaultRes updateAnniversary(final int anniversaryIdx, final String dateStr);
+
     DefaultRes deleteAnniversary(final int anniversaryIdx);
 
     List<Anniversary> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate);

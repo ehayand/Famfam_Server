@@ -4,6 +4,7 @@ import kr.co.famfam.server.model.AnniversaryReq;
 import kr.co.famfam.server.service.AnniversaryService;
 import kr.co.famfam.server.service.JwtService;
 import kr.co.famfam.server.utils.auth.Auth;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +40,18 @@ public class AnniversaryController {
                                          @RequestBody AnniversaryReq anniversaryReq) {
         try {
             return new ResponseEntity<>(anniversaryService.addAnniversary(anniversaryType, anniversaryReq), HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Auth
+    @PutMapping("/{anniversaryIdx}")
+    public ResponseEntity updateAnniversary(@PathVariable(value = "anniversaryIdx") final int anniversaryIdx,
+                                            @Param(value = "dateStr") final String dateStr) {
+        try {
+            return new ResponseEntity<>(anniversaryService.updateAnniversary(anniversaryIdx, dateStr), HttpStatus.OK);
 
         } catch (Exception e) {
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);

@@ -80,6 +80,31 @@ public class AnniversaryServiceImpl implements AnniversaryService {
     }
 
     @Transactional
+    public DefaultRes updateAnniversary(final int anniversaryIdx, final String dateStr) {
+        // 기념일 수정
+        try {
+            Optional<Anniversary> anniversary = anniversaryRepository.findById(anniversaryIdx);
+            if (!anniversary.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_ANNIVERSARY);
+            int anniversaryType = anniversary.get().getAnniversaryType();
+
+            if (anniversaryType == 1 || anniversaryType == 3) {
+                LocalDateTime date = LocalDateTime.parse(dateStr);
+                anniversary.get().setDate(date);
+
+                return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_ANNIVERSARY);
+            } else {
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_ANNIVERSARYTYPE);
+            }
+        } catch (Exception e) {
+            //Rollback
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
+    }
+
+    @Transactional
     public DefaultRes deleteAnniversary(final int anniversaryIdx) {
         // 기념일 삭제
         try {
