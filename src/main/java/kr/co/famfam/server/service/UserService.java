@@ -1,10 +1,7 @@
 package kr.co.famfam.server.service;
 
 import kr.co.famfam.server.domain.User;
-import kr.co.famfam.server.model.DefaultRes;
-import kr.co.famfam.server.model.SignUpReq;
-import kr.co.famfam.server.model.UserRes;
-import kr.co.famfam.server.model.UserinfoReq;
+import kr.co.famfam.server.model.*;
 import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.repository.UserRepository;
 
@@ -24,5 +21,6 @@ public interface UserService {
     DefaultRes findusersById(final int groupIdx);
     DefaultRes save(final SignUpReq signUpReq);
     DefaultRes update(final int userIdx, final UserinfoReq userinfoReq);
+    DefaultRes updatePw(final int userIdx, final PasswordReq passwordReq);
     DefaultRes deleteByUserIdx(final int userIdx);
 }

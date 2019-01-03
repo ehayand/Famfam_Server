@@ -1,15 +1,13 @@
 package kr.co.famfam.server.service.impl;
 
 import kr.co.famfam.server.domain.User;
-import kr.co.famfam.server.model.DefaultRes;
-import kr.co.famfam.server.model.SignUpReq;
-import kr.co.famfam.server.model.UserRes;
-import kr.co.famfam.server.model.UserinfoReq;
+import kr.co.famfam.server.model.*;
 import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.FileUploadService;
 import kr.co.famfam.server.service.UserService;
 import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
+import kr.co.famfam.server.utils.security.PasswordUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +28,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final FileUploadService fileUploadService;
+
 
     /**
      * UserRepository 생성자 의존성 주입
@@ -96,6 +95,9 @@ public class UserServiceImpl implements UserService {
                 return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.DUPLICATED_ID);
             }
 
+            PasswordUtil util = new PasswordUtil();
+
+            signUpReq.setUserPw(util.encryptSHA256(signUpReq.getUserPw()));
             userRepository.save(new User(signUpReq));
             return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_USER);
 
@@ -140,6 +142,23 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Transactional
+    public DefaultRes updatePw(final int userIdx, final PasswordReq passwordReq) {
+        Optional<User> temp = userRepository.findById(userIdx);
+        if (!temp.isPresent())
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+        try{
+            temp.get().setUserPw(passwordReq.getUserPw());
+            userRepository.save(temp.get());
+            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.UPDATE_USER);
+        } catch (Exception e) {
+            //Rollback
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
+    }
     /**
      * 회원 탈퇴
      *

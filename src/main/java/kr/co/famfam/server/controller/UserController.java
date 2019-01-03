@@ -8,6 +8,7 @@ import kr.co.famfam.server.service.UserService;
 import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
 import kr.co.famfam.server.utils.auth.Auth;
+import kr.co.famfam.server.utils.security.PasswordUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
@@ -90,10 +91,9 @@ public class UserController {
     public ResponseEntity<DefaultRes> updateUser(@RequestHeader(value = "Authorization") final String header,
                                                  @PathVariable("userIdx") final int userIdx,
                                                  @RequestBody final UserinfoReq userinfoReq) {
-
         try {
             int authIdx = jwtService.decode(header).getUser_idx();
-            if (authIdx == userIdx) {
+            if (authIdx != userIdx) {
             }
             return new ResponseEntity<>(userService.update(userIdx, userinfoReq), HttpStatus.OK);
 
@@ -105,7 +105,29 @@ public class UserController {
         }
     }
 
+    @Auth
+    @PutMapping("/{userIdx}")
+    public  ResponseEntity<DefaultRes> updatePassword(@RequestHeader(value="Authorization") final String header,
+                                                      @PathVariable("userIdx") final int userIdx,
+                                                      @RequestBody final PasswordReq passwordReq){
+        SignUpReq signUpReq=new SignUpReq();
+        LoginReq loginReq=new LoginReq();
+        try {
+            System.out.println(header);
+            PasswordUtil util=new PasswordUtil();
+            if (util.encryptSHA256(loginReq.getUserPw())!=signUpReq.getUserPw()) {
+                return new ResponseEntity<>(userService.updatePw(userIdx, passwordReq), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(userService.updatePw(userIdx, passwordReq), HttpStatus.OK);
 
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
+
+    }
     @Auth
     @DeleteMapping("/{userIdx}")
     public ResponseEntity deleteUser( @RequestHeader(value = "Authorization") final String header,
