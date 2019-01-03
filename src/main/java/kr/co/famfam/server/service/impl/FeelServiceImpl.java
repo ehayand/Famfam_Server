@@ -3,6 +3,7 @@ package kr.co.famfam.server.service.impl;
 import kr.co.famfam.server.domain.Feel;
 import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.DefaultRes;
+import kr.co.famfam.server.model.FeelReq;
 import kr.co.famfam.server.model.FeelRes;
 import kr.co.famfam.server.repository.FeelRepository;
 import kr.co.famfam.server.repository.UserRepository;
@@ -44,7 +45,7 @@ public class FeelServiceImpl implements FeelService {
             final List<Feel> feels = feelRepository.findFeelsByContentIdxOrderByCreatedDateAsc(contentIdx);
 
             if (feels.isEmpty())
-                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_FEEL);
+                return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_FEEL);
 
             List<Integer> types = new ArrayList<>();
             for (Feel feel : feels)
@@ -54,10 +55,11 @@ public class FeelServiceImpl implements FeelService {
             if (!firstUser.isPresent())
                 return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.INTERNAL_SERVER_ERROR);
 
-            FeelRes feelRes = new FeelRes();
-            feelRes.setTypes(types);
-            feelRes.setFirstUserName(firstUser.get().getUserName());
-            feelRes.setFeelCount(feels.size());
+            FeelRes feelRes = FeelRes.builder()
+                    .types(feels)
+                    .firstUserName(firstUser.get().getUserName())
+                    .feelCount(feels.size())
+                    .build();
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_FEEL, feelRes);
         } catch (Exception e) {
@@ -92,15 +94,20 @@ public class FeelServiceImpl implements FeelService {
     }
 
     @Transactional
-    public DefaultRes save(int contentIdx, int userIdx, int type) {
+    public DefaultRes save(FeelReq feelReq) {
         try {
-            Feel feel = new Feel();
-            feel.setContentIdx(contentIdx);
-            feel.setType(type);
-            feel.setUserIdx(userIdx);
+            Optional<Feel> feel = feelRepository.findFeelByContentIdxAndUserIdx(feelReq.getContentIdx(), feelReq.getUserIdx());
+            if (feel.isPresent()) {
+                feel.get().setType(feelReq.getType());
+                feelRepository.save(feel.get());
 
-            feelRepository.save(feel);
-            return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_FEEL);
+                return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.UPDATE_FEEL);
+            }
+            else {
+                feelRepository.save(new Feel(feelReq));
+
+                return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_FEEL);
+            }
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -110,9 +117,9 @@ public class FeelServiceImpl implements FeelService {
     }
 
     @Transactional
-    public DefaultRes delete(int feelIdx) {
+    public DefaultRes delete(int contentIdx, int userIdx) {
         try {
-            Optional<Feel> feel = feelRepository.findById(feelIdx);
+            Optional<Feel> feel = feelRepository.findFeelByContentIdxAndUserIdx(contentIdx, userIdx);
             if (!feel.isPresent())
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_FEEL);
 
