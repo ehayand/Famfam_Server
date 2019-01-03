@@ -24,6 +24,8 @@ public interface AnniversaryService {
     List<Anniversary> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate);
 
     List<Anniversary> findByYearAndMonthAndDate(final String dateStr);
+
+    List<Anniversary> searchSchedule(final String content);
 }
 
 

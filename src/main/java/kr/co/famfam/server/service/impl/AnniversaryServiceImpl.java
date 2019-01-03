@@ -131,4 +131,19 @@ public class AnniversaryServiceImpl implements AnniversaryService {
             return null;
         }
     }
+
+    @Transactional
+    public List<Anniversary> searchSchedule(final String content) {
+        // 일정 검색
+        try{
+            List<Anniversary> anniversaries = anniversaryRepository.findByContetnt(content);
+
+            return anniversaries;
+        }catch (Exception e) {
+            //Rollback
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return null;
+        }
+    }
 }

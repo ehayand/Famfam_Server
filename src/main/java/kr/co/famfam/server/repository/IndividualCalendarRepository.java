@@ -24,4 +24,8 @@ public interface IndividualCalendarRepository extends JpaRepository<IndividualCa
 
     @Query(value = "SELECT * FROM Individual_calendar WHERE all_date LIKE :dateStr", nativeQuery = true)
     List<IndividualCalendar> findByYearAndMonthAndDate(@Param("dateStr") final String dateStr);
+
+    @Query(value = "SELECT * FROM Individual_calendar WHERE content LIKE :content", nativeQuery = true)
+    List<IndividualCalendar> findByContetnt(@Param("content") final String content);
+
 }

@@ -58,6 +58,7 @@ public class ResponseMessage {
     public static final String CREATED_CALENDAR = "일정 추가 성공";
     public static final String UPDATE_CALENDAR = "일정 수정 성공";
     public static final String DELETE_CALENDAR = "일정 삭제 성공";
+    public static final String FIND_CALENDAR = "일정 검색 성공";
 
     public static final String READ_PHOTO = "사진 조회 성공";
     public static final String NOT_FOUND_PHOTO = "사진을 찾을 수 없습니다.";
