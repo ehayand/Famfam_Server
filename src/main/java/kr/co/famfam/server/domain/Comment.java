@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -27,7 +27,7 @@ public class Comment {
     @Column(name = "content")
     private String content;
     @Column(name = "createdDate")
-    private Date createdDate;
+    private LocalDateTime createdDate;
 
     @Column(name = "contentIdx")
     private int contentIdx;
@@ -38,5 +38,6 @@ public class Comment {
         this.content = commentDto.getContent();
         this.contentIdx = commentDto.getContentIdx();
         this.userIdx = commentDto.getUserIdx();
+        this.createdDate = LocalDateTime.now();
     }
 }

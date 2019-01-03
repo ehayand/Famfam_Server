@@ -42,7 +42,7 @@ public class CommentServiceImpl implements CommentService {
         try {
             final List<Comment> comments = commentRepository.findCommentsByContentIdxOrderByCreatedDateAsc(contentIdx);
             if (comments.isEmpty())
-                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_COMMENT);
+                return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_COMMENT);
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_COMMENT, comments);
         } catch (Exception e) {
