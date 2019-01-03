@@ -79,6 +79,7 @@ public class UserServiceImpl implements UserService {
 
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, groupUsers);
     }
+
     /**
      * 회원 가입
      *
@@ -91,7 +92,7 @@ public class UserServiceImpl implements UserService {
 
             User tempUser = userRepository.findUserByUserId(signUpReq.getUserId());
 
-            if(tempUser != null) {
+            if (tempUser != null) {
                 return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.DUPLICATED_ID);
             }
 
@@ -112,8 +113,8 @@ public class UserServiceImpl implements UserService {
     /**
      * 회원 정보 수정
      *
-     * @param userIdx 회원 고유 번호
-     * @param userinfoReq    수정할 회원 데이터
+     * @param userIdx     회원 고유 번호
+     * @param userinfoReq 수정할 회원 데이터
      * @return DefaultRes
      */
     @Transactional
@@ -142,16 +143,27 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    public DefaultRes checkPw(final int userIdx, final PasswordReq passwordReq) {
+        Optional<User> temp = userRepository.findById(userIdx);
+        if (!temp.isPresent())
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+        if (temp.get().getUserPw() != passwordReq.getUserPw())
+            return DefaultRes.res(StatusCode.UNAUTHORIZED, ResponseMessage.NOT_FOUND_PW);
+        else
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.PW_SUCCEESS);
+    }
+
     @Transactional
     public DefaultRes updatePw(final int userIdx, final PasswordReq passwordReq) {
         Optional<User> temp = userRepository.findById(userIdx);
         if (!temp.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
-        try{
+        try {
             temp.get().setUserPw(passwordReq.getUserPw());
             userRepository.save(temp.get());
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.UPDATE_USER);
+            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.UPDATE_PW);
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -159,6 +171,7 @@ public class UserServiceImpl implements UserService {
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
     }
+
     /**
      * 회원 탈퇴
      *

@@ -16,6 +16,10 @@ public class ResponseMessage {
     public static final String LOGIN_FAIL = "로그인 실패";
     public static final String DUPLICATED_ID="아이디 중복";
 
+    public static  final String NOT_FOUND_PW="비밀번호가 틀렸습니다.";
+    public static final String PW_SUCCEESS="비밀번호가 일치 합니다.";
+    public static  final String UPDATE_PW="비밀번호 수정 성공";
+
     public static final String NOT_FOUND_GROUP = "그룹을 찾을 수 없습니다.";
     public static final String UPDATE_GROUP = "그룹 정보 수정 성공";
     public static final String NOT_FOUND_INVITATION = "인증코드가 유효하지 않습니다.";

@@ -87,15 +87,12 @@ public class UserController {
 
 
     @Auth
-    @PutMapping("/{userIdx}")
+    @PutMapping("")
     public ResponseEntity<DefaultRes> updateUser(@RequestHeader(value = "Authorization") final String header,
-                                                 @PathVariable("userIdx") final int userIdx,
                                                  @RequestBody final UserinfoReq userinfoReq) {
         try {
             int authIdx = jwtService.decode(header).getUser_idx();
-            if (authIdx != userIdx) {
-            }
-            return new ResponseEntity<>(userService.update(userIdx, userinfoReq), HttpStatus.OK);
+            return new ResponseEntity<>(userService.update(authIdx, userinfoReq), HttpStatus.OK);
 
         } catch (Exception e) {
 
@@ -106,37 +103,47 @@ public class UserController {
     }
 
     @Auth
-    @PutMapping("/{userIdx}")
-    public  ResponseEntity<DefaultRes> updatePassword(@RequestHeader(value="Authorization") final String header,
-                                                      @PathVariable("userIdx") final int userIdx,
+    @PostMapping("/password")
+    public  ResponseEntity<DefaultRes> checkPassword(@RequestHeader(value="Authorization") final String header,
                                                       @RequestBody final PasswordReq passwordReq){
-        SignUpReq signUpReq=new SignUpReq();
-        LoginReq loginReq=new LoginReq();
         try {
+            int authIdx=jwtService.decode(header).getUser_idx();
             System.out.println(header);
             PasswordUtil util=new PasswordUtil();
-            if (util.encryptSHA256(loginReq.getUserPw())!=signUpReq.getUserPw()) {
-                return new ResponseEntity<>(userService.updatePw(userIdx, passwordReq), HttpStatus.OK);
-            }
-            return new ResponseEntity<>(userService.updatePw(userIdx, passwordReq), HttpStatus.OK);
-
+            passwordReq.setUserPw(util.encryptSHA256(passwordReq.getUserPw()));
+            return new ResponseEntity<>(userService.checkPw(authIdx, passwordReq), HttpStatus.OK);
         } catch (Exception e) {
-
             e.printStackTrace();
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
-
     }
+
     @Auth
-    @DeleteMapping("/{userIdx}")
-    public ResponseEntity deleteUser( @RequestHeader(value = "Authorization") final String header,
-                                      @PathVariable("userIdx") final int userIdx) {
+    @PutMapping("/password")
+    public  ResponseEntity<DefaultRes> updatePassword(@RequestHeader(value="Authorization") final String header,
+                                                      @RequestBody final PasswordReq passwordReq){
+        try {
+            int authIdx=jwtService.decode(header).getUser_idx();
+            System.out.println(header);
+            PasswordUtil util=new PasswordUtil();
+            passwordReq.setUserPw(util.encryptSHA256(passwordReq.getUserPw()));
+            return new ResponseEntity<>(userService.updatePw(authIdx, passwordReq), HttpStatus.OK);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Auth
+    @DeleteMapping("")
+    public ResponseEntity deleteUser( @RequestHeader(value = "Authorization") final String header) {
 
         try {
-
-            if (jwtService.checkAuth(header, userIdx))
-                return new ResponseEntity<>(userService.deleteByUserIdx(userIdx), HttpStatus.OK);
+            int authIdx=jwtService.decode(header).getUser_idx();
+            if (jwtService.checkAuth(header, authIdx))
+                return new ResponseEntity<>(userService.deleteByUserIdx(authIdx), HttpStatus.OK);
             return new ResponseEntity<>(UNAUTHORIZED_RES, HttpStatus.OK);
 
         } catch (Exception e) {
