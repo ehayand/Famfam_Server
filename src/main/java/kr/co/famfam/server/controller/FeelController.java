@@ -1,6 +1,7 @@
 package kr.co.famfam.server.controller;
 
 import kr.co.famfam.server.model.DefaultRes;
+import kr.co.famfam.server.model.FeelReq;
 import kr.co.famfam.server.service.FeelService;
 import kr.co.famfam.server.service.JwtService;
 import kr.co.famfam.server.utils.auth.Auth;
@@ -9,11 +10,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 import static kr.co.famfam.server.model.DefaultRes.FAIL_DEFAULT_RES;
 
 @Slf4j
 @RestController
-@RequestMapping("/feel")
+@RequestMapping("/feels")
 public class FeelController {
 
     private final FeelService feelService;
@@ -56,16 +59,22 @@ public class FeelController {
     }
 
     @Auth
-    @PostMapping("/{type}/contents/{contentIdx}")
+    @PostMapping("/contents/{contentIdx}")
     public ResponseEntity saveFeel(
             @RequestHeader("Authorization") final String header,
-            @PathVariable("type") final int type,
-            @PathVariable("contentIdx") final int contentIdx) {
+            @PathVariable("contentIdx") final int contentIdx,
+            @RequestBody final Optional<FeelReq> feelReq) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
             log.info("ID : " + authUserIdx);
 
-            return new ResponseEntity<>(feelService.save(contentIdx, authUserIdx, type), HttpStatus.OK);
+            if(!feelReq.isPresent())
+                return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.BAD_REQUEST);
+
+            feelReq.get().setContentIdx(contentIdx);
+            feelReq.get().setUserIdx(authUserIdx);
+
+            return new ResponseEntity<>(feelService.save(feelReq.get()), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -73,15 +82,15 @@ public class FeelController {
     }
 
     @Auth
-    @DeleteMapping("/{feelIdx}")
-    public ResponseEntity saveFeel(
+    @DeleteMapping("/contents/{contentIdx}")
+    public ResponseEntity deleteFeel(
             @RequestHeader("Authorization") final String header,
-            @PathVariable("feelIdx") final int feelIdx) {
+            @PathVariable("contentIdx") final int contentIdx) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
             log.info("ID : " + authUserIdx);
 
-            return new ResponseEntity<>(feelService.delete(feelIdx), HttpStatus.OK);
+            return new ResponseEntity<>(feelService.delete(contentIdx, authUserIdx), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
