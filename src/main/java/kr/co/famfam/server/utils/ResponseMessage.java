@@ -52,7 +52,6 @@ public class ResponseMessage {
     public static final String CREATED_ANNIVERSARY = "기념일 추가 성공";
     public static final String UPDATE_ANNIVERSARY = "기념일 수정 성공";
     public static final String DELETE_ANNIVERSARY = "기념일 삭제 성공";
-    public static final String NOT_MATCH_ANNIVERSARY_COUNT = "기념일 갯수가 일치하지 않습니다.";
 
     public static final String READ_CALENDAR = "일정 조회 성공";
     public static final String NOT_FOUND_CALENDAR_TYPE = "잘못된 일정 타입입니다.";
