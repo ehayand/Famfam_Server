@@ -12,6 +12,7 @@ import kr.co.famfam.server.model.UserinfoReq;
  */
 
 public interface UserService {
+
     DefaultRes getAllUsers();
 
     DefaultRes findById(final int userIdx);

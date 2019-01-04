@@ -1,5 +1,7 @@
 package kr.co.famfam.server.model;
 
+import kr.co.famfam.server.domain.Feel;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
@@ -11,8 +13,10 @@ import java.util.List;
  */
 
 @Data
+@Builder
 public class FeelRes {
-    private List<Integer> types;
+
+    private List<Feel> types;
     private String firstUserName;
     private int feelCount;
 }

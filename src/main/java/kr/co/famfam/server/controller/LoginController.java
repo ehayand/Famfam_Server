@@ -2,7 +2,6 @@ package kr.co.famfam.server.controller;
 
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.model.LoginReq;
-import kr.co.famfam.server.model.SignUpReq;
 import kr.co.famfam.server.service.JwtService;
 import kr.co.famfam.server.service.LoginService;
 import kr.co.famfam.server.utils.auth.Auth;
@@ -21,10 +20,11 @@ public class LoginController {
     private final LoginService loginService;
     private final JwtService jwtService;
 
-    public LoginController(final LoginService loginService ,final JwtService jwtService) {
+    public LoginController(final LoginService loginService, final JwtService jwtService) {
         this.loginService = loginService;
-        this.jwtService= jwtService;
+        this.jwtService = jwtService;
     }
+
     /**
      * 로그인
      *

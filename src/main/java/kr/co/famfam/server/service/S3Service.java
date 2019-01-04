@@ -30,6 +30,8 @@ public class S3Service {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
+    @Value("${cloud.aws.s3.bucket.resized}")
+    private String bucketResized;
     @Value("${cloud.aws.region.static}")
     private String region;
 
@@ -68,6 +70,7 @@ public class S3Service {
                     .build();
 
             s3Client.deleteObject(new DeleteObjectRequest(bucket, fileName));
+            s3Client.deleteObject(new DeleteObjectRequest(bucketResized, fileName));
         } catch (AmazonServiceException e) {
             // The call was transmitted successfully, but Amazon S3 couldn't process
             // it, so it returned an error response.

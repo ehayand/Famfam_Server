@@ -1,8 +1,10 @@
 package kr.co.famfam.server.controller;
 
-import kr.co.famfam.server.domain.Group;
 import kr.co.famfam.server.domain.User;
-import kr.co.famfam.server.model.*;
+import kr.co.famfam.server.model.DefaultRes;
+import kr.co.famfam.server.model.PasswordReq;
+import kr.co.famfam.server.model.SignUpReq;
+import kr.co.famfam.server.model.UserinfoReq;
 import kr.co.famfam.server.service.JwtService;
 import kr.co.famfam.server.service.UserService;
 import kr.co.famfam.server.utils.ResponseMessage;
@@ -21,8 +23,8 @@ import static kr.co.famfam.server.model.DefaultRes.FAIL_DEFAULT_RES;
  * Blog : http://ehay.tistory.com
  * Github : http://github.com/ehayand
  */
-@RestController
 
+@RestController
 @RequestMapping("/users")
 public class UserController {
     private static final DefaultRes<User> UNAUTHORIZED_RES = new DefaultRes(StatusCode.INTERNAL_SERVER_ERROR, ResponseMessage.INTERNAL_SERVER_ERROR);
@@ -39,17 +41,16 @@ public class UserController {
     /**
      * 회원 조회
      *
-     * @param header  jwt token
-     *
+     * @param header jwt token
      * @return ResponseEntity
      */
     @Auth
     @GetMapping("")
-    public ResponseEntity<DefaultRes> getUser( @RequestHeader(value = "Authorization") final String header) {
+    public ResponseEntity<DefaultRes> getUser(@RequestHeader(value = "Authorization") final String header) {
         try {
             System.out.println(header);
 
-            int authIdx=jwtService.decode(header).getUser_idx();
+            int authIdx = jwtService.decode(header).getUser_idx();
             return new ResponseEntity<>(userService.findById(authIdx), HttpStatus.OK);
 
         } catch (Exception e) {
@@ -61,9 +62,8 @@ public class UserController {
 
     @Auth
     @GetMapping("/groups/{groupIdx}")
-
-    public ResponseEntity<DefaultRes> getGroup( @RequestHeader(value = "Authorization")final String header,
-                                                @PathVariable("groupIdx") final int groupIdx) {
+    public ResponseEntity<DefaultRes> getGroup(@RequestHeader(value = "Authorization") final String header,
+                                               @PathVariable("groupIdx") final int groupIdx) {
         try {
             System.out.println(header);
             return new ResponseEntity<>(userService.findusersById(groupIdx), HttpStatus.OK);
@@ -85,7 +85,6 @@ public class UserController {
         }
     }
 
-
     @Auth
     @PutMapping("")
     public ResponseEntity<DefaultRes> updateUser(@RequestHeader(value = "Authorization") final String header,
@@ -104,29 +103,31 @@ public class UserController {
 
     @Auth
     @PostMapping("/password")
-    public  ResponseEntity<DefaultRes> checkPassword(@RequestHeader(value="Authorization") final String header,
-                                                      @RequestBody final PasswordReq passwordReq){
+    public ResponseEntity<DefaultRes> checkPassword(@RequestHeader(value = "Authorization") final String header,
+                                                    @RequestBody final PasswordReq passwordReq) {
         try {
-            int authIdx=jwtService.decode(header).getUser_idx();
+            int authIdx = jwtService.decode(header).getUser_idx();
             System.out.println(header);
-            PasswordUtil util=new PasswordUtil();
+            PasswordUtil util = new PasswordUtil();
             passwordReq.setUserPw(util.encryptSHA256(passwordReq.getUserPw()));
             return new ResponseEntity<>(userService.checkPw(authIdx, passwordReq), HttpStatus.OK);
         } catch (Exception e) {
+
             e.printStackTrace();
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
     }
 
+
     @Auth
     @PutMapping("/password")
-    public  ResponseEntity<DefaultRes> updatePassword(@RequestHeader(value="Authorization") final String header,
-                                                      @RequestBody final PasswordReq passwordReq){
+    public ResponseEntity<DefaultRes> updatePassword(@RequestHeader(value = "Authorization") final String header,
+                                                     @RequestBody final PasswordReq passwordReq) {
         try {
-            int authIdx=jwtService.decode(header).getUser_idx();
+            int authIdx = jwtService.decode(header).getUser_idx();
             System.out.println(header);
-            PasswordUtil util=new PasswordUtil();
+            PasswordUtil util = new PasswordUtil();
             passwordReq.setUserPw(util.encryptSHA256(passwordReq.getUserPw()));
             return new ResponseEntity<>(userService.updatePw(authIdx, passwordReq), HttpStatus.OK);
 
@@ -138,10 +139,10 @@ public class UserController {
 
     @Auth
     @DeleteMapping("")
-    public ResponseEntity deleteUser( @RequestHeader(value = "Authorization") final String header) {
+    public ResponseEntity deleteUser(@RequestHeader(value = "Authorization") final String header) {
 
         try {
-            int authIdx=jwtService.decode(header).getUser_idx();
+            int authIdx = jwtService.decode(header).getUser_idx();
             if (jwtService.checkAuth(header, authIdx))
                 return new ResponseEntity<>(userService.deleteByUserIdx(authIdx), HttpStatus.OK);
             return new ResponseEntity<>(UNAUTHORIZED_RES, HttpStatus.OK);
@@ -155,7 +156,6 @@ public class UserController {
         }
 
     }
-
 
 }
 

@@ -1,10 +1,12 @@
 package kr.co.famfam.server.service.impl;
 
 import kr.co.famfam.server.domain.Comment;
+import kr.co.famfam.server.domain.Content;
 import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.CommentDto;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.repository.CommentRepository;
+import kr.co.famfam.server.repository.ContentRepository;
 import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.CommentService;
 import kr.co.famfam.server.utils.ResponseMessage;
@@ -31,10 +33,12 @@ import java.util.Optional;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
+    private final ContentRepository contentRepository;
     private final UserRepository userRepository;
 
-    public CommentServiceImpl(CommentRepository commentRepository, UserRepository userRepository) {
+    public CommentServiceImpl(CommentRepository commentRepository, ContentRepository contentRepository, UserRepository userRepository) {
         this.commentRepository = commentRepository;
+        this.contentRepository = contentRepository;
         this.userRepository = userRepository;
     }
 
@@ -42,7 +46,7 @@ public class CommentServiceImpl implements CommentService {
         try {
             final List<Comment> comments = commentRepository.findCommentsByContentIdxOrderByCreatedDateAsc(contentIdx);
             if (comments.isEmpty())
-                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_COMMENT);
+                return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_COMMENT);
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_COMMENT, comments);
         } catch (Exception e) {
@@ -65,7 +69,7 @@ public class CommentServiceImpl implements CommentService {
             LocalDateTime endDateTime = LocalDateTime.of(startDateTime.plusDays(6).toLocalDate(), LocalTime.of(23, 59, 59));
             long count = 0;
 
-            for(User u : groupUsers) {
+            for (User u : groupUsers) {
                 count += commentRepository.countByUserIdxAndCreatedDateBetween(u.getUserIdx(), startDateTime, endDateTime);
             }
 
@@ -78,8 +82,15 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     public DefaultRes save(CommentDto commentDto) {
+        Optional<Content> content = contentRepository.findById(commentDto.getContentIdx());
+        if(!content.isPresent())
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
+
         try {
             commentRepository.save(new Comment(commentDto));
+
+            content.get().setCommentCount(content.get().getCommentCount() + 1);
+            contentRepository.save(content.get());
             return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_COMMENT);
         } catch (Exception e) {
             //Rollback
@@ -93,13 +104,13 @@ public class CommentServiceImpl implements CommentService {
     public DefaultRes update(int commentIdx, CommentDto commentDto) {
         try {
             Optional<Comment> comment = commentRepository.findById(commentIdx);
-            if(!comment.isPresent())
+            if (!comment.isPresent())
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_COMMENT);
 
             comment.get().setContent(commentDto.getContent());
 
             commentRepository.save(comment.get());
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.UPDATE_COMMENT);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_COMMENT);
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -110,13 +121,20 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     public DefaultRes delete(int commentIdx) {
-        try {
-            Optional<Comment> comment = commentRepository.findById(commentIdx);
-            if(!comment.isPresent())
-                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_COMMENT);
+        Optional<Comment> comment = commentRepository.findById(commentIdx);
+        if (!comment.isPresent())
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_COMMENT);
 
+        Optional<Content> content = contentRepository.findById(comment.get().getContentIdx());
+        if(!content.isPresent())
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
+
+        try {
             commentRepository.delete(comment.get());
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.DELETE_COMMENT);
+
+            content.get().setCommentCount(content.get().getCommentCount() - 1);
+            contentRepository.save(content.get());
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_COMMENT);
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -128,7 +146,7 @@ public class CommentServiceImpl implements CommentService {
     private LocalDateTime getStartDateTime() {
         LocalDate today = LocalDate.now();
         LocalDateTime startDateTime =
-                LocalDateTime.of(today.minusDays(today.getDayOfWeek().getValue()-1), LocalTime.of(0, 0, 0));
+                LocalDateTime.of(today.minusDays(today.getDayOfWeek().getValue() - 1), LocalTime.of(0, 0, 0));
         return startDateTime;
     }
 }

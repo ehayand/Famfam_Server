@@ -1,6 +1,5 @@
 package kr.co.famfam.server.service;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,11 +15,6 @@ import java.util.UUID;
 
 @Service
 public class FileUploadService {
-
-    @Value("${cloud.aws.s3.bucket.url}")
-    private String defaultUrl;
-    @Value("${cloud.aws.s3.bucket.origin}")
-    private String originUrl;
 
     private final S3Service s3Service;
 
@@ -44,7 +38,7 @@ public class FileUploadService {
             //S3 파일 업로드
             s3Service.uploadOnS3(saveFileName, file);
             //주소 할당
-            url = defaultUrl + originUrl + saveFileName;
+            url = "/" + saveFileName;
             //파일 삭제
             file.delete();
         } catch (StringIndexOutOfBoundsException e) {
@@ -55,7 +49,7 @@ public class FileUploadService {
         return url;
     }
 
-    public String reload(String deleteUrl, MultipartFile uploadFile) throws IOException {
+    public String reload(String deleteUrl, MultipartFile uploadFile) {
         try {
             s3Service.deleteS3(deleteUrl);
             return upload(uploadFile);

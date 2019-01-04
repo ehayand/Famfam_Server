@@ -2,9 +2,9 @@ package kr.co.famfam.server.domain;
 
 import kr.co.famfam.server.model.ContentReq;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 /**
@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
+@NoArgsConstructor
 @Table(name = "content")
 public class Content {
     @Id
@@ -29,8 +30,6 @@ public class Content {
     private LocalDateTime createdDate;
     @Column(name = "commentCount")
     private int commentCount;
-    @Column(name = "feelCount")
-    private int feelCount;
 
     @Column(name = "userIdx")
     private int userIdx;
@@ -41,5 +40,7 @@ public class Content {
         this.content = contentReq.getContent();
         this.userIdx = contentReq.getUserIdx();
         this.groupIdx = contentReq.getGroupIdx();
+        this.createdDate = LocalDateTime.now();
+        this.commentCount = 0;
     }
 }

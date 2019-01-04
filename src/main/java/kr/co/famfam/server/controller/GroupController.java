@@ -28,6 +28,20 @@ public class GroupController {
 
     @Auth
     @GetMapping("")
+    public ResponseEntity getGroup(@RequestHeader("Authorization") final String header) {
+        try {
+            int authUserIdx = jwtService.decode(header).getUser_idx();
+            log.info("ID : " + authUserIdx);
+
+            return new ResponseEntity<>(groupService.findGroupByUserIdx(authUserIdx), HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Auth
+    @GetMapping("/invitation")
     public ResponseEntity createInvitationCode(@RequestHeader("Authorization") final String header) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
@@ -83,6 +97,21 @@ public class GroupController {
         } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Auth
+    @DeleteMapping("/withdraw")
+    public ResponseEntity withdrawGroup(@RequestHeader(value = "Authorization") final String header) {
+        try {
+            int authIdx = jwtService.decode(header).getUser_idx();
+
+            return new ResponseEntity<>(groupService.withdraw(authIdx), HttpStatus.OK);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
     }
 

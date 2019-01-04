@@ -1,6 +1,8 @@
 package kr.co.famfam.server.domain;
 
+import kr.co.famfam.server.model.FeelReq;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -13,6 +15,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
+@NoArgsConstructor
 @Table(name = "feel")
 public class Feel {
     @Id
@@ -30,4 +33,11 @@ public class Feel {
     private int userIdx;
     @Column(name = "contentIdx")
     private int contentIdx;
+
+    public Feel(FeelReq feelReq) {
+        this.type = feelReq.getType();
+        this.userIdx = feelReq.getUserIdx();
+        this.contentIdx = feelReq.getContentIdx();
+        this.createdDate = LocalDateTime.now();
+    }
 }

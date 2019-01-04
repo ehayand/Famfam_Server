@@ -4,7 +4,6 @@ import kr.co.famfam.server.domain.Anniversary;
 import kr.co.famfam.server.model.AnniversaryReq;
 import kr.co.famfam.server.model.DefaultRes;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -15,10 +14,15 @@ import java.util.List;
  */
 
 public interface AnniversaryService {
+
     DefaultRes findAll(final int authUserIdx);
+
     DefaultRes addAnniversary(final int anniversaryType, final AnniversaryReq anniversaryReq);
+
     DefaultRes deleteAnniversary(final int anniversaryIdx);
+
     List<Anniversary> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate);
+
     List<Anniversary> findByYearAndMonthAndDate(final String dateStr);
 }
 

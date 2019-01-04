@@ -1,6 +1,7 @@
 package kr.co.famfam.server.domain;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
@@ -12,6 +13,7 @@ import javax.persistence.*;
 
 @Data
 @Entity
+@NoArgsConstructor
 @Table(name = "famfam_group")
 public class Group {
 

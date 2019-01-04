@@ -59,6 +59,7 @@ public class User {
         this.birthday = LocalDateTime.parse(signUpReq.getBirthday());
         this.userPhone = signUpReq.getUserPhone();
         this.sexType = signUpReq.getSexType();
+        this.statusMessage = "상태메세지를 등록하세요.";
         this.groupIdx = -1;
     }
 
@@ -68,7 +69,6 @@ public class User {
     }
 
     public User(UserinfoReq userinfoReq) {
-
         this.userName = userinfoReq.getUserName();
         this.birthday = userinfoReq.getBirthday();
         this.sexType = userinfoReq.getSexType();

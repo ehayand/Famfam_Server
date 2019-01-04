@@ -3,7 +3,6 @@ package kr.co.famfam.server.service.impl;
 import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.model.LoginReq;
-import kr.co.famfam.server.model.SignUpReq;
 import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.JwtService;
 import kr.co.famfam.server.service.LoginService;

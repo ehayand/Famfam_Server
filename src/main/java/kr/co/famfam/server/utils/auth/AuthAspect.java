@@ -1,13 +1,13 @@
 package kr.co.famfam.server.utils.auth;
 
+import kr.co.famfam.server.domain.User;
+import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.repository.UserRepository;
+import kr.co.famfam.server.service.JwtService;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import kr.co.famfam.server.domain.User;
-import kr.co.famfam.server.model.DefaultRes;
-import kr.co.famfam.server.service.JwtService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
