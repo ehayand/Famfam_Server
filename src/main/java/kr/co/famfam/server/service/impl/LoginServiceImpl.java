@@ -11,6 +11,8 @@ import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -38,7 +40,12 @@ public class LoginServiceImpl implements LoginService {
 
             if (user.isPresent()) {
                 final JwtService.TokenRes tokenRes = new JwtService.TokenRes(jwtService.create(user.get().getUserIdx()));
-                return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, tokenRes);
+
+                Map<String, Object> result = new HashMap<>();
+                result.put("token", tokenRes.getToken());
+                result.put("user", user);
+
+                return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, result);
             }
         }
         return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.LOGIN_FAIL);
@@ -49,8 +56,13 @@ public class LoginServiceImpl implements LoginService {
 
         if (user.isPresent()) {
             final JwtService.TokenRes tokenRes = new JwtService.TokenRes(jwtService.create(user.get().getUserIdx()));
+            Map<String, Object> result = new HashMap<>();
+            result.put("token", tokenRes.getToken());
+            result.put("user", user);
+
             return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, tokenRes);
         }
+
 
         return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.LOGIN_FAIL);
     }

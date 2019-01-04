@@ -3,7 +3,9 @@ package kr.co.famfam.server.domain;
 import kr.co.famfam.server.model.LoginReq;
 import kr.co.famfam.server.model.SignUpReq;
 import kr.co.famfam.server.model.UserinfoReq;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -57,7 +59,7 @@ public class User {
         this.birthday = LocalDateTime.parse(signUpReq.getBirthday());
         this.userPhone = signUpReq.getUserPhone();
         this.sexType = signUpReq.getSexType();
-        this.groupIdx=-1;
+        this.groupIdx = -1;
     }
 
     public User(LoginReq loginReq) {
@@ -69,11 +71,11 @@ public class User {
 
         this.userName = userinfoReq.getUserName();
         this.birthday = userinfoReq.getBirthday();
-        this.userPhone =userinfoReq.getUserPhone();
+        this.userPhone = userinfoReq.getUserPhone();
         this.sexType = userinfoReq.getSexType();
-        this.statusMessage=userinfoReq.getStatusMessage();
-        this.profilePhoto=userinfoReq.getProfilePhoto();
-        this.backPhoto=userinfoReq.getBackPhoto();
+        this.statusMessage = userinfoReq.getStatusMessage();
+        this.profilePhoto = userinfoReq.getProfilePhoto();
+        this.backPhoto = userinfoReq.getBackPhoto();
     }
 
 }

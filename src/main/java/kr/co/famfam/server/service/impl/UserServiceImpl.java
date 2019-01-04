@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -100,7 +102,10 @@ public class UserServiceImpl implements UserService {
 
             signUpReq.setUserPw(util.encryptSHA256(signUpReq.getUserPw()));
             userRepository.save(new User(signUpReq));
-            return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_USER);
+
+            User newUser=userRepository.findUserByUserId(signUpReq.getUserId());
+            return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_USER,newUser);
+
 
         } catch (Exception e) {
             //Rollback
