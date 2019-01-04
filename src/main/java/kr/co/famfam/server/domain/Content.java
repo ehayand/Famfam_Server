@@ -30,8 +30,6 @@ public class Content {
     private LocalDateTime createdDate;
     @Column(name = "commentCount")
     private int commentCount;
-    @Column(name = "feelCount")
-    private int feelCount;
 
     @Column(name = "userIdx")
     private int userIdx;
@@ -44,6 +42,5 @@ public class Content {
         this.groupIdx = contentReq.getGroupIdx();
         this.createdDate = LocalDateTime.now();
         this.commentCount = 0;
-        this.feelCount = 0;
     }
 }

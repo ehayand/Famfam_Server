@@ -51,7 +51,7 @@ public class User {
     @Column(name = "groupIdx")
     private int groupIdx;
 
-    public User(SignUpReq signUpReq, String profilePhoto, String backPhoto) {
+    public User(SignUpReq signUpReq) {
         this.userId = signUpReq.getUserId();
         this.userPw = signUpReq.getUserPw();
         this.userName = signUpReq.getUserName();
@@ -59,8 +59,6 @@ public class User {
         this.userPhone = signUpReq.getUserPhone();
         this.sexType = signUpReq.getSexType();
         this.statusMessage = "상태메세지를 등록하세요.";
-        this.profilePhoto = profilePhoto;
-        this.backPhoto = backPhoto;
         this.groupIdx = -1;
     }
 
