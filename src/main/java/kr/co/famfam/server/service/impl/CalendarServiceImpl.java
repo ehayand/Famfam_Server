@@ -91,7 +91,7 @@ public class CalendarServiceImpl implements CalendarService {
         } else if (calendarType == 2) {
             return familyCalendarService.addSchedule(calendarReq, authUserIdx, allDateStr);
         } else {
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDARTYPE);
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDAR_TYPE);
         }
     }
 
@@ -106,7 +106,7 @@ public class CalendarServiceImpl implements CalendarService {
         } else if (calendarType == 2) {
             return familyCalendarService.updateSchedule(calendarIdx, calendarReq, allDateStr);
         } else {
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDARTYPE);
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDAR_TYPE);
         }
     }
 
@@ -118,7 +118,7 @@ public class CalendarServiceImpl implements CalendarService {
         } else if (calendarType == 2) {
             return familyCalendarService.deleteSchedule(calendarIdx);
         } else {
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDARTYPE);
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDAR_TYPE);
         }
     }
 

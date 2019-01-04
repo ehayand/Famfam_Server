@@ -81,7 +81,7 @@ public class AnniversaryServiceImpl implements AnniversaryService {
 
                 anniversaryRepository.save(anniversary);
             } else {
-                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_ANNIVERSARYTYPE);
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_ANNIVERSARY_TYPE);
             }
             return DefaultRes.res(StatusCode.OK, ResponseMessage.CREATED_ANNIVERSARY);
         } catch (Exception e) {
@@ -106,7 +106,7 @@ public class AnniversaryServiceImpl implements AnniversaryService {
 
                 return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_ANNIVERSARY);
             } else {
-                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_ANNIVERSARYTYPE);
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_ANNIVERSARY_TYPE);
             }
         } catch (Exception e) {
             //Rollback
@@ -120,19 +120,27 @@ public class AnniversaryServiceImpl implements AnniversaryService {
     public DefaultRes deleteAnniversary(final AnniversaryDeleteReq anniversaryDeleteReq) {
         // 기념일 삭제
         try {
-            for (int i = 0; i < anniversaryDeleteReq.getCount(); i++) {
+            if(anniversaryDeleteReq.getCount() != anniversaryDeleteReq.getAnniversarIdx().length)
+                return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.NOT_MATCH_ANNIVERSARY_COUNT);
+
+            int[] indexTemp = new int[anniversaryDeleteReq.getCount()];
+            for(int i = 0; i < anniversaryDeleteReq.getCount(); i++) {
+                // 기념일 타입/인덱스 확인
                 int anniversaryIdx = anniversaryDeleteReq.getAnniversarIdx()[i];
                 Optional<Anniversary> anniversary = anniversaryRepository.findById(anniversaryIdx);
                 if (!anniversary.isPresent())
                     return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_ANNIVERSARY);
 
                 int anniversaryType = anniversary.get().getAnniversaryType();
-                if (anniversaryType == 1 || anniversaryType == 3) {
-                    anniversaryRepository.deleteById(anniversaryIdx);
-                } else {
-                    return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_ANNIVERSARYTYPE);
-                }
+                if (anniversaryType != 1 || anniversaryType != 3)
+                    return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_ANNIVERSARY_TYPE);
+
+                indexTemp[i] = anniversaryIdx;
             }
+
+            for (int idx : indexTemp)
+                anniversaryRepository.deleteById(idx);
+
             return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_ANNIVERSARY);
         } catch (Exception e) {
             //Rollback
