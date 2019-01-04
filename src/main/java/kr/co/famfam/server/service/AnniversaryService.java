@@ -1,6 +1,7 @@
 package kr.co.famfam.server.service;
 
 import kr.co.famfam.server.domain.Anniversary;
+import kr.co.famfam.server.model.AnniversaryDeleteReq;
 import kr.co.famfam.server.model.AnniversaryReq;
 import kr.co.famfam.server.model.DefaultRes;
 
@@ -17,11 +18,11 @@ public interface AnniversaryService {
 
     DefaultRes findAll(final int authUserIdx);
 
-    DefaultRes addAnniversary(final int anniversaryType, final AnniversaryReq anniversaryReq);
+    DefaultRes addAnniversary(final int anniversaryType, final AnniversaryReq anniversaryReq, final int authUserIdx);
 
     DefaultRes updateAnniversary(final int anniversaryIdx, final String dateStr);
 
-    DefaultRes deleteAnniversary(final int anniversaryIdx);
+    DefaultRes deleteAnniversary(final AnniversaryDeleteReq anniversaryDeleteReq);
 
     List<Anniversary> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate);
 

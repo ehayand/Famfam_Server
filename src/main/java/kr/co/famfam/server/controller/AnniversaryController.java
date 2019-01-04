@@ -1,5 +1,6 @@
 package kr.co.famfam.server.controller;
 
+import kr.co.famfam.server.model.AnniversaryDeleteReq;
 import kr.co.famfam.server.model.AnniversaryReq;
 import kr.co.famfam.server.service.AnniversaryService;
 import kr.co.famfam.server.service.JwtService;
@@ -37,9 +38,11 @@ public class AnniversaryController {
     @Auth
     @PostMapping("/{anniversaryType}")
     public ResponseEntity addAnniversary(@PathVariable(value = "anniversaryType") final int anniversaryType,
-                                         @RequestBody AnniversaryReq anniversaryReq) {
+                                         @RequestBody AnniversaryReq anniversaryReq,
+                                         @RequestHeader("Authorization") final String header) {
         try {
-            return new ResponseEntity<>(anniversaryService.addAnniversary(anniversaryType, anniversaryReq), HttpStatus.OK);
+            int authUserIdx = jwtService.decode(header).getUser_idx();
+            return new ResponseEntity<>(anniversaryService.addAnniversary(anniversaryType, anniversaryReq, authUserIdx), HttpStatus.OK);
 
         } catch (Exception e) {
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -59,10 +62,10 @@ public class AnniversaryController {
     }
 
     @Auth
-    @DeleteMapping("/{anniversaryIdx}")
-    public ResponseEntity deleteAnniversary(@PathVariable(value = "anniversaryIdx") final int anniversaryIdx) {
+    @DeleteMapping("")
+    public ResponseEntity deleteAnniversary(@RequestBody AnniversaryDeleteReq anniversaryDeleteReq) {
         try {
-            return new ResponseEntity<>(anniversaryService.deleteAnniversary(anniversaryIdx), HttpStatus.OK);
+            return new ResponseEntity<>(anniversaryService.deleteAnniversary(anniversaryDeleteReq), HttpStatus.OK);
 
         } catch (Exception e) {
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
