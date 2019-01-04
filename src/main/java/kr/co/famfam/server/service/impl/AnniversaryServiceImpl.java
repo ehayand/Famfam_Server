@@ -93,7 +93,7 @@ public class AnniversaryServiceImpl implements AnniversaryService {
     }
 
     @Transactional
-    public DefaultRes updateAnniversary(final int anniversaryIdx, final String dateStr) {
+    public DefaultRes updateAnniversary(final int anniversaryIdx, final AnniversaryReq anniversaryReq) {
         // 기념일 수정
         try {
             Optional<Anniversary> anniversary = anniversaryRepository.findById(anniversaryIdx);
@@ -102,8 +102,7 @@ public class AnniversaryServiceImpl implements AnniversaryService {
             int anniversaryType = anniversary.get().getAnniversaryType();
 
             if (anniversaryType == 1 || anniversaryType == 3) {
-                LocalDateTime date = LocalDateTime.parse(dateStr);
-                anniversary.get().setDate(date);
+                anniversary.get().setDate(anniversaryReq.getDate());
 
                 return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_ANNIVERSARY);
             } else {

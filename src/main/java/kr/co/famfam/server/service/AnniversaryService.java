@@ -20,7 +20,7 @@ public interface AnniversaryService {
 
     DefaultRes addAnniversary(final int anniversaryType, final AnniversaryReq anniversaryReq, final int authUserIdx);
 
-    DefaultRes updateAnniversary(final int anniversaryIdx, final String dateStr);
+    DefaultRes updateAnniversary(final int anniversaryIdx, final AnniversaryReq anniversaryReq);
 
     DefaultRes deleteAnniversary(final AnniversaryDeleteReq anniversaryDeleteReq);
 

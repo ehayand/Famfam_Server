@@ -52,9 +52,9 @@ public class AnniversaryController {
     @Auth
     @PutMapping("/{anniversaryIdx}")
     public ResponseEntity updateAnniversary(@PathVariable(value = "anniversaryIdx") final int anniversaryIdx,
-                                            @Param(value = "dateStr") final String dateStr) {
+                                            @RequestBody AnniversaryReq anniversaryReq) {
         try {
-            return new ResponseEntity<>(anniversaryService.updateAnniversary(anniversaryIdx, dateStr), HttpStatus.OK);
+            return new ResponseEntity<>(anniversaryService.updateAnniversary(anniversaryIdx, anniversaryReq), HttpStatus.OK);
 
         } catch (Exception e) {
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
