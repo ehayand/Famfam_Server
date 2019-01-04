@@ -95,10 +95,10 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDAR);
 
             IndividualCalendar schedule = individualCalendarRepository.findById(calendarIdx).get();
-            schedule.setContent(calendarReq.getContent());
-            schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
-            schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
-            schedule.setAllDate(allDateStr);
+            if(!calendarReq.getContent().isEmpty()) schedule.setContent(calendarReq.getContent());
+            if(!calendarReq.getStartDate().isEmpty()) schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
+            if(!calendarReq.getEndDate().isEmpty()) schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
+            if(allDateStr != "") schedule.setAllDate(allDateStr);
             schedule.setReturningTime(calendarReq.getReturningTime());
             schedule.setDinner(calendarReq.getDinner());
 

@@ -93,10 +93,10 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDAR);
 
             FamilyCalendar schedule = familyCalendarRepository.findById(calendarIdx).get();
-            schedule.setContent(calendarReq.getContent());
-            schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
-            schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
-            schedule.setAllDate(allDateStr);
+            if(!calendarReq.getContent().isEmpty()) schedule.setContent(calendarReq.getContent());
+            if(!calendarReq.getStartDate().isEmpty()) schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
+            if(!calendarReq.getEndDate().isEmpty()) schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
+            if(allDateStr != "") schedule.setAllDate(allDateStr);
 
             familyCalendarRepository.save(schedule);
 
