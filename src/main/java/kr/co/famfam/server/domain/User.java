@@ -71,7 +71,6 @@ public class User {
 
         this.userName = userinfoReq.getUserName();
         this.birthday = userinfoReq.getBirthday();
-        this.userPhone = userinfoReq.getUserPhone();
         this.sexType = userinfoReq.getSexType();
         this.statusMessage = userinfoReq.getStatusMessage();
         this.profilePhoto = userinfoReq.getProfilePhoto();

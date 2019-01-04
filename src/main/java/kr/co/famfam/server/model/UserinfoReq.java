@@ -9,7 +9,6 @@ import java.util.Date;
 public class UserinfoReq {
 
     private String userName;
-    private String userPhone;
     private LocalDateTime birthday;
     private int sexType;
     private String statusMessage;
