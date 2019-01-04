@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
     public DefaultRes findusersById(final int groupIdx) {
         List<User> groupUsers = userRepository.findUsersByGroupIdx(groupIdx);
         if (groupUsers.isEmpty())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_GROUP_USER);
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_GROUP);
 
 
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_GROUP_USER, groupUsers);
@@ -139,7 +139,7 @@ public class UserServiceImpl implements UserService {
             temp.get().setProfilePhoto(userinfoReq.getProfilePhoto());
             temp.get().setBackPhoto(userinfoReq.getBackPhoto());
             userRepository.save(temp.get());
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.UPDATE_USER);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_USER);
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -168,7 +168,7 @@ public class UserServiceImpl implements UserService {
         try {
             temp.get().setUserPw(passwordReq.getUserPw());
             userRepository.save(temp.get());
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.UPDATE_PW);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_PW);
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -191,7 +191,7 @@ public class UserServiceImpl implements UserService {
 
         try {
             userRepository.deleteById(userIdx);
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.DELETE_USER);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_USER);
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
