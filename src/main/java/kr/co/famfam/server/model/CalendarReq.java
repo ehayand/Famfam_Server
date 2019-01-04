@@ -10,6 +10,6 @@ public class CalendarReq {
     private String endDate;
     private String content;
 
-    private int returningTime;
-    private int dinner;
+    private int returningTime = -1;
+    private int dinner = -1;
 }
