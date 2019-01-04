@@ -23,4 +23,8 @@ public interface FamilyCalendarRepository extends JpaRepository<FamilyCalendar, 
 
     @Query(value = "SELECT * FROM family_calendar WHERE all_date LIKE :dateStr", nativeQuery = true)
     List<FamilyCalendar> findByYearAndMonthAndDate(@Param("dateStr") final String dateStr);
+
+    @Query(value = "SELECT * FROM family_calendar WHERE content LIKE :content", nativeQuery = true)
+    List<FamilyCalendar> findByContetnt(@Param("content") final String content);
+
 }

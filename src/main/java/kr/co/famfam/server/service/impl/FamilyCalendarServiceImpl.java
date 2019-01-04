@@ -126,4 +126,19 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
     }
+
+    @Transactional
+    public List<FamilyCalendar> searchSchedule(final String content) {
+        // 일정 검색
+        try {
+            List<FamilyCalendar> familyCalendars = familyCalendarRepository.findByContetnt(content);
+
+            return familyCalendars;
+        } catch (Exception e) {
+            //Rollback
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return null;
+        }
+    }
 }

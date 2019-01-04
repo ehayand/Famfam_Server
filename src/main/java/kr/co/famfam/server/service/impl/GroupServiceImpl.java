@@ -1,15 +1,9 @@
 package kr.co.famfam.server.service.impl;
 
-import kr.co.famfam.server.domain.Group;
-import kr.co.famfam.server.domain.GroupInvitation;
-import kr.co.famfam.server.domain.Photo;
-import kr.co.famfam.server.domain.User;
+import kr.co.famfam.server.domain.*;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.model.HomePhotoReq;
-import kr.co.famfam.server.repository.GroupInvitationRepository;
-import kr.co.famfam.server.repository.GroupRepository;
-import kr.co.famfam.server.repository.PhotoRepository;
-import kr.co.famfam.server.repository.UserRepository;
+import kr.co.famfam.server.repository.*;
 import kr.co.famfam.server.service.FileUploadService;
 import kr.co.famfam.server.service.GroupService;
 import kr.co.famfam.server.utils.ResponseMessage;
@@ -45,13 +39,15 @@ public class GroupServiceImpl implements GroupService {
     private final GroupInvitationRepository groupInvitationRepository;
     private final FileUploadService fileUploadService;
     private final PhotoRepository photoRepository;
+    private final AnniversaryRepository anniversaryRepository;
 
-    public GroupServiceImpl(GroupRepository groupRepository, UserRepository userRepository, GroupInvitationRepository groupInvitationRepository, FileUploadService fileUploadService, PhotoRepository photoRepository) {
+    public GroupServiceImpl(GroupRepository groupRepository, UserRepository userRepository, GroupInvitationRepository groupInvitationRepository, FileUploadService fileUploadService, PhotoRepository photoRepository, AnniversaryRepository anniversaryRepository) {
         this.groupRepository = groupRepository;
         this.userRepository = userRepository;
         this.groupInvitationRepository = groupInvitationRepository;
         this.fileUploadService = fileUploadService;
         this.photoRepository = photoRepository;
+        this.anniversaryRepository = anniversaryRepository;
     }
 
     public DefaultRes findGroupByUserIdx(int userIdx) {
@@ -102,6 +98,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Transactional
     public DefaultRes joinGroup(int userIdx, String code) {
+        // 그룹 참여
         Optional<User> user = userRepository.findById(userIdx);
         if (!user.isPresent()) return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
@@ -117,6 +114,13 @@ public class GroupServiceImpl implements GroupService {
             user.get().setGroupIdx(groupIdx);
             userRepository.save(user.get());
 
+            Anniversary anniversary = new Anniversary();
+            anniversary.setGroupIdx(user.get().getGroupIdx());
+            anniversary.setDate(user.get().getBirthday());
+            anniversary.setAnniversaryType(0);
+            anniversary.setContent(user.get().getUserName() + " 생일");
+            anniversaryRepository.save(anniversary);
+
             return DefaultRes.res(StatusCode.OK, ResponseMessage.JOIN_SUCCESS_GROUP);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -126,6 +130,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Transactional
     public DefaultRes save(int userIdx) {
+        // 그룹 생성
         Optional<User> user = userRepository.findById(userIdx);
         if (!user.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
@@ -140,6 +145,13 @@ public class GroupServiceImpl implements GroupService {
 
             user.get().setGroupIdx(groupIdx);
             userRepository.save(user.get());
+
+            Anniversary anniversary = new Anniversary();
+            anniversary.setGroupIdx(user.get().getGroupIdx());
+            anniversary.setDate(user.get().getBirthday());
+            anniversary.setAnniversaryType(0);
+            anniversary.setContent(user.get().getUserName() + " 생일");
+            anniversaryRepository.save(anniversary);
 
             return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_GROUP);
         } catch (Exception e) {
@@ -164,6 +176,8 @@ public class GroupServiceImpl implements GroupService {
             userRepository.save(user.get());
 
             List<User> groupUsers = userRepository.findUsersByGroupIdx(groupIdx);
+
+            // 그룹 삭제(배치처리 30일 이후), 로직 미 완성
             if (groupUsers.isEmpty()) {
                 Optional<Group> group = groupRepository.findById(groupIdx);
                 groupRepository.delete(group.get());

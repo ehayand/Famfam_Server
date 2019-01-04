@@ -1,6 +1,10 @@
 package kr.co.famfam.server.service.impl;
 
+import kr.co.famfam.server.domain.Anniversary;
 import kr.co.famfam.server.domain.User;
+import kr.co.famfam.server.model.DefaultRes;
+import kr.co.famfam.server.model.SignUpReq;
+import kr.co.famfam.server.repository.AnniversaryRepository;
 import kr.co.famfam.server.model.*;
 import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.FileUploadService;
@@ -28,7 +32,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final FileUploadService fileUploadService;
-
+    private final AnniversaryRepository anniversaryRepository;
 
     /**
      * UserRepository 생성자 의존성 주입
@@ -38,9 +42,10 @@ public class UserServiceImpl implements UserService {
      * @param fileUploadService
      */
 
-    public UserServiceImpl(UserRepository userRepository, FileUploadService fileUploadService) {
+    public UserServiceImpl(UserRepository userRepository, FileUploadService fileUploadService, AnniversaryRepository anniversaryRepository) {
         this.userRepository = userRepository;
         this.fileUploadService = fileUploadService;
+        this.anniversaryRepository = anniversaryRepository;
     }
 
     /**
@@ -111,7 +116,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public DefaultRes update(final int userIdx, final UserinfoReq userinfoReq) {
         Optional<User> temp = userRepository.findById(userIdx);
-        if (!temp.isPresent())
+        Optional<Anniversary> anniversary = anniversaryRepository.findById(temp.get().getUserIdx());
+        if (!temp.isPresent() || !anniversary.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
         try {
@@ -125,6 +131,10 @@ public class UserServiceImpl implements UserService {
             temp.get().setProfilePhoto(userinfoReq.getProfilePhoto());
             temp.get().setBackPhoto(userinfoReq.getBackPhoto());
             userRepository.save(temp.get());
+
+            anniversary.get().setDate(temp.get().getBirthday());
+            anniversaryRepository.save(anniversary.get());
+
             return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_USER);
         } catch (Exception e) {
             //Rollback
@@ -154,6 +164,7 @@ public class UserServiceImpl implements UserService {
         try {
             temp.get().setUserPw(passwordReq.getUserPw());
             userRepository.save(temp.get());
+
             return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_PW);
         } catch (Exception e) {
             //Rollback
