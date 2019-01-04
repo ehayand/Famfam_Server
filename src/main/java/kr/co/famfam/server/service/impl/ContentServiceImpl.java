@@ -13,6 +13,7 @@ import kr.co.famfam.server.service.FileUploadService;
 import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,11 @@ import java.util.*;
 @Slf4j
 @Service
 public class ContentServiceImpl implements ContentService {
+
+    @Value("${cloud.aws.s3.bucket.url}")
+    private String bucketPrefix;
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucketOrigin;
 
     private final ContentRepository contentRepository;
     private final PhotoRepository photoRepository;
@@ -61,9 +67,13 @@ public class ContentServiceImpl implements ContentService {
 
         for (Content content : contentPage) {
             Map<Object, Object> map = new HashMap<>();
-            Optional<Photo> photo = photoRepository.findPhotoByContentIdx(content.getContentIdx());
+            List<Photo> photos = photoRepository.findPhotosByContentIdx(content.getContentIdx());
+
+            for (final Photo photo : photos)
+                photo.setPhotoName(bucketPrefix + bucketOrigin + photo.getPhotoName());
+
             map.put("content", content);
-            map.put("photo", photo);
+            map.put("photos", photos);
             contents.add(map);
         }
 
@@ -87,9 +97,13 @@ public class ContentServiceImpl implements ContentService {
 
         for (Content content : contentPage) {
             Map<Object, Object> map = new HashMap<>();
-            Optional<Photo> photo = photoRepository.findPhotoByContentIdx(content.getContentIdx());
+            List<Photo> photos = photoRepository.findPhotosByContentIdx(content.getContentIdx());
+
+            for (final Photo photo : photos)
+                photo.setPhotoName(bucketPrefix + bucketOrigin + photo.getPhotoName());
+
             map.put("content", content);
-            map.put("photo", photo);
+            map.put("photos", photos);
             contents.add(map);
         }
 
@@ -144,9 +158,10 @@ public class ContentServiceImpl implements ContentService {
             int contentIdx = contentRepository.save(content).getContentIdx();
 
             if (contentReq.getPhotos() != null) {
+                log.info("photos != null");
                 for (MultipartFile file : contentReq.getPhotos()) {
-                    Photo photo = new Photo();
-                    photo.setContentIdx(contentIdx);
+                    log.info(file.getOriginalFilename());
+                    Photo photo = new Photo(contentIdx, contentReq.getUserIdx());
                     photo.setPhotoName(fileUploadService.upload(file));
                     photoRepository.save(photo);
                 }

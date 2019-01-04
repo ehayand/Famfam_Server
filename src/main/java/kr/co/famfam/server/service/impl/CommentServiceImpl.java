@@ -1,10 +1,12 @@
 package kr.co.famfam.server.service.impl;
 
 import kr.co.famfam.server.domain.Comment;
+import kr.co.famfam.server.domain.Content;
 import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.CommentDto;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.repository.CommentRepository;
+import kr.co.famfam.server.repository.ContentRepository;
 import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.CommentService;
 import kr.co.famfam.server.utils.ResponseMessage;
@@ -31,10 +33,12 @@ import java.util.Optional;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
+    private final ContentRepository contentRepository;
     private final UserRepository userRepository;
 
-    public CommentServiceImpl(CommentRepository commentRepository, UserRepository userRepository) {
+    public CommentServiceImpl(CommentRepository commentRepository, ContentRepository contentRepository, UserRepository userRepository) {
         this.commentRepository = commentRepository;
+        this.contentRepository = contentRepository;
         this.userRepository = userRepository;
     }
 
@@ -78,8 +82,15 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     public DefaultRes save(CommentDto commentDto) {
+        Optional<Content> content = contentRepository.findById(commentDto.getContentIdx());
+        if(!content.isPresent())
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
+
         try {
             commentRepository.save(new Comment(commentDto));
+
+            content.get().setCommentCount(content.get().getCommentCount() + 1);
+            contentRepository.save(content.get());
             return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_COMMENT);
         } catch (Exception e) {
             //Rollback
@@ -99,7 +110,7 @@ public class CommentServiceImpl implements CommentService {
             comment.get().setContent(commentDto.getContent());
 
             commentRepository.save(comment.get());
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.UPDATE_COMMENT);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_COMMENT);
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -110,13 +121,20 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     public DefaultRes delete(int commentIdx) {
-        try {
-            Optional<Comment> comment = commentRepository.findById(commentIdx);
-            if (!comment.isPresent())
-                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_COMMENT);
+        Optional<Comment> comment = commentRepository.findById(commentIdx);
+        if (!comment.isPresent())
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_COMMENT);
 
+        Optional<Content> content = contentRepository.findById(comment.get().getContentIdx());
+        if(!content.isPresent())
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
+
+        try {
             commentRepository.delete(comment.get());
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.DELETE_COMMENT);
+
+            content.get().setCommentCount(content.get().getCommentCount() - 1);
+            contentRepository.save(content.get());
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_COMMENT);
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

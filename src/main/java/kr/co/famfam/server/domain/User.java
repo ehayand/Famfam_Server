@@ -2,6 +2,7 @@ package kr.co.famfam.server.domain;
 
 import kr.co.famfam.server.model.LoginReq;
 import kr.co.famfam.server.model.SignUpReq;
+import kr.co.famfam.server.model.UserinfoReq;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -51,7 +52,7 @@ public class User {
     @Column(name = "groupIdx")
     private int groupIdx;
 
-    public User(SignUpReq signUpReq, String profilePhoto, String backPhoto) {
+    public User(SignUpReq signUpReq) {
         this.userId = signUpReq.getUserId();
         this.userPw = signUpReq.getUserPw();
         this.userName = signUpReq.getUserName();
@@ -59,8 +60,7 @@ public class User {
         this.userPhone = signUpReq.getUserPhone();
         this.sexType = signUpReq.getSexType();
         this.statusMessage = "상태메세지를 등록하세요.";
-        this.profilePhoto = profilePhoto;
-        this.backPhoto = backPhoto;
+        this.groupIdx = -1;
     }
 
     public User(LoginReq loginReq) {
@@ -68,5 +68,13 @@ public class User {
         this.userPw = loginReq.getUserPw();
     }
 
+    public User(UserinfoReq userinfoReq) {
+        this.userName = userinfoReq.getUserName();
+        this.birthday = userinfoReq.getBirthday();
+        this.sexType = userinfoReq.getSexType();
+        this.statusMessage = userinfoReq.getStatusMessage();
+        this.profilePhoto = userinfoReq.getProfilePhoto();
+        this.backPhoto = userinfoReq.getBackPhoto();
+    }
 
 }

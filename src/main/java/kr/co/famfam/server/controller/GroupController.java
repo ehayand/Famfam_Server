@@ -101,7 +101,7 @@ public class GroupController {
     }
 
     @Auth
-    @PutMapping("/withdraw")
+    @DeleteMapping("/withdraw")
     public ResponseEntity withdrawGroup(@RequestHeader(value = "Authorization") final String header) {
         try {
             int authIdx = jwtService.decode(header).getUser_idx();

@@ -35,7 +35,7 @@ public class PhotoController {
             @RequestParam("userIdx") final Optional<Integer> userIdx,
             @PageableDefault(sort = {"createdDate"}, direction = Sort.Direction.DESC, size = 12) Pageable pageable) {
         try {
-            int authUserIdx = Integer.parseInt(jwtService.decode(header).toString());
+            int authUserIdx = jwtService.decode(header).getUser_idx();
             log.info("ID : " + authUserIdx);
 
             if (userIdx.isPresent())
