@@ -33,7 +33,7 @@ public class PhotoController {
     public ResponseEntity getPhotos(
             @RequestHeader("Authorization") final String header,
             @RequestParam("userIdx") final Optional<Integer> userIdx,
-            @PageableDefault(sort = {"createdDate"}, direction = Sort.Direction.DESC, size = 12) Pageable pageable) {
+            @PageableDefault(sort = {"createdDate"}, direction = Sort.Direction.DESC, size = 20) Pageable pageable) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
             log.info("ID : " + authUserIdx);

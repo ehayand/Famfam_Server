@@ -2,7 +2,7 @@ package kr.co.famfam.server.repository;
 
 import kr.co.famfam.server.domain.Group;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -10,6 +10,6 @@ import org.springframework.stereotype.Service;
  * Github : http://github.com/ehayand
  */
 
-@Service
+@Repository
 public interface GroupRepository extends JpaRepository<Group, Integer> {
 }
