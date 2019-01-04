@@ -120,19 +120,20 @@ public class AnniversaryServiceImpl implements AnniversaryService {
     public DefaultRes deleteAnniversary(final AnniversaryDeleteReq anniversaryDeleteReq) {
         // 기념일 삭제
         try {
-            if(anniversaryDeleteReq.getCount() != anniversaryDeleteReq.getAnniversarIdx().length)
+            if (anniversaryDeleteReq.getCount() != anniversaryDeleteReq.getAnniversaryIdx().length)
                 return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.NOT_MATCH_ANNIVERSARY_COUNT);
 
             int[] indexTemp = new int[anniversaryDeleteReq.getCount()];
-            for(int i = 0; i < anniversaryDeleteReq.getCount(); i++) {
+            for (int i = 0; i < anniversaryDeleteReq.getCount(); i++) {
                 // 기념일 타입/인덱스 확인
-                int anniversaryIdx = anniversaryDeleteReq.getAnniversarIdx()[i];
+                int anniversaryIdx = anniversaryDeleteReq.getAnniversaryIdx()[i];
                 Optional<Anniversary> anniversary = anniversaryRepository.findById(anniversaryIdx);
                 if (!anniversary.isPresent())
                     return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_ANNIVERSARY);
 
                 int anniversaryType = anniversary.get().getAnniversaryType();
-                if (anniversaryType != 1 || anniversaryType != 3)
+                System.out.println(anniversaryType);
+                if (anniversaryType != 1 && anniversaryType != 3)
                     return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_ANNIVERSARY_TYPE);
 
                 indexTemp[i] = anniversaryIdx;

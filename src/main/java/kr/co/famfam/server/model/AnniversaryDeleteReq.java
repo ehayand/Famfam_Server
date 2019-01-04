@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class AnniversaryDeleteReq {
-    private int[] anniversarIdx;
+    private int[] anniversaryIdx;
     private int count;
 }
