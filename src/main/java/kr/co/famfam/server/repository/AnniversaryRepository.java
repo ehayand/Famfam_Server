@@ -25,7 +25,7 @@ public interface AnniversaryRepository extends JpaRepository<Anniversary, Intege
     List<Anniversary> findByYearAndMonthAndDate(@Param("dateStr") final String dateStr);
 
     @Query(value = "SELECT * FROM anniversary WHERE content LIKE :content", nativeQuery = true)
-    List<Anniversary> findByContetnt(@Param("content") final String content);
+    List<Anniversary> findByContent(@Param("content") final String content);
 
     List<Anniversary> findAnniversariesByGroupIdx(final int groupIdx);
 }

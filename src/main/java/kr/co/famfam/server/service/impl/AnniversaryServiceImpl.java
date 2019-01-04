@@ -186,7 +186,7 @@ public class AnniversaryServiceImpl implements AnniversaryService {
     public List<Anniversary> searchSchedule(final String content) {
         // 일정 검색
         try {
-            List<Anniversary> anniversaries = anniversaryRepository.findByContetnt(content);
+            List<Anniversary> anniversaries = anniversaryRepository.findByContent(content);
 
             return anniversaries;
         } catch (Exception e) {
