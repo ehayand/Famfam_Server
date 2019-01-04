@@ -1,13 +1,9 @@
 package kr.co.famfam.server.model;
 
-        import lombok.Data;
-
-        import java.time.LocalDateTime;
+import lombok.Data;
 
 @Data
 public class AnniversaryReq {
-
     private String content;
-    private LocalDateTime date;
-
+    private String dateStr;
 }

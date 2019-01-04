@@ -65,18 +65,19 @@ public class AnniversaryServiceImpl implements AnniversaryService {
             if (!user.isPresent())
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
+            LocalDateTime date = LocalDateTime.parse(anniversaryReq.getDateStr());
             Anniversary anniversary = new Anniversary();
             if (anniversaryType == 1 || anniversaryType == 3) {
                 anniversary.setAnniversaryType(anniversaryType);
                 anniversary.setContent(anniversaryReq.getContent());
-                anniversary.setDate(anniversaryReq.getDate());
+                anniversary.setDate(date);
                 anniversary.setGroupIdx(user.get().getGroupIdx());
 
                 anniversaryRepository.save(anniversary);
             } else if (anniversaryType == 2) {
                 anniversary.setAnniversaryType(anniversaryType);
                 anniversary.setContent("결혼기념일");
-                anniversary.setDate(anniversaryReq.getDate());
+                anniversary.setDate(date);
                 anniversary.setGroupIdx(user.get().getGroupIdx());
 
                 anniversaryRepository.save(anniversary);
@@ -99,10 +100,13 @@ public class AnniversaryServiceImpl implements AnniversaryService {
             Optional<Anniversary> anniversary = anniversaryRepository.findById(anniversaryIdx);
             if (!anniversary.isPresent())
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_ANNIVERSARY);
+
+            LocalDateTime date = LocalDateTime.parse(anniversaryReq.getDateStr());
             int anniversaryType = anniversary.get().getAnniversaryType();
 
-            if (anniversaryType == 1 || anniversaryType == 3) {
-                anniversary.get().setDate(anniversaryReq.getDate());
+            if (anniversaryType == 1 || anniversaryType == 2 || anniversaryType == 3) {
+                anniversary.get().setDate(date);
+                anniversaryRepository.save(anniversary.get());
 
                 return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_ANNIVERSARY);
             } else {
