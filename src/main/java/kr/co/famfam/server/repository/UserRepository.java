@@ -2,7 +2,7 @@ package kr.co.famfam.server.repository;
 
 import kr.co.famfam.server.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +13,7 @@ import java.util.Optional;
  * Github : http://github.com/ehayand
  */
 
-@Service
+@Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findUserByUserIdAndUserPw(String userId, String userPw);

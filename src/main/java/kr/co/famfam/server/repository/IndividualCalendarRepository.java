@@ -5,7 +5,7 @@ import kr.co.famfam.server.domain.IndividualCalendar;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  * Github : http://github.com/ehayand
  */
 
-@Service
+@Repository
 public interface IndividualCalendarRepository extends JpaRepository<IndividualCalendar, Integer> {
 
     @Query("SELECT i FROM IndividualCalendar AS i WHERE i.startDate between :startDate and :endDate")

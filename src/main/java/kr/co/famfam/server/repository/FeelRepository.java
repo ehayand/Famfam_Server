@@ -2,7 +2,7 @@ package kr.co.famfam.server.repository;
 
 import kr.co.famfam.server.domain.Feel;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.Optional;
  * Github : http://github.com/ehayand
  */
 
-@Service
+@Repository
 public interface FeelRepository extends JpaRepository<Feel, Integer> {
 
     Optional<Feel> findFeelByContentIdxAndUserIdx(int contentIdx, int userIdx);

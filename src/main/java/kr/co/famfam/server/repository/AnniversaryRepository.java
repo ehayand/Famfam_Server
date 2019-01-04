@@ -4,7 +4,7 @@ import kr.co.famfam.server.domain.Anniversary;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.List;
  * Github : http://github.com/ehayand
  */
 
-@Service
+@Repository
 public interface AnniversaryRepository extends JpaRepository<Anniversary, Integer> {
 
     @Query("SELECT a FROM Anniversary AS a WHERE a.date between :startDate and :endDate")
@@ -25,7 +25,7 @@ public interface AnniversaryRepository extends JpaRepository<Anniversary, Intege
     List<Anniversary> findByYearAndMonthAndDate(@Param("dateStr") final String dateStr);
 
     @Query(value = "SELECT * FROM anniversary WHERE content LIKE :content", nativeQuery = true)
-    List<Anniversary> findByContetnt(@Param("content") final String content);
+    List<Anniversary> findByContent(@Param("content") final String content);
 
     List<Anniversary> findAnniversariesByGroupIdx(final int groupIdx);
 }

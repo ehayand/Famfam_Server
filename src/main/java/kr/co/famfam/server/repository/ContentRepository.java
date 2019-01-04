@@ -4,7 +4,7 @@ import kr.co.famfam.server.domain.Content;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
  * Github : http://github.com/ehayand
  */
 
-@Service
+@Repository
 public interface ContentRepository extends JpaRepository<Content, Integer> {
 
     Page<Content> findContentsByGroupIdx(int groupIdx, Pageable pageable);

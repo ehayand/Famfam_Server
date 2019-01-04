@@ -60,10 +60,10 @@ public class ContentServiceImpl implements ContentService {
 
         Page<Content> contentPage = contentRepository.findContentsByUserIdx(userIdx, pageable);
         if (contentPage.isEmpty())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
+            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_CONTENT);
 
         Map<Object, Object> result = new HashMap<>();
-        List<Object> contents = new ArrayList<>();
+        List<Object> contents = new LinkedList<>();
 
         for (Content content : contentPage) {
             Map<Object, Object> map = new HashMap<>();
@@ -90,10 +90,10 @@ public class ContentServiceImpl implements ContentService {
 
         Page<Content> contentPage = contentRepository.findContentsByGroupIdx(user.get().getGroupIdx(), pageable);
         if (contentPage.isEmpty())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
+            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_CONTENT);
 
         Map<Object, Object> result = new HashMap<>();
-        List<Object> contents = new ArrayList<>();
+        List<Object> contents = new LinkedList<>();
 
         for (Content content : contentPage) {
             Map<Object, Object> map = new HashMap<>();
@@ -118,17 +118,35 @@ public class ContentServiceImpl implements ContentService {
         if (!content.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
 
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, content);
+        Map<Object, Object> result = new HashMap<>();
+        List<Photo> photos = photoRepository.findPhotosByContentIdx(content.get().getContentIdx());
+
+        for (final Photo photo : photos)
+            photo.setPhotoName(bucketPrefix + bucketOrigin + photo.getPhotoName());
+
+        result.put("content", content);
+        result.put("photos", photos);
+
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, result);
     }
 
     public DefaultRes findContentByPhotoId(int photoIdx) {
-        Optional<Photo> photo = photoRepository.findById(photoIdx);
-        if (!photo.isPresent())
+        Optional<Photo> temp = photoRepository.findById(photoIdx);
+        if (!temp.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_PHOTO);
 
-        Optional<Content> content = contentRepository.findById(photo.get().getContentIdx());
+        Optional<Content> content = contentRepository.findById(temp.get().getContentIdx());
         if (!content.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
+
+        Map<Object, Object> result = new HashMap<>();
+        List<Photo> photos = photoRepository.findPhotosByContentIdx(content.get().getContentIdx());
+
+        for (final Photo photo : photos)
+            photo.setPhotoName(bucketPrefix + bucketOrigin + photo.getPhotoName());
+
+        result.put("content", content);
+        result.put("photos", photos);
 
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, content);
     }
@@ -143,7 +161,10 @@ public class ContentServiceImpl implements ContentService {
 
         long count = contentRepository.countByGroupIdxAndCreatedDateBetween(user.get().getGroupIdx(), startDateTime, endDateTime);
 
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, count);
+        Map<String, Long> result = new HashMap<>();
+        result.put("count", count);
+
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, result);
     }
 
     @Transactional
@@ -188,7 +209,7 @@ public class ContentServiceImpl implements ContentService {
         try {
             oldContent.get().setContent(contentReq.getContent());
             contentRepository.save(oldContent.get());
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.UPDATE_CONTENT);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_CONTENT);
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -208,7 +229,7 @@ public class ContentServiceImpl implements ContentService {
 
         try {
             contentRepository.delete(content.get());
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.DELETE_CONTENT);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_CONTENT);
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

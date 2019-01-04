@@ -36,7 +36,7 @@ public class ContentController {
     public ResponseEntity<DefaultRes> getContents(
             @RequestHeader("Authorization") final String header,
             @RequestParam("userIdx") final Optional<Integer> userIdx,
-            @PageableDefault(sort = {"createdDate"}, direction = Sort.Direction.DESC, size = 3) Pageable pageable) {
+            @PageableDefault(sort = {"createdDate"}, direction = Sort.Direction.DESC, size = 5) Pageable pageable) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
             log.info("ID : " + authUserIdx);
@@ -127,7 +127,7 @@ public class ContentController {
     public ResponseEntity<DefaultRes> update(
             @RequestHeader("Authorization") final String header,
             @PathVariable("contentIdx") final int contentIdx,
-            ContentReq contentReq) {
+            @RequestBody ContentReq contentReq) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
             log.info("ID : " + authUserIdx);
