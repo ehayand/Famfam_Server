@@ -13,9 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -46,18 +44,6 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * 모든 회원 조회
-     *
-     * @return DefaultRes
-     */
-    public DefaultRes getAllUsers() {
-        final List<User> userList = userRepository.findAll();
-        if (userList.isEmpty())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, userList);
-    }
-
-    /**
      * 회원 고유 번호로 회원 조회
      *
      * @param userIdx 회원 고유 번호
@@ -73,7 +59,7 @@ public class UserServiceImpl implements UserService {
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, userRes);
     }
 
-    public DefaultRes findusersById(final int groupIdx) {
+    public DefaultRes findUsersById(final int groupIdx) {
         List<User> groupUsers = userRepository.findUsersByGroupIdx(groupIdx);
         if (groupUsers.isEmpty())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_GROUP);
@@ -103,8 +89,8 @@ public class UserServiceImpl implements UserService {
             signUpReq.setUserPw(util.encryptSHA256(signUpReq.getUserPw()));
             userRepository.save(new User(signUpReq));
 
-            User newUser=userRepository.findUserByUserId(signUpReq.getUserId());
-            return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_USER,newUser);
+            User newUser = userRepository.findUserByUserId(signUpReq.getUserId());
+            return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_USER, newUser);
 
 
         } catch (Exception e) {

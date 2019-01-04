@@ -66,7 +66,7 @@ public class UserController {
                                                @PathVariable("groupIdx") final int groupIdx) {
         try {
             System.out.println(header);
-            return new ResponseEntity<>(userService.findusersById(groupIdx), HttpStatus.OK);
+            return new ResponseEntity<>(userService.findUsersById(groupIdx), HttpStatus.OK);
 
         } catch (Exception e) {
             e.printStackTrace();

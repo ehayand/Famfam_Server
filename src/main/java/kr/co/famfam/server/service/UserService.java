@@ -13,11 +13,9 @@ import kr.co.famfam.server.model.UserinfoReq;
 
 public interface UserService {
 
-    DefaultRes getAllUsers();
-
     DefaultRes findById(final int userIdx);
 
-    DefaultRes findusersById(final int groupIdx);
+    DefaultRes findUsersById(final int groupIdx);
 
     DefaultRes save(final SignUpReq signUpReq);
 
