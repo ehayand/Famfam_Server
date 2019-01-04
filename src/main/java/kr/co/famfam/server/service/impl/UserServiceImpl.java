@@ -1,13 +1,13 @@
 package kr.co.famfam.server.service.impl;
 
 import kr.co.famfam.server.domain.User;
-import kr.co.famfam.server.model.DefaultRes;
-import kr.co.famfam.server.model.SignUpReq;
+import kr.co.famfam.server.model.*;
 import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.FileUploadService;
 import kr.co.famfam.server.service.UserService;
 import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
+import kr.co.famfam.server.utils.security.PasswordUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +29,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final FileUploadService fileUploadService;
 
+
     /**
      * UserRepository 생성자 의존성 주입
      * FileUploadService 생성자 의존성 주입
@@ -43,18 +44,6 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * 모든 회원 조회
-     *
-     * @return DefaultRes
-     */
-    public DefaultRes getAllUsers() {
-        final List<User> userList = userRepository.findAll();
-        if (userList.isEmpty())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, userList);
-    }
-
-    /**
      * 회원 고유 번호로 회원 조회
      *
      * @param userIdx 회원 고유 번호
@@ -64,7 +53,19 @@ public class UserServiceImpl implements UserService {
         final Optional<User> user = userRepository.findById(userIdx);
         if (!user.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, user);
+
+        UserRes userRes = new UserRes(user.get());
+
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, userRes);
+    }
+
+    public DefaultRes findUsersById(final int groupIdx) {
+        List<User> groupUsers = userRepository.findUsersByGroupIdx(groupIdx);
+        if (groupUsers.isEmpty())
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_GROUP);
+
+
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_GROUP_USER, groupUsers);
     }
 
     /**
@@ -83,8 +84,14 @@ public class UserServiceImpl implements UserService {
                 return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.DUPLICATED_ID);
             }
 
+            PasswordUtil util = new PasswordUtil();
+
+            signUpReq.setUserPw(util.encryptSHA256(signUpReq.getUserPw()));
             userRepository.save(new User(signUpReq));
-            return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_USER);
+
+            User newUser = userRepository.findUserByUserId(signUpReq.getUserId());
+            return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_USER, newUser);
+
 
         } catch (Exception e) {
             //Rollback
@@ -97,12 +104,12 @@ public class UserServiceImpl implements UserService {
     /**
      * 회원 정보 수정
      *
-     * @param userIdx 회원 고유 번호
-     * @param user    수정할 회원 데이터
+     * @param userIdx     회원 고유 번호
+     * @param userinfoReq 수정할 회원 데이터
      * @return DefaultRes
      */
     @Transactional
-    public DefaultRes update(final int userIdx, final User user) {
+    public DefaultRes update(final int userIdx, final UserinfoReq userinfoReq) {
         Optional<User> temp = userRepository.findById(userIdx);
         if (!temp.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
@@ -111,14 +118,43 @@ public class UserServiceImpl implements UserService {
             /*
                 null 검사
             */
-            temp.get().setUserName(user.getUserName());
-            temp.get().setBirthday(user.getBirthday());
-            temp.get().setSexType(user.getSexType());
-            temp.get().setStatusMessage(user.getStatusMessage());
-            temp.get().setProfilePhoto(user.getProfilePhoto());
-            temp.get().setBackPhoto(user.getBackPhoto());
+            temp.get().setUserName(userinfoReq.getUserName());
+            temp.get().setBirthday(userinfoReq.getBirthday());
+            temp.get().setSexType(userinfoReq.getSexType());
+            temp.get().setStatusMessage(userinfoReq.getStatusMessage());
+            temp.get().setProfilePhoto(userinfoReq.getProfilePhoto());
+            temp.get().setBackPhoto(userinfoReq.getBackPhoto());
             userRepository.save(temp.get());
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.UPDATE_USER);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_USER);
+        } catch (Exception e) {
+            //Rollback
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
+    }
+
+    public DefaultRes checkPw(final int userIdx, final PasswordReq passwordReq) {
+        Optional<User> temp = userRepository.findById(userIdx);
+        if (!temp.isPresent())
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+        if (temp.get().getUserPw() != passwordReq.getUserPw())
+            return DefaultRes.res(StatusCode.UNAUTHORIZED, ResponseMessage.NOT_FOUND_PW);
+        else
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.PW_SUCCEESS);
+    }
+
+    @Transactional
+    public DefaultRes updatePw(final int userIdx, final PasswordReq passwordReq) {
+        Optional<User> temp = userRepository.findById(userIdx);
+        if (!temp.isPresent())
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+        try {
+            temp.get().setUserPw(passwordReq.getUserPw());
+            userRepository.save(temp.get());
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_PW);
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -141,7 +177,7 @@ public class UserServiceImpl implements UserService {
 
         try {
             userRepository.deleteById(userIdx);
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.DELETE_USER);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_USER);
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

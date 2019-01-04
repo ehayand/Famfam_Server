@@ -85,6 +85,7 @@ public class JwtService {
         public int getUser_idx() {
             return user_idx;
         }
+
     }
 
     //반환될 토큰Res
