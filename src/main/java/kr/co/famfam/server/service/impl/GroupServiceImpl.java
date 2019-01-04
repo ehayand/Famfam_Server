@@ -35,8 +35,10 @@ import java.util.UUID;
 @Service
 public class GroupServiceImpl implements GroupService {
 
-    @Value("${cloud.aws.s3.bucket.default.home}")
-    private String defaultHomeUrl;
+    @Value("${cloud.aws.s3.bucket.url}")
+    private String bucketPrefix;
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucketOrigin;
 
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
@@ -60,13 +62,15 @@ public class GroupServiceImpl implements GroupService {
             int groupIdx = user.get().getGroupIdx();
 
             if (groupIdx == -1)
-                return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.NOT_JOIN_GROUP);
+                return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_JOIN_GROUP);
 
             Optional<Group> group = groupRepository.findById(groupIdx);
             if (!group.isPresent())
-                return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.NOT_FOUND_GROUP);
+                return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_GROUP);
 
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.READ_GROUP, group.get());
+            group.get().setHomePhoto(bucketPrefix + bucketOrigin + group.get().getHomePhoto());
+
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_GROUP, group.get());
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -85,9 +89,9 @@ public class GroupServiceImpl implements GroupService {
             int groupIdx = user.get().getGroupIdx();
 
             if (groupIdx == -1)
-                return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.NOT_JOIN_GROUP);
+                return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_JOIN_GROUP);
 
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.JOIN_SUCCESS_GROUP, check(groupIdx));
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_COED, check(groupIdx));
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -101,16 +105,19 @@ public class GroupServiceImpl implements GroupService {
         Optional<User> user = userRepository.findById(userIdx);
         if (!user.isPresent()) return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
+        if (user.get().getGroupIdx() != -1)
+            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.ALREADY_JOINED_GROUP);
+
         try {
             int groupIdx = check(code);
 
             if (groupIdx == -1)
-                return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.NOT_FOUND_INVITATION);
+                return DefaultRes.res(StatusCode.UNAUTHORIZED, ResponseMessage.INVALID_CODE);
 
             user.get().setGroupIdx(groupIdx);
             userRepository.save(user.get());
 
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.JOIN_SUCCESS_GROUP);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.JOIN_SUCCESS_GROUP);
         } catch (Exception e) {
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
@@ -123,15 +130,18 @@ public class GroupServiceImpl implements GroupService {
         if (!user.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
+        if (user.get().getGroupIdx() != -1)
+            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.ALREADY_JOINED_GROUP);
+
         try {
-            Group group = new Group(defaultHomeUrl);
+            Group group = new Group();
             group.setUserIdx(userIdx);
             int groupIdx = groupRepository.save(group).getGroupIdx();
 
             user.get().setGroupIdx(groupIdx);
             userRepository.save(user.get());
 
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.CREATED_GROUP);
+            return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_GROUP);
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -147,7 +157,7 @@ public class GroupServiceImpl implements GroupService {
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
         if (user.get().getGroupIdx() == -1)
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_JOIN_GROUP);
+            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_JOIN_GROUP);
 
         try {
             user.get().setGroupIdx(-1);
@@ -157,9 +167,11 @@ public class GroupServiceImpl implements GroupService {
             if (groupUsers.isEmpty()) {
                 Optional<Group> group = groupRepository.findById(groupIdx);
                 groupRepository.delete(group.get());
+            } else {
+
             }
 
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.DELETE_GROUP);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_GROUP);
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -174,10 +186,13 @@ public class GroupServiceImpl implements GroupService {
         if (!user.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
+        if (user.get().getGroupIdx() == -1)
+            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_JOIN_GROUP);
+
         try {
             user.get().setGroupIdx(-1);
             userRepository.save(user.get());
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.WITHDRAW_SUCCESS_GROUP);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.WITHDRAW_SUCCESS_GROUP);
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -190,7 +205,7 @@ public class GroupServiceImpl implements GroupService {
     public DefaultRes photoUpdate(HomePhotoReq homePhotoReq) {
         Optional<Group> group = groupRepository.findById(homePhotoReq.getGroupIdx());
         if (!group.isPresent())
-            return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.NOT_FOUND_GROUP);
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_GROUP);
 
         try {
             if (homePhotoReq.getPhoto() != null) {

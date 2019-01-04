@@ -28,8 +28,4 @@ public class Group {
 
     @Column(name = "userIdx")
     private int userIdx;
-
-    public Group(String homePhoto) {
-        this.homePhoto = homePhoto;
-    }
 }
