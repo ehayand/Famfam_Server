@@ -19,7 +19,7 @@ public class UserRes {
 
     public UserRes(User user) {
         this.userId = user.getUserId();
-        this.userName = user.getUserPw();
+        this.userName = user.getUserName();
         this.userPhone = user.getUserPhone();
         this.birthday = user.getBirthday();
         this.sexType = user.getSexType();
