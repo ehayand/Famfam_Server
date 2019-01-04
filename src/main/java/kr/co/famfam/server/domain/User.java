@@ -2,6 +2,7 @@ package kr.co.famfam.server.domain;
 
 import kr.co.famfam.server.model.LoginReq;
 import kr.co.famfam.server.model.SignUpReq;
+import kr.co.famfam.server.model.UserinfoReq;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -67,5 +68,13 @@ public class User {
         this.userPw = loginReq.getUserPw();
     }
 
+    public User(UserinfoReq userinfoReq) {
+        this.userName = userinfoReq.getUserName();
+        this.birthday = userinfoReq.getBirthday();
+        this.sexType = userinfoReq.getSexType();
+        this.statusMessage = userinfoReq.getStatusMessage();
+        this.profilePhoto = userinfoReq.getProfilePhoto();
+        this.backPhoto = userinfoReq.getBackPhoto();
+    }
 
 }

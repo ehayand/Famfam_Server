@@ -24,4 +24,6 @@ public interface IndividualCalendarService {
     DefaultRes updateSchedule(final int calendarIdx, final CalendarReq calendarReq, final String allDateStr);
 
     DefaultRes deleteSchedule(final int calendarIdx);
+
+    List<IndividualCalendar> searchSchedule(final String content);
 }

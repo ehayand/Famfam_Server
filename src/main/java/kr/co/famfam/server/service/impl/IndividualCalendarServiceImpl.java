@@ -130,4 +130,19 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
     }
+
+    @Transactional
+    public List<IndividualCalendar> searchSchedule(final String content) {
+        // 일정 검색
+        try {
+            List<IndividualCalendar> individualCalendars = individualCalendarRepository.findByContetnt(content);
+
+            return individualCalendars;
+        } catch (Exception e) {
+            //Rollback
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return null;
+        }
+    }
 }

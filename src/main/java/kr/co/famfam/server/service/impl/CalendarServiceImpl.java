@@ -4,6 +4,7 @@ import kr.co.famfam.server.domain.Anniversary;
 import kr.co.famfam.server.domain.FamilyCalendar;
 import kr.co.famfam.server.domain.IndividualCalendar;
 import kr.co.famfam.server.model.CalendarReq;
+import kr.co.famfam.server.model.CalendarSearchReq;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.service.AnniversaryService;
 import kr.co.famfam.server.service.CalendarService;
@@ -90,7 +91,7 @@ public class CalendarServiceImpl implements CalendarService {
         } else if (calendarType == 2) {
             return familyCalendarService.addSchedule(calendarReq, authUserIdx, allDateStr);
         } else {
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDARTYPE);
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDAR_TYPE);
         }
     }
 
@@ -105,7 +106,7 @@ public class CalendarServiceImpl implements CalendarService {
         } else if (calendarType == 2) {
             return familyCalendarService.updateSchedule(calendarIdx, calendarReq, allDateStr);
         } else {
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDARTYPE);
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDAR_TYPE);
         }
     }
 
@@ -117,8 +118,33 @@ public class CalendarServiceImpl implements CalendarService {
         } else if (calendarType == 2) {
             return familyCalendarService.deleteSchedule(calendarIdx);
         } else {
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDARTYPE);
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDAR_TYPE);
         }
+    }
+
+    @Transactional
+    public DefaultRes searchSchedule(final CalendarSearchReq calendarSearchReq) {
+        // 일정 검색
+        String content = calendarSearchReq.getContent();
+
+        String per = "%";
+        String contentTemp = per.concat(content);
+        String result = contentTemp.concat("%");
+
+        List<IndividualCalendar> individualCalendars = individualCalendarService.searchSchedule(result);
+        List<FamilyCalendar> familyCalendars = familyCalendarService.searchSchedule(result);
+        List<Anniversary> anniversaries = anniversaryService.searchSchedule(result);
+
+        if (anniversaries == null || individualCalendars == null || familyCalendars == null)
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+
+        Map<String, Object> map = new HashMap<>();
+
+        map.put("individual", individualCalendars);
+        map.put("family", familyCalendars);
+        map.put("anniversary", anniversaries);
+
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.SEARCH_CALENDAR, map);
     }
 
     public String allDate(final CalendarReq calendarReq) {

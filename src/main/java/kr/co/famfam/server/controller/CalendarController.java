@@ -1,6 +1,7 @@
 package kr.co.famfam.server.controller;
 
 import kr.co.famfam.server.model.CalendarReq;
+import kr.co.famfam.server.model.CalendarSearchReq;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.service.CalendarService;
 import kr.co.famfam.server.service.JwtService;
@@ -89,5 +90,13 @@ public class CalendarController {
         }
     }
 
-
+    @Auth
+    @GetMapping("/search")
+    public ResponseEntity searchSchedule(@RequestBody CalendarSearchReq calendarSearchReq) {
+        try {
+            return new ResponseEntity<>(calendarService.searchSchedule(calendarSearchReq), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
