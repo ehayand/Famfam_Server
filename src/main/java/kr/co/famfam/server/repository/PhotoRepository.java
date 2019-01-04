@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -17,7 +17,7 @@ import java.util.Optional;
 @Service
 public interface PhotoRepository extends JpaRepository<Photo, Integer> {
 
-    Optional<Photo> findPhotoByContentIdx(int contentIdx);
+    List<Photo> findPhotosByContentIdx(int contentIdx);
 
-    Page<Photo> findPhotosByUserIdx(int userIdx, Pageable pageable);
+    Page<Photo> findPhotosByUserIdxOrderByCreatedDateAsc(int userIdx, Pageable pageable);
 }

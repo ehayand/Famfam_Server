@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -24,9 +25,17 @@ public class Photo {
 
     @Column(name = "photoName")
     private String photoName;
+    @Column(name = "createdDate")
+    private LocalDateTime createdDate;
 
     @Column(name = "contentIdx")
     private int contentIdx;
     @Column(name = "userIdx")
     private int userIdx;
+
+    public Photo(int contentIdx, int userIdx) {
+        this.contentIdx = contentIdx;
+        this.userIdx = userIdx;
+        this.createdDate = LocalDateTime.now();
+    }
 }

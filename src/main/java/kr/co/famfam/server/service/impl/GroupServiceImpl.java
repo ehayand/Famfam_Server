@@ -37,6 +37,10 @@ public class GroupServiceImpl implements GroupService {
 
     @Value("${cloud.aws.s3.bucket.default.home}")
     private String defaultHomeUrl;
+    @Value("${cloud.aws.s3.bucket.url}")
+    private String bucketPrefix;
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucketOrigin;
 
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
@@ -65,6 +69,8 @@ public class GroupServiceImpl implements GroupService {
             Optional<Group> group = groupRepository.findById(groupIdx);
             if (!group.isPresent())
                 return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.NOT_FOUND_GROUP);
+
+            group.get().setHomePhoto(bucketPrefix + bucketOrigin + group.get().getHomePhoto());
 
             return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.READ_GROUP, group.get());
         } catch (Exception e) {
@@ -157,6 +163,9 @@ public class GroupServiceImpl implements GroupService {
             if (groupUsers.isEmpty()) {
                 Optional<Group> group = groupRepository.findById(groupIdx);
                 groupRepository.delete(group.get());
+            }
+            else {
+
             }
 
             return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.DELETE_GROUP);

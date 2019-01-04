@@ -61,6 +61,7 @@ public class User {
         this.statusMessage = "상태메세지를 등록하세요.";
         this.profilePhoto = profilePhoto;
         this.backPhoto = backPhoto;
+        this.groupIdx = -1;
     }
 
     public User(LoginReq loginReq) {
