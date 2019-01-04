@@ -92,10 +92,10 @@ public class UserServiceImpl implements UserService {
             PasswordUtil util = new PasswordUtil();
 
             signUpReq.setUserPw(util.encryptSHA256(signUpReq.getUserPw()));
-            userRepository.save(new User(signUpReq));
 
-            User newUser = userRepository.findUserByUserId(signUpReq.getUserId());
-            return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_USER, newUser);
+            UserRes userRes = new UserRes(userRepository.save(new User(signUpReq)));
+
+            return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_USER, userRes);
 
 
         } catch (Exception e) {
