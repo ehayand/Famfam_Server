@@ -6,6 +6,7 @@ import kr.co.famfam.server.model.SignUpReq;
 import kr.co.famfam.server.service.JwtService;
 import kr.co.famfam.server.service.LoginService;
 import kr.co.famfam.server.utils.auth.Auth;
+import kr.co.famfam.server.utils.security.PasswordUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,8 @@ public class LoginController {
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody final LoginReq loginReq) {
         try {
+            PasswordUtil util=new PasswordUtil();
+            loginReq.setUserPw(util.encryptSHA256(loginReq.getUserPw()));
             return new ResponseEntity<>(loginService.login(loginReq), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());

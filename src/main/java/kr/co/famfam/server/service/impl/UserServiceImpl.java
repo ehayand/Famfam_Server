@@ -74,10 +74,10 @@ public class UserServiceImpl implements UserService {
     public DefaultRes findusersById(final int groupIdx) {
         List<User> groupUsers = userRepository.findUsersByGroupIdx(groupIdx);
         if (groupUsers.isEmpty())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_GROUP_USER);
 
 
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, groupUsers);
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_GROUP_USER, groupUsers);
     }
 
     /**
