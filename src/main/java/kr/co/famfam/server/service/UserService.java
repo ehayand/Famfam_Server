@@ -15,7 +15,7 @@ public interface UserService {
 
     DefaultRes findById(final int userIdx);
 
-    DefaultRes findUsersById(final int groupIdx);
+    DefaultRes findUsersByGroupIdx(final int groupIdx);
 
     DefaultRes save(final SignUpReq signUpReq);
 
@@ -24,6 +24,8 @@ public interface UserService {
     DefaultRes updatePw(final int userIdx, final PasswordReq passwordReq);
 
     DefaultRes checkPw(final int userIdx, final PasswordReq passwordReq);
+
+    DefaultRes checkDuplicationId(final String userId);
 
     DefaultRes deleteByUserIdx(final int userIdx);
 }

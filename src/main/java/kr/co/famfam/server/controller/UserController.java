@@ -1,10 +1,7 @@
 package kr.co.famfam.server.controller;
 
 import kr.co.famfam.server.domain.User;
-import kr.co.famfam.server.model.DefaultRes;
-import kr.co.famfam.server.model.PasswordReq;
-import kr.co.famfam.server.model.SignUpReq;
-import kr.co.famfam.server.model.UserinfoReq;
+import kr.co.famfam.server.model.*;
 import kr.co.famfam.server.service.JwtService;
 import kr.co.famfam.server.service.UserService;
 import kr.co.famfam.server.utils.ResponseMessage;
@@ -48,8 +45,6 @@ public class UserController {
     @GetMapping("")
     public ResponseEntity<DefaultRes> getUser(@RequestHeader(value = "Authorization") final String header) {
         try {
-            System.out.println(header);
-
             int authIdx = jwtService.decode(header).getUser_idx();
             return new ResponseEntity<>(userService.findById(authIdx), HttpStatus.OK);
 
@@ -61,12 +56,11 @@ public class UserController {
     }
 
     @Auth
-    @GetMapping("/groups/{groupIdx}")
-    public ResponseEntity<DefaultRes> getGroup(@RequestHeader(value = "Authorization") final String header,
-                                               @PathVariable("groupIdx") final int groupIdx) {
+    @GetMapping("/groups")
+    public ResponseEntity<DefaultRes> getGroup(@RequestHeader(value = "Authorization") final String header) {
         try {
-            System.out.println(header);
-            return new ResponseEntity<>(userService.findUsersById(groupIdx), HttpStatus.OK);
+            int authIdx = jwtService.decode(header).getUser_idx();
+            return new ResponseEntity<>(userService.findUsersByGroupIdx(authIdx), HttpStatus.OK);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -101,13 +95,24 @@ public class UserController {
         }
     }
 
+    @PostMapping("/id")
+    public ResponseEntity<DefaultRes> checkDuplicationId(@RequestBody final DuplicationIdReq duplicationIdReq) {
+        try {
+            if(duplicationIdReq == null)
+                return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(userService.checkDuplicationId(duplicationIdReq.getUserId()), HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @Auth
     @PostMapping("/password")
     public ResponseEntity<DefaultRes> checkPassword(@RequestHeader(value = "Authorization") final String header,
                                                     @RequestBody final PasswordReq passwordReq) {
         try {
             int authIdx = jwtService.decode(header).getUser_idx();
-            System.out.println(header);
             PasswordUtil util = new PasswordUtil();
             passwordReq.setUserPw(util.encryptSHA256(passwordReq.getUserPw()));
             return new ResponseEntity<>(userService.checkPw(authIdx, passwordReq), HttpStatus.OK);
@@ -126,7 +131,6 @@ public class UserController {
                                                      @RequestBody final PasswordReq passwordReq) {
         try {
             int authIdx = jwtService.decode(header).getUser_idx();
-            System.out.println(header);
             PasswordUtil util = new PasswordUtil();
             passwordReq.setUserPw(util.encryptSHA256(passwordReq.getUserPw()));
             return new ResponseEntity<>(userService.updatePw(authIdx, passwordReq), HttpStatus.OK);
