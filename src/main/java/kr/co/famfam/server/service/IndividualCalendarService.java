@@ -15,9 +15,9 @@ import java.util.List;
 
 public interface IndividualCalendarService {
 
-    List<IndividualCalendar> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate);
+    List<IndividualCalendar> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate, final int groupIdx);
 
-    List<IndividualCalendar> findByYearAndMonthAndDate(final String dateStr);
+    List<IndividualCalendar> findByYearAndMonthAndDate(final String dateStr, final int groupIdx);
 
     DefaultRes addSchedule(final CalendarReq calendarReq, final int authUserIdx, final String allDateStr);
 
@@ -25,5 +25,5 @@ public interface IndividualCalendarService {
 
     DefaultRes deleteSchedule(final int calendarIdx);
 
-    List<IndividualCalendar> searchSchedule(final String content);
+    List<IndividualCalendar> searchSchedule(final String content, final int groupIdx);
 }

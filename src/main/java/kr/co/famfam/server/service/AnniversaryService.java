@@ -24,11 +24,11 @@ public interface AnniversaryService {
 
     DefaultRes deleteAnniversary(final AnniversaryDeleteReq anniversaryDeleteReq);
 
-    List<Anniversary> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate);
+    List<Anniversary> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate, final int groupIdx);
 
-    List<Anniversary> findByYearAndMonthAndDate(final String dateStr);
+    List<Anniversary> findByYearAndMonthAndDate(final String dateStr, final int groupIdx);
 
-    List<Anniversary> searchSchedule(final String content);
+    List<Anniversary> searchSchedule(final String content, final int groupIdx);
 }
 
 
