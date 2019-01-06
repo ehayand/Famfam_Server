@@ -31,10 +31,10 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
         this.individualCalendarRepository = individualCalendarRepository;
     }
 
-    public List<IndividualCalendar> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate) {
+    public List<IndividualCalendar> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate, final int groupIdx) {
         // 년, 월에 맞는 (앞달, 뒷달 포함)세달치 일정 조회
         try {
-            List<IndividualCalendar> individualCalendars = individualCalendarRepository.findByYearAndMonth(startDate, endDate);
+            List<IndividualCalendar> individualCalendars = individualCalendarRepository.findByYearAndMonth(startDate, endDate, groupIdx);
 
             return individualCalendars;
         } catch (Exception e) {
@@ -45,14 +45,14 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
         }
     }
 
-    public List<IndividualCalendar> findByYearAndMonthAndDate(final String dateStr) {
+    public List<IndividualCalendar> findByYearAndMonthAndDate(final String dateStr, final int groupIdx) {
         // 날짜에 맞는 일정 조회
         try {
             String per = "%";
             String tempStr = per.concat(dateStr);
             String result = tempStr.concat("%");
 
-            List<IndividualCalendar> individualCalendars = individualCalendarRepository.findByYearAndMonthAndDate(result);
+            List<IndividualCalendar> individualCalendars = individualCalendarRepository.findByYearAndMonthAndDate(result, groupIdx);
 
             return individualCalendars;
         } catch (Exception e) {
@@ -133,10 +133,10 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
     }
 
     @Transactional
-    public List<IndividualCalendar> searchSchedule(final String content) {
+    public List<IndividualCalendar> searchSchedule(final String content, final int groupIdx) {
         // 일정 검색
         try {
-            List<IndividualCalendar> individualCalendars = individualCalendarRepository.findByContetnt(content);
+            List<IndividualCalendar> individualCalendars = individualCalendarRepository.findByContetnt(content, groupIdx);
 
             return individualCalendars;
         } catch (Exception e) {

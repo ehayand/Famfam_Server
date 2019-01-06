@@ -15,9 +15,9 @@ import java.util.List;
 
 public interface FamilyCalendarService {
 
-    List<FamilyCalendar> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate);
+    List<FamilyCalendar> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate, final int groupIdx);
 
-    List<FamilyCalendar> findByYearAndMonthAndDate(final String dateStr);
+    List<FamilyCalendar> findByYearAndMonthAndDate(final String dateStr, final int groupIdx);
 
     DefaultRes addSchedule(final CalendarReq calendarReq, final int authUserIdx, final String allDateStr);
 
@@ -25,5 +25,5 @@ public interface FamilyCalendarService {
 
     DefaultRes deleteSchedule(final int calendarIdx);
 
-    List<FamilyCalendar> searchSchedule(final String content);
+    List<FamilyCalendar> searchSchedule(final String content, final int groupIdx);
 }

@@ -31,10 +31,10 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
         this.familyCalendarRepository = familyCalendarRepository;
     }
 
-    public List<FamilyCalendar> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate) {
+    public List<FamilyCalendar> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate, final int groupIdx) {
         // 년, 월에 맞는 (앞달, 뒷달 포함)세달치 일정 조회
         try {
-            List<FamilyCalendar> familyCalendars = familyCalendarRepository.findByYearAndMonth(startDate, endDate);
+            List<FamilyCalendar> familyCalendars = familyCalendarRepository.findByYearAndMonth(startDate, endDate, groupIdx);
 
             return familyCalendars;
         } catch (Exception e) {
@@ -45,14 +45,14 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
         }
     }
 
-    public List<FamilyCalendar> findByYearAndMonthAndDate(final String dateStr) {
+    public List<FamilyCalendar> findByYearAndMonthAndDate(final String dateStr, final int groupIdx) {
         // 날짜에 맞는 일정 조회
         try {
             String per = "%";
             String tempStr = per.concat(dateStr);
             String result = tempStr.concat("%");
 
-            List<FamilyCalendar> familyCalendars = familyCalendarRepository.findByYearAndMonthAndDate(result);
+            List<FamilyCalendar> familyCalendars = familyCalendarRepository.findByYearAndMonthAndDate(result, groupIdx);
 
             return familyCalendars;
         } catch (Exception e) {
@@ -128,10 +128,10 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
     }
 
     @Transactional
-    public List<FamilyCalendar> searchSchedule(final String content) {
+    public List<FamilyCalendar> searchSchedule(final String content, final int groupIdx) {
         // 일정 검색
         try {
-            List<FamilyCalendar> familyCalendars = familyCalendarRepository.findByContetnt(content);
+            List<FamilyCalendar> familyCalendars = familyCalendarRepository.findByContetnt(content, groupIdx);
 
             return familyCalendars;
         } catch (Exception e) {

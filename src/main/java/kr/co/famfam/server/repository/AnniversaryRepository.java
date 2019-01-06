@@ -1,6 +1,7 @@
 package kr.co.famfam.server.repository;
 
 import kr.co.famfam.server.domain.Anniversary;
+import org.apache.tomcat.jni.Local;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,14 +19,17 @@ import java.util.List;
 @Repository
 public interface AnniversaryRepository extends JpaRepository<Anniversary, Integer> {
 
-    @Query("SELECT a FROM Anniversary AS a WHERE a.date between :startDate and :endDate")
-    List<Anniversary> findByYearAndMonth(@Param("startDate") final LocalDateTime startDate, @Param("endDate") final LocalDateTime endDate);
+    @Query(value = "SELECT * FROM anniversary WHERE (group_idx = :groupIdx) AND (date between :startDate and :endDate)", nativeQuery = true)
+    List<Anniversary> findByYearAndMonth(@Param("startDate") final LocalDateTime startDate, @Param("endDate") final LocalDateTime endDate, @Param("groupIdx") final int groupIdx);
+//    List<Anniversary> findAnniversariesByDateBetween(@Param("startDate") final LocalDateTime startDate, @Param("endDate") final LocalDateTime endDate);
 
-    @Query(value = "SELECT * FROM anniversary WHERE date LIKE :dateStr", nativeQuery = true)
-    List<Anniversary> findByYearAndMonthAndDate(@Param("dateStr") final String dateStr);
+    @Query(value = "SELECT * FROM anniversary WHERE (group_idx = :groupIdx) AND (date LIKE :dateStr)", nativeQuery = true)
+    List<Anniversary> findByYearAndMonthAndDate(@Param("dateStr") final String dateStr, @Param("groupIdx") final int groupIdx);
+//    List<Anniversary> findAnniversariesByDateLike(@Param("dateStr") final LocalDateTime dateStr);
 
-    @Query(value = "SELECT * FROM anniversary WHERE content LIKE :content", nativeQuery = true)
-    List<Anniversary> findByContent(@Param("content") final String content);
+    @Query(value = "SELECT * FROM anniversary WHERE (group_idx = :groupIdx) AND (content LIKE :content)", nativeQuery = true)
+    List<Anniversary> findByContent(@Param("content") final String content, @Param("groupIdx") final int groupIdx);
+//    List<Anniversary> findAnniversariesByContentLike(@Param("content") final String content);
 
     List<Anniversary> findAnniversariesByGroupIdx(final int groupIdx);
 }
