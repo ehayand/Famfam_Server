@@ -73,8 +73,9 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
             schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
             schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
             schedule.setAllDate(allDateStr);
-            schedule.setReturningTime(calendarReq.getReturningTime());
-            schedule.setDinner(calendarReq.getDinner());
+
+            if(calendarReq.getReturningTime() != -1) schedule.setReturningTime(calendarReq.getReturningTime());
+            if(calendarReq.getDinner() != -1) schedule.setDinner(calendarReq.getDinner());
 
             individualCalendarRepository.save(schedule);
 
@@ -95,12 +96,12 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDAR);
 
             IndividualCalendar schedule = individualCalendarRepository.findById(calendarIdx).get();
-            schedule.setContent(calendarReq.getContent());
-            schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
-            schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
-            schedule.setAllDate(allDateStr);
-            schedule.setReturningTime(calendarReq.getReturningTime());
-            schedule.setDinner(calendarReq.getDinner());
+            if(!calendarReq.getContent().isEmpty()) schedule.setContent(calendarReq.getContent());
+            if(!calendarReq.getStartDate().isEmpty()) schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
+            if(!calendarReq.getEndDate().isEmpty()) schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
+            if(allDateStr != "") schedule.setAllDate(allDateStr);
+            if(calendarReq.getReturningTime() != -1) schedule.setReturningTime(calendarReq.getReturningTime());
+            if(calendarReq.getDinner() != -1) schedule.setDinner(calendarReq.getDinner());
 
             individualCalendarRepository.save(schedule);
 

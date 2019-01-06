@@ -17,10 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -41,7 +38,7 @@ public class CalendarServiceImpl implements CalendarService {
 
         LocalDateTime date = LocalDateTime.parse(dateStr);
         LocalDateTime startDate = date.minusMonths(1);
-        LocalDateTime endDate = date.plusMonths(1);
+        LocalDateTime endDate = date.plusMonths(2);
 
         List<IndividualCalendar> individualCalendars = individualCalendarService.findByYearAndMonth(startDate, endDate);
         List<FamilyCalendar> familyCalendars = familyCalendarService.findByYearAndMonth(startDate, endDate);
@@ -99,7 +96,9 @@ public class CalendarServiceImpl implements CalendarService {
     public DefaultRes updateSchedule(final int calendarType, final int calendarIdx, final CalendarReq calendarReq) {
         // 타입값에 따라서 가족/개인 캘린더서비스 불러서 일정 수정하기
 
-        String allDateStr = allDate(calendarReq);
+        String allDateStr = "";
+        if(!calendarReq.getStartDate().isEmpty() || !calendarReq.getEndDate().isEmpty())
+            allDateStr = allDate(calendarReq);
 
         if (calendarType == 1) {
             return individualCalendarService.updateSchedule(calendarIdx, calendarReq, allDateStr);
