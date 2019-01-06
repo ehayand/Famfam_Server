@@ -19,7 +19,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findUserByUserIdAndUserPw(String userId, String userPw);
 
     List<User> findUsersByGroupIdx(int groupIdx);
-    
+
     User findByUserIdx(int userIdx);
 
     Optional<User> findUserByUserId(String userId);

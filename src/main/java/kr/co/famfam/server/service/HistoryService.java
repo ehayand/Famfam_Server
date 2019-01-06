@@ -9,8 +9,9 @@ import java.util.List;
 
 
 public interface HistoryService {
-    Boolean addHistory(HistoryDto historyDto);
+    Boolean add(HistoryDto historyDto);
+//    Boolean add(int userIdx, String type);
 
-    List<History> getHistory(int userIdx);
+    DefaultRes findAllHistoryByUserIdx(int userIdx);
 
 }

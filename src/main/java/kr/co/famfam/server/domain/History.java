@@ -1,6 +1,7 @@
 package kr.co.famfam.server.domain;
 
 
+import kr.co.famfam.server.model.HistoryDto;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,7 +38,7 @@ public class History {
 
 
     @Builder
-    public History(int userIdx, int groupIdx, String type, String content, LocalDateTime created) {
+    public History(int userIdx, int groupIdx, String type, String content) {
         this.userIdx = userIdx;
         this.groupIdx = groupIdx;
         this.type = type;
