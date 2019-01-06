@@ -13,7 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -42,13 +42,18 @@ public class PhotoServiceImpl implements PhotoService {
         if (!user.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
-        Page<Photo> photos = photoRepository.findPhotosByUserIdxOrderByCreatedDateAsc(userIdx, pageable);
+        Page<Photo> photos = photoRepository.findPhotosByUserIdxOrderByCreatedDateDesc(userIdx, pageable);
         if (photos.isEmpty())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_PHOTO);
+            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_PHOTO);
+
+        Map<String, Object> result = new HashMap<>();
 
         for(final Photo photo : photos)
             photo.setPhotoName(bucketPrefix + bucketResized + photo.getPhotoName());
 
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_PHOTO, photos.getContent());
+        result.put("photos", photos.getContent());
+        result.put("totalPage", photos.getTotalPages());
+
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_PHOTO, result);
     }
 }

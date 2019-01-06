@@ -18,9 +18,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -47,7 +45,7 @@ public class FeelServiceImpl implements FeelService {
             if (feels.isEmpty())
                 return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_FEEL);
 
-            List<Integer> types = new ArrayList<>();
+            List<Integer> types = new LinkedList<>();
             for (Feel feel : feels)
                 types.add(feel.getType());
 
@@ -75,7 +73,7 @@ public class FeelServiceImpl implements FeelService {
 
         final List<User> groupUsers = userRepository.findUsersByGroupIdx(user.get().getGroupIdx());
         if (groupUsers.isEmpty())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_GROUP);
 
         try {
             LocalDateTime startDateTime = getStartDateTime();
@@ -86,7 +84,10 @@ public class FeelServiceImpl implements FeelService {
                 count += feelRepository.countByUserIdxAndCreatedDateBetween(u.getUserIdx(), startDateTime, endDateTime);
             }
 
-            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_COMMENT, count);
+            Map<String, Long> result = new HashMap<>();
+            result.put("count", count);
+
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_FEEL, result);
         } catch (Exception e) {
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
@@ -97,13 +98,13 @@ public class FeelServiceImpl implements FeelService {
     public DefaultRes save(FeelReq feelReq) {
         try {
             Optional<Feel> feel = feelRepository.findFeelByContentIdxAndUserIdx(feelReq.getContentIdx(), feelReq.getUserIdx());
+
             if (feel.isPresent()) {
                 feel.get().setType(feelReq.getType());
                 feelRepository.save(feel.get());
 
-                return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.UPDATE_FEEL);
-            }
-            else {
+                return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_FEEL);
+            } else {
                 feelRepository.save(new Feel(feelReq));
 
                 return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_FEEL);
@@ -121,10 +122,10 @@ public class FeelServiceImpl implements FeelService {
         try {
             Optional<Feel> feel = feelRepository.findFeelByContentIdxAndUserIdx(contentIdx, userIdx);
             if (!feel.isPresent())
-                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_FEEL);
+                return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_FEEL);
 
             feelRepository.delete(feel.get());
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.DELETE_FEEL);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_FEEL);
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

@@ -19,7 +19,9 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -73,7 +75,10 @@ public class CommentServiceImpl implements CommentService {
                 count += commentRepository.countByUserIdxAndCreatedDateBetween(u.getUserIdx(), startDateTime, endDateTime);
             }
 
-            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_COMMENT, count);
+            Map<String, Long> result = new HashMap<>();
+            result.put("count", count);
+
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_COMMENT, result);
         } catch (Exception e) {
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);

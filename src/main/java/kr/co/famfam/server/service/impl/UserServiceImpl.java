@@ -2,10 +2,8 @@ package kr.co.famfam.server.service.impl;
 
 import kr.co.famfam.server.domain.Anniversary;
 import kr.co.famfam.server.domain.User;
-import kr.co.famfam.server.model.DefaultRes;
-import kr.co.famfam.server.model.SignUpReq;
-import kr.co.famfam.server.repository.AnniversaryRepository;
 import kr.co.famfam.server.model.*;
+import kr.co.famfam.server.repository.AnniversaryRepository;
 import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.FileUploadService;
 import kr.co.famfam.server.service.UserService;
@@ -17,8 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by ehay@naver.com on 2018-12-24
@@ -64,13 +61,24 @@ public class UserServiceImpl implements UserService {
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, userRes);
     }
 
-    public DefaultRes findUsersById(final int groupIdx) {
-        List<User> groupUsers = userRepository.findUsersByGroupIdx(groupIdx);
+    public DefaultRes findUsersByGroupIdx(final int userIdx) {
+        Optional<User> user = userRepository.findById(userIdx);
+        if(!user.isPresent())
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+        List<User> groupUsers = userRepository.findUsersByGroupIdx(user.get().getGroupIdx());
         if (groupUsers.isEmpty())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_GROUP);
 
+        Map<String, Object> result = new HashMap<>();
+        List<UserRes> users = new LinkedList<>();
 
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_GROUP_USER, groupUsers);
+        for(User u : groupUsers)
+            users.add(new UserRes(u));
+
+        result.put("users", users);
+
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_GROUP_USER, result);
     }
 
     /**
@@ -83,19 +91,18 @@ public class UserServiceImpl implements UserService {
     public DefaultRes save(final SignUpReq signUpReq) {
         try {
 
-            User tempUser = userRepository.findUserByUserId(signUpReq.getUserId());
+            Optional<User> tempUser = userRepository.findUserByUserId(signUpReq.getUserId());
 
-            if (tempUser != null) {
+            if (tempUser.isPresent())
                 return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.DUPLICATED_ID);
-            }
 
             PasswordUtil util = new PasswordUtil();
 
             signUpReq.setUserPw(util.encryptSHA256(signUpReq.getUserPw()));
-            userRepository.save(new User(signUpReq));
 
-            User newUser = userRepository.findUserByUserId(signUpReq.getUserId());
-            return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_USER, newUser);
+            UserRes userRes = new UserRes(userRepository.save(new User(signUpReq)));
+
+            return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_USER, userRes);
 
 
         } catch (Exception e) {
@@ -116,9 +123,13 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public DefaultRes update(final int userIdx, final UserinfoReq userinfoReq) {
         Optional<User> temp = userRepository.findById(userIdx);
-        Optional<Anniversary> anniversary = anniversaryRepository.findById(temp.get().getUserIdx());
-        if (!temp.isPresent() || !anniversary.isPresent())
+        if (!temp.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+        Optional<Anniversary> anniversary = anniversaryRepository.findById(temp.get().getUserIdx());
+        if(!anniversary.isPresent())
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
 
         try {
             /*
@@ -144,12 +155,20 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    public DefaultRes checkDuplicationId(final String userId) {
+        Optional<User> user = userRepository.findUserByUserId(userId);
+        if(user.isPresent())
+            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.DUPLICATED_ID);
+        else
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.AVALIABLE_ID);
+    }
+
     public DefaultRes checkPw(final int userIdx, final PasswordReq passwordReq) {
         Optional<User> temp = userRepository.findById(userIdx);
         if (!temp.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
-        if (temp.get().getUserPw() != passwordReq.getUserPw())
+        if (!temp.get().getUserPw().equals(passwordReq.getUserPw()))
             return DefaultRes.res(StatusCode.UNAUTHORIZED, ResponseMessage.NOT_FOUND_PW);
         else
             return DefaultRes.res(StatusCode.OK, ResponseMessage.PW_SUCCEESS);
