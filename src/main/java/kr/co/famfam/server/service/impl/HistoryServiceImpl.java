@@ -7,16 +7,16 @@ import kr.co.famfam.server.model.HistoryDto;
 import kr.co.famfam.server.repository.HistoryRepository;
 import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.HistoryService;
+import kr.co.famfam.server.utils.HistoryType;
 import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
-import kr.co.famfam.server.utils.HistoryType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.List;
-
+import java.util.Optional;
 
 
 @Slf4j
@@ -32,20 +32,20 @@ public class HistoryServiceImpl implements HistoryService {
         this.userRepository = userRepository;
     }
 
+    @Transactional
     public Boolean add(final HistoryDto historyDto) {
         try {
-
             int userIdx = historyDto.getUserIdx();
 
+            Optional<User> user = userRepository.findById(userIdx);
+            if (!user.isPresent())
+                return false;
 
-            User user = userRepository.findByUserIdx(userIdx);
-            String userName = user.getUserName();
-            int groupIdx = user.getGroupIdx();
-
+            String userName = user.get().getUserName();
+            int groupIdx = user.get().getGroupIdx();
 
             StringBuilder stb = new StringBuilder();
             stb.append(userName);
-
 
             switch (historyDto.getType()) {
                 case HistoryType.ADD_SCHEDULE:
@@ -53,7 +53,7 @@ public class HistoryServiceImpl implements HistoryService {
                     break;
                 case HistoryType.ADD_EMOTION:
                     stb.append(" 님이 감정을 표현했습니다.");
-                   break;
+                    break;
                 case HistoryType.ADD_CONTENT:
                     stb.append(" 님이 글을 추가했습니다.");
                     break;
@@ -74,6 +74,7 @@ public class HistoryServiceImpl implements HistoryService {
 
             return true;
         } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
             return false;
         }
@@ -81,13 +82,16 @@ public class HistoryServiceImpl implements HistoryService {
 
 
     public DefaultRes findAllHistoryByUserIdx(int userIdx) {
-        User user = userRepository.findByUserIdx(userIdx);
-        int groupIdx = user.getGroupIdx();
+        Optional<User> user = userRepository.findById(userIdx);
+        if (!user.isPresent())
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+        int groupIdx = user.get().getGroupIdx();
 
         List<History> history = historyRepository.findAllByGroupIdxAndUserIdxIsNotIn(groupIdx, userIdx);
-
+        if (history.isEmpty())
+            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_HISTORY);
 
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_HISTORY, history);
-
     }
 }

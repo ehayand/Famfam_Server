@@ -18,6 +18,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.util.*;
 
 /**
@@ -101,6 +102,7 @@ public class FeelServiceImpl implements FeelService {
 
             if (feel.isPresent()) {
                 feel.get().setType(feelReq.getType());
+                feel.get().setCreatedDate(LocalDateTime.now());
                 feelRepository.save(feel.get());
 
                 return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_FEEL);

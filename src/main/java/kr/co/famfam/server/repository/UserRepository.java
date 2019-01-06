@@ -20,8 +20,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     List<User> findUsersByGroupIdx(int groupIdx);
 
-    User findByUserIdx(int userIdx);
-
     Optional<User> findUserByUserId(String userId);
 
 }
