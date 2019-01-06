@@ -56,11 +56,12 @@ public class LoginServiceImpl implements LoginService {
 
         if (user.isPresent()) {
             final JwtService.TokenRes tokenRes = new JwtService.TokenRes(jwtService.create(user.get().getUserIdx()));
+
             Map<String, Object> result = new HashMap<>();
             result.put("token", tokenRes.getToken());
-            result.put("user", user);
+            result.put("user", new UserRes(user.get()));
 
-            return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, tokenRes);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, result);
         }
 
 

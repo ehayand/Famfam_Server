@@ -3,9 +3,11 @@ package kr.co.famfam.server.service.impl;
 import kr.co.famfam.server.domain.Anniversary;
 import kr.co.famfam.server.domain.FamilyCalendar;
 import kr.co.famfam.server.domain.IndividualCalendar;
+import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.CalendarReq;
 import kr.co.famfam.server.model.CalendarSearchReq;
 import kr.co.famfam.server.model.DefaultRes;
+import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.AnniversaryService;
 import kr.co.famfam.server.service.CalendarService;
 import kr.co.famfam.server.service.FamilyCalendarService;
@@ -26,23 +28,27 @@ public class CalendarServiceImpl implements CalendarService {
     private final IndividualCalendarService individualCalendarService;
     private final FamilyCalendarService familyCalendarService;
     private final AnniversaryService anniversaryService;
+    private final UserRepository userRepository;
 
-    public CalendarServiceImpl(IndividualCalendarService individualCalendarService, FamilyCalendarService familyCalendarService, AnniversaryService anniversaryService) {
+    public CalendarServiceImpl(IndividualCalendarService individualCalendarService, FamilyCalendarService familyCalendarService, AnniversaryService anniversaryService, UserRepository userRepository) {
         this.individualCalendarService = individualCalendarService;
         this.familyCalendarService = familyCalendarService;
         this.anniversaryService = anniversaryService;
+        this.userRepository = userRepository;
     }
 
-    public DefaultRes findAllSchedule(final String dateStr) {
+    public DefaultRes findAllSchedule(final String dateStr, final int authUserIdx) {
         // 가족 일정, 개인 일정 합치기
+        Optional<User> user = userRepository.findById(authUserIdx);
+        int groupIdx = user.get().getGroupIdx();
 
         LocalDateTime date = LocalDateTime.parse(dateStr);
         LocalDateTime startDate = date.minusMonths(1);
         LocalDateTime endDate = date.plusMonths(2);
 
-        List<IndividualCalendar> individualCalendars = individualCalendarService.findByYearAndMonth(startDate, endDate);
-        List<FamilyCalendar> familyCalendars = familyCalendarService.findByYearAndMonth(startDate, endDate);
-        List<Anniversary> anniversaries = anniversaryService.findByYearAndMonth(startDate, endDate);
+        List<IndividualCalendar> individualCalendars = individualCalendarService.findByYearAndMonth(startDate, endDate, groupIdx);
+        List<FamilyCalendar> familyCalendars = familyCalendarService.findByYearAndMonth(startDate, endDate, groupIdx);
+        List<Anniversary> anniversaries = anniversaryService.findByYearAndMonth(startDate, endDate, groupIdx);
 
         if (anniversaries == null || individualCalendars == null || familyCalendars == null)
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
@@ -56,14 +62,16 @@ public class CalendarServiceImpl implements CalendarService {
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CALENDAR, map);
     }
 
-    public DefaultRes findDaySchedule(final String dateStrTemp) {
+    public DefaultRes findDaySchedule(final String dateStrTemp, final int authUserIdx) {
         // 가족 일정, 개인 일정 합치기
+        Optional<User> user = userRepository.findById(authUserIdx);
+        int groupIdx = user.get().getGroupIdx();
 
         String dateStr = dateStrTemp.substring(0, 10);
 
-        List<IndividualCalendar> individualCalendars = individualCalendarService.findByYearAndMonthAndDate(dateStr);
-        List<FamilyCalendar> familyCalendars = familyCalendarService.findByYearAndMonthAndDate(dateStr);
-        List<Anniversary> anniversaries = anniversaryService.findByYearAndMonthAndDate(dateStr);
+        List<IndividualCalendar> individualCalendars = individualCalendarService.findByYearAndMonthAndDate(dateStr, groupIdx);
+        List<FamilyCalendar> familyCalendars = familyCalendarService.findByYearAndMonthAndDate(dateStr, groupIdx);
+        List<Anniversary> anniversaries = anniversaryService.findByYearAndMonthAndDate(dateStr, groupIdx);
 
         if (anniversaries == null || individualCalendars == null || familyCalendars == null)
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
@@ -122,17 +130,19 @@ public class CalendarServiceImpl implements CalendarService {
     }
 
     @Transactional
-    public DefaultRes searchSchedule(final CalendarSearchReq calendarSearchReq) {
+    public DefaultRes searchSchedule(final CalendarSearchReq calendarSearchReq, final int authUserIdx) {
         // 일정 검색
-        String content = calendarSearchReq.getContent();
+        Optional<User> user = userRepository.findById(authUserIdx);
+        int groupIdx = user.get().getGroupIdx();
 
+        String content = calendarSearchReq.getContent();
         String per = "%";
         String contentTemp = per.concat(content);
         String result = contentTemp.concat("%");
 
-        List<IndividualCalendar> individualCalendars = individualCalendarService.searchSchedule(result);
-        List<FamilyCalendar> familyCalendars = familyCalendarService.searchSchedule(result);
-        List<Anniversary> anniversaries = anniversaryService.searchSchedule(result);
+        List<IndividualCalendar> individualCalendars = individualCalendarService.searchSchedule(result, groupIdx);
+        List<FamilyCalendar> familyCalendars = familyCalendarService.searchSchedule(result, groupIdx);
+        List<Anniversary> anniversaries = anniversaryService.searchSchedule(result, groupIdx);
 
         if (anniversaries == null || individualCalendars == null || familyCalendars == null)
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);

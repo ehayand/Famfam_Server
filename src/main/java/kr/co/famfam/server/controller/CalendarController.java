@@ -28,9 +28,13 @@ public class CalendarController {
 
     @Auth
     @GetMapping("/month/{dateStr}")
-    public ResponseEntity<DefaultRes> getMonthSchedule(@PathVariable(value = "dateStr") final String dateStr) {
+    public ResponseEntity<DefaultRes> getMonthSchedule(@PathVariable(value = "dateStr") final String dateStr,
+                                                       @RequestHeader("Authorization") final String header) {
         try {
-            return new ResponseEntity<>(calendarService.findAllSchedule(dateStr), HttpStatus.OK);
+            int authUserIdx = jwtService.decode(header).getUser_idx();
+            log.info("ID : " + authUserIdx);
+
+            return new ResponseEntity<>(calendarService.findAllSchedule(dateStr, authUserIdx), HttpStatus.OK);
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -40,9 +44,13 @@ public class CalendarController {
 
     @Auth
     @GetMapping("/oneday/{dateStr}")
-    public ResponseEntity getDaySchedule(@PathVariable(value = "dateStr") final String dateStr) {
+    public ResponseEntity getDaySchedule(@PathVariable(value = "dateStr") final String dateStr,
+                                         @RequestHeader("Authorization") final String header) {
         try {
-            return new ResponseEntity<>(calendarService.findDaySchedule(dateStr), HttpStatus.OK);
+            int authUserIdx = jwtService.decode(header).getUser_idx();
+            log.info("ID : " + authUserIdx);
+
+            return new ResponseEntity<>(calendarService.findDaySchedule(dateStr, authUserIdx), HttpStatus.OK);
 
         } catch (Exception e) {
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -92,9 +100,13 @@ public class CalendarController {
 
     @Auth
     @GetMapping("/search")
-    public ResponseEntity searchSchedule(@RequestBody CalendarSearchReq calendarSearchReq) {
+    public ResponseEntity searchSchedule(@RequestBody CalendarSearchReq calendarSearchReq,
+                                         @RequestHeader("Authorization") final String header) {
         try {
-            return new ResponseEntity<>(calendarService.searchSchedule(calendarSearchReq), HttpStatus.OK);
+            int authUserIdx = jwtService.decode(header).getUser_idx();
+            log.info("ID : " + authUserIdx);
+
+            return new ResponseEntity<>(calendarService.searchSchedule(calendarSearchReq, authUserIdx), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }

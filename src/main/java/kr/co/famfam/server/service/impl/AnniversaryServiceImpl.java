@@ -153,10 +153,10 @@ public class AnniversaryServiceImpl implements AnniversaryService {
         }
     }
 
-    public List<Anniversary> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate) {
+    public List<Anniversary> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate, final int groupIdx) {
         // 년, 월에 맞는 (앞달, 뒷달 포함)세달치 기념일 조회
         try {
-            List<Anniversary> anniversaries = anniversaryRepository.findByYearAndMonth(startDate, endDate);
+            List<Anniversary> anniversaries = anniversaryRepository.findByYearAndMonth(startDate, endDate, groupIdx);
 
             return anniversaries;
         } catch (Exception e) {
@@ -167,11 +167,12 @@ public class AnniversaryServiceImpl implements AnniversaryService {
         }
     }
 
-    public List<Anniversary> findByYearAndMonthAndDate(final String dateStr) {
+    public List<Anniversary> findByYearAndMonthAndDate(final String dateStr, final int groupIdx) {
         // 날짜에 맞는 기념일 조회
         try {
-            String tempStr = dateStr.concat("%");
-            List<Anniversary> anniversaries = anniversaryRepository.findByYearAndMonthAndDate(tempStr);
+//            LocalDateTime date = LocalDateTime.parse(dateStr);
+            String result = dateStr.concat("%");
+            List<Anniversary> anniversaries = anniversaryRepository.findByYearAndMonthAndDate(result, groupIdx);
 
             return anniversaries;
         } catch (Exception e) {
@@ -183,10 +184,10 @@ public class AnniversaryServiceImpl implements AnniversaryService {
     }
 
     @Transactional
-    public List<Anniversary> searchSchedule(final String content) {
+    public List<Anniversary> searchSchedule(final String content, final int groupIdx) {
         // 일정 검색
         try {
-            List<Anniversary> anniversaries = anniversaryRepository.findByContent(content);
+            List<Anniversary> anniversaries = anniversaryRepository.findByContent(content, groupIdx);
 
             return anniversaries;
         } catch (Exception e) {

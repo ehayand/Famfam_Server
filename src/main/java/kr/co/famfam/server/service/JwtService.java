@@ -11,6 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Date;
+
 import static com.auth0.jwt.JWT.require;
 
 /**
@@ -40,6 +44,7 @@ public class JwtService {
             JWTCreator.Builder b = JWT.create();
             b.withIssuer(ISSUER);
             b.withClaim("user_idx", user_idx);
+            b.withExpiresAt(Date.from(LocalDateTime.now().plusDays(7).toInstant(ZoneOffset.UTC)));
             return b.sign(Algorithm.HMAC256(SECRET));
         } catch (JWTCreationException JwtCreationException) {
             log.info(JwtCreationException.getMessage());
@@ -57,6 +62,11 @@ public class JwtService {
         try {
             final JWTVerifier jwtVerifier = require(Algorithm.HMAC256(SECRET)).withIssuer(ISSUER).build();
             DecodedJWT decodedJWT = jwtVerifier.verify(token);
+
+            Date expiresAt = decodedJWT.getExpiresAt();
+            if(LocalDateTime.now().isAfter(LocalDateTime.ofInstant(expiresAt.toInstant(), ZoneOffset.UTC)))
+                return new Token();
+
             return new Token(decodedJWT.getClaim("user_idx").asLong().intValue());
         } catch (JWTVerificationException jve) {
             log.error(jve.getMessage());

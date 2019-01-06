@@ -6,9 +6,9 @@ import kr.co.famfam.server.model.DefaultRes;
 
 public interface CalendarService {
 
-    DefaultRes findAllSchedule(final String dateStr);
+    DefaultRes findAllSchedule(final String dateStr, final int authUserIdx);
 
-    DefaultRes findDaySchedule(final String dateStr);
+    DefaultRes findDaySchedule(final String dateStr, final int authUserIdx);
 
     DefaultRes addSchedule(final int calendarType, final CalendarReq calendarReq, final int authUserIdx);
 
@@ -16,5 +16,5 @@ public interface CalendarService {
 
     DefaultRes deleteSchedule(final int calendarType, final int calendarIdx);
 
-    DefaultRes searchSchedule(final CalendarSearchReq calendarSearchReq);
+    DefaultRes searchSchedule(final CalendarSearchReq calendarSearchReq, final int authUserIdx);
 }
