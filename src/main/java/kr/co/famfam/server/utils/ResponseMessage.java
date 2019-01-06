@@ -69,6 +69,8 @@ public class ResponseMessage {
     public static final String DELETE_CALENDAR = "일정 삭제 성공";
     public static final String SEARCH_CALENDAR = "일정 검색 성공";
 
+    public static final String READ_HISTORY = "히스토리 조회 성공";
+
     public static final String READ_PHOTO = "사진 조회 성공";
     public static final String NOT_FOUND_PHOTO = "사진을 찾을 수 없습니다.";
 
