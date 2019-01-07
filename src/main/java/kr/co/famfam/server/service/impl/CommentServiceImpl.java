@@ -51,7 +51,7 @@ public class CommentServiceImpl implements CommentService {
 
     public DefaultRes findCommentsByContentIdx(int contentIdx) {
         try {
-            final List<Comment> comments = commentRepository.findCommentsByContentIdxOrderByCreatedDateAsc(contentIdx);
+            final List<Comment> comments = commentRepository.findCommentsByContentIdxOrderByCreatedAtAsc(contentIdx);
             if (comments.isEmpty())
                 return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_COMMENT);
 
@@ -77,7 +77,7 @@ public class CommentServiceImpl implements CommentService {
             long count = 0;
 
             for (User u : groupUsers) {
-                count += commentRepository.countByUserIdxAndCreatedDateBetween(u.getUserIdx(), startDateTime, endDateTime);
+                count += commentRepository.countByUserIdxAndCreatedAtBetween(u.getUserIdx(), startDateTime, endDateTime);
             }
 
             Map<String, Long> result = new HashMap<>();
