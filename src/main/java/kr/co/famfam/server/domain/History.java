@@ -20,19 +20,19 @@ public class History {
     @Column(name = "historyIdx")
     private int historyIdx;
 
-    @Column
+    @Column(name = "userIdx")
     private int userIdx;
 
-    @Column
+    @Column(name = "groupIdx")
     private int groupIdx;
 
-    @Column
+    @Column(name = "historyType")
     private String historyType;
 
-    @Column
+    @Column(name = "content")
     private String content;
 
-    @Column
+    @Column(name = "createdAt")
     private LocalDateTime createdAt;
 
 

@@ -35,7 +35,7 @@ public class Feel {
     private int contentIdx;
 
     public Feel(FeelReq feelReq) {
-        this.feelType = feelReq.getType();
+        this.feelType = feelReq.getFeelType();
         this.userIdx = feelReq.getUserIdx();
         this.contentIdx = feelReq.getContentIdx();
         this.createdAt = LocalDateTime.now();
