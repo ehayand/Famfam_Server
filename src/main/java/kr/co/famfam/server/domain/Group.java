@@ -23,6 +23,9 @@ public class Group {
     @Column(name = "groupIdx")
     private int groupIdx;
 
+    @Column(name = "groupId")
+    private String groupId;
+
     @Column(name = "homePhoto")
     private String homePhoto;
 

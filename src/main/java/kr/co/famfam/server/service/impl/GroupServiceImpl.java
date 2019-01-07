@@ -15,9 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -121,7 +119,11 @@ public class GroupServiceImpl implements GroupService {
             anniversary.setContent(user.get().getUserName() + " 생일");
             anniversaryRepository.save(anniversary);
 
-            return DefaultRes.res(StatusCode.OK, ResponseMessage.JOIN_SUCCESS_GROUP);
+            Optional<Group> group = groupRepository.findById(groupIdx);
+            Map<String, String> result = new HashMap<>();
+            result.put("groupId", group.get().getGroupId());
+
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.JOIN_SUCCESS_GROUP, result);
         } catch (Exception e) {
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
@@ -141,6 +143,7 @@ public class GroupServiceImpl implements GroupService {
         try {
             Group group = new Group();
             group.setUserIdx(userIdx);
+            group.setGroupId(getUUID());
             int groupIdx = groupRepository.save(group).getGroupIdx();
 
             user.get().setGroupIdx(groupIdx);
@@ -153,7 +156,10 @@ public class GroupServiceImpl implements GroupService {
             anniversary.setContent(user.get().getUserName() + " 생일");
             anniversaryRepository.save(anniversary);
 
-            return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_GROUP);
+            Map<String, String> result = new HashMap<>();
+            result.put("groupId", group.getGroupId());
+
+            return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_GROUP, result);
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -279,5 +285,10 @@ public class GroupServiceImpl implements GroupService {
         }
 
         return -1;
+    }
+
+    private String getUUID() {
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString().replace("-", "");
     }
 }
