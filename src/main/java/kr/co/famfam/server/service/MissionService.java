@@ -1,5 +1,6 @@
 package kr.co.famfam.server.service;
 
+import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.DefaultRes;
 
 /**
@@ -10,6 +11,6 @@ import kr.co.famfam.server.model.DefaultRes;
 
 public interface MissionService {
     DefaultRes findById(int missionIdx);
-    Boolean updateUser(int userIdx);
+    Boolean updateUser(final User user);
     Boolean save(String text);
 }

@@ -35,15 +35,15 @@ public class MissionServiceImpl implements MissionService {
 
     public DefaultRes findById(int userIdx) {
         Optional<User> user = userRepository.findById(userIdx);
-        if(!user.isPresent())
+        if (!user.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
         Optional<Mission> mission = missionRepository.findById(user.get().getMissionIdx());
-        if(!mission.isPresent())
+        if (!mission.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_MISSION);
 
         Optional<User> target = userRepository.findById(user.get().getMissionTargetUserIdx());
-        if(!target.isPresent())
+        if (!target.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
         Map<String, Object> result = new HashMap<>();
@@ -54,34 +54,30 @@ public class MissionServiceImpl implements MissionService {
     }
 
     @Transactional
-    public Boolean updateUser(int userIdx) {
-        Optional<User> user = userRepository.findById(userIdx);
-        if (!user.isPresent())
-            return false;
+    public Boolean updateUser(final User user) {
 
         List<Mission> missions = missionRepository.findAll();
         if (missions.isEmpty())
             return false;
 
-        List<User> users = userRepository.findUsersByGroupIdxAndUserIdxIsNotIn(user.get().getGroupIdx(), user.get().getUserIdx());
+        List<User> users = userRepository.findUsersByGroupIdxAndUserIdxIsNotIn(user.getGroupIdx(), user.getUserIdx());
         if (users.isEmpty())
             return false;
 
         Mission mission = missions.get(new Random().nextInt(missions.size()));
         User target = users.get(new Random().nextInt(users.size()));
 
-        user.get().setMissionIdx(mission.getMissionIdx());
-        user.get().setMissionTargetUserIdx(target.getUserIdx());
+        user.setMissionIdx(mission.getMissionIdx());
+        user.setMissionTargetUserIdx(target.getUserIdx());
 
         try {
-            userRepository.save(user.get());
+            userRepository.save(user);
             return true;
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
+            return false;
         }
-
-        return false;
     }
 
     @Transactional
@@ -91,7 +87,7 @@ public class MissionServiceImpl implements MissionService {
         String content;
 
         String[] temp = text.split(" ");
-        if(temp == null || temp.length != 3) return false;
+        if (temp == null || temp.length != 3) return false;
 
         if ("하트".equals(temp[0])) missionType = 1;
         else if ("요리".equals(temp[0])) missionType = 2;

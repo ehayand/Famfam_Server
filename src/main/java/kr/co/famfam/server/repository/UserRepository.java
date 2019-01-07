@@ -24,4 +24,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     List<User> findUsersByGroupIdxAndUserIdxIsNotIn(int groupIdx, int userIdx);
 
+    int countByGroupIdx(int groupIdx);
 }
