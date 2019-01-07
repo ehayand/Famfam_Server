@@ -5,6 +5,7 @@ import kr.co.famfam.server.domain.Photo;
 import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.ContentReq;
 import kr.co.famfam.server.model.DefaultRes;
+import kr.co.famfam.server.model.HistoryDto;
 import kr.co.famfam.server.repository.ContentRepository;
 import kr.co.famfam.server.repository.PhotoRepository;
 import kr.co.famfam.server.repository.UserRepository;
@@ -26,6 +27,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
+import static kr.co.famfam.server.utils.HistoryType.ADD_CONTENT;
+
 /**
  * Created by ehay@naver.com on 2018-12-25
  * Blog : http://ehay.tistory.com
@@ -45,12 +48,14 @@ public class ContentServiceImpl implements ContentService {
     private final PhotoRepository photoRepository;
     private final UserRepository userRepository;
     private final FileUploadService fileUploadService;
+    private final HistoryServiceImpl historyService;
 
-    public ContentServiceImpl(ContentRepository contentRepository, PhotoRepository photoRepository, UserRepository userRepository, FileUploadService fileUploadService) {
+    public ContentServiceImpl(ContentRepository contentRepository, PhotoRepository photoRepository, UserRepository userRepository, FileUploadService fileUploadService, HistoryServiceImpl historyService) {
         this.contentRepository = contentRepository;
         this.photoRepository = photoRepository;
         this.userRepository = userRepository;
         this.fileUploadService = fileUploadService;
+        this.historyService = historyService;
     }
 
     public DefaultRes findContentsByUserIdx(int userIdx, Pageable pageable) {
@@ -187,6 +192,9 @@ public class ContentServiceImpl implements ContentService {
                     photoRepository.save(photo);
                 }
             }
+
+            HistoryDto historyDto = new HistoryDto(contentReq.getUserIdx(), groupIdx, ADD_CONTENT);
+            historyService.add(historyDto);
 
             return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_CONTENT);
         } catch (Exception e) {

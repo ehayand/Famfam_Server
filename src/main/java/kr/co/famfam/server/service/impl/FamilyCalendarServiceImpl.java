@@ -1,9 +1,12 @@
 package kr.co.famfam.server.service.impl;
 
 import kr.co.famfam.server.domain.FamilyCalendar;
+import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.CalendarReq;
 import kr.co.famfam.server.model.DefaultRes;
+import kr.co.famfam.server.model.HistoryDto;
 import kr.co.famfam.server.repository.FamilyCalendarRepository;
+import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.FamilyCalendarService;
 import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
@@ -14,6 +17,9 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
+import static kr.co.famfam.server.utils.HistoryType.ADD_SCHEDULE;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -26,9 +32,13 @@ import java.util.List;
 public class FamilyCalendarServiceImpl implements FamilyCalendarService {
 
     private final FamilyCalendarRepository familyCalendarRepository;
+    private final HistoryServiceImpl historyService;
+    private final UserRepository userRepository;
 
-    public FamilyCalendarServiceImpl(FamilyCalendarRepository familyCalendarRepository) {
+    public FamilyCalendarServiceImpl(FamilyCalendarRepository familyCalendarRepository, HistoryServiceImpl historyService, UserRepository userRepository) {
         this.familyCalendarRepository = familyCalendarRepository;
+        this.historyService = historyService;
+        this.userRepository = userRepository;
     }
 
     public List<FamilyCalendar> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate, final int groupIdx) {
@@ -67,6 +77,10 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
     public DefaultRes addSchedule(final CalendarReq calendarReq, final int authUserIdx, final String allDateStr) {
         // 일정 추가
         try {
+            Optional<User> user = userRepository.findById(authUserIdx);
+            if(!user.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
             FamilyCalendar schedule = new FamilyCalendar();
             schedule.setUserIdx(authUserIdx);
             schedule.setContent(calendarReq.getContent());
@@ -75,6 +89,9 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
             schedule.setAllDate(allDateStr);
 
             familyCalendarRepository.save(schedule);
+
+            HistoryDto historyDto = new HistoryDto(authUserIdx, user.get().getGroupIdx(), ADD_SCHEDULE);
+            historyService.add(historyDto);
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.CREATED_CALENDAR);
         } catch (Exception e) {
@@ -93,10 +110,11 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDAR);
 
             FamilyCalendar schedule = familyCalendarRepository.findById(calendarIdx).get();
-            if(!calendarReq.getContent().isEmpty()) schedule.setContent(calendarReq.getContent());
-            if(!calendarReq.getStartDate().isEmpty()) schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
-            if(!calendarReq.getEndDate().isEmpty()) schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
-            if(allDateStr != "") schedule.setAllDate(allDateStr);
+            if (!calendarReq.getContent().isEmpty()) schedule.setContent(calendarReq.getContent());
+            if (!calendarReq.getStartDate().isEmpty())
+                schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
+            if (!calendarReq.getEndDate().isEmpty()) schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
+            if (allDateStr != "") schedule.setAllDate(allDateStr);
 
             familyCalendarRepository.save(schedule);
 
