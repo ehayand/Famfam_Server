@@ -82,16 +82,23 @@ public class HistoryServiceImpl implements HistoryService {
 
 
     public DefaultRes findAllHistoryByUserIdx(int userIdx) {
-        Optional<User> user = userRepository.findById(userIdx);
-        if (!user.isPresent())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+        try {
+            Optional<User> user = userRepository.findById(userIdx);
+            if (!user.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
-        int groupIdx = user.get().getGroupIdx();
+            int groupIdx = user.get().getGroupIdx();
 
-        List<History> history = historyRepository.findAllByGroupIdxAndUserIdxIsNotIn(groupIdx, userIdx);
-        if (history.isEmpty())
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_HISTORY);
+            List<History> history = historyRepository.findAllByGroupIdxAndUserIdxIsNotIn(groupIdx, userIdx);
+            if (history.isEmpty())
+                return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_HISTORY);
 
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_HISTORY, history);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_HISTORY, history);
+        } catch (Exception e) {
+            //Rollback
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
     }
 }
