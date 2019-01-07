@@ -25,8 +25,8 @@ public class Photo {
 
     @Column(name = "photoName")
     private String photoName;
-    @Column(name = "createdDate")
-    private LocalDateTime createdDate;
+    @Column(name = "createdAt")
+    private LocalDateTime createdAt;
 
     @Column(name = "contentIdx")
     private int contentIdx;
@@ -36,6 +36,6 @@ public class Photo {
     public Photo(int contentIdx, int userIdx) {
         this.contentIdx = contentIdx;
         this.userIdx = userIdx;
-        this.createdDate = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
     }
 }

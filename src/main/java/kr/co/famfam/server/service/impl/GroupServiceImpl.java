@@ -250,8 +250,8 @@ public class GroupServiceImpl implements GroupService {
         GroupInvitation invitation = GroupInvitation.builder()
                 .code(code)
                 .groupIdx(groupIdx)
-                .created(current)
-                .expired(current.plusMinutes(10))
+                .createdAt(current)
+                .expiredAt(current.plusMinutes(10))
                 .build();
 
         return groupInvitationRepository.save(invitation);
@@ -260,7 +260,7 @@ public class GroupServiceImpl implements GroupService {
     private GroupInvitation check(int groupIdx) {
         Optional<GroupInvitation> invitation = groupInvitationRepository.findGroupInvitationByGroupIdx(groupIdx);
         if (invitation.isPresent()) {
-            if (LocalDateTime.now().isBefore(invitation.get().getExpired()))
+            if (LocalDateTime.now().isBefore(invitation.get().getExpiredAt()))
                 return invitation.get();
             else {
                 Optional<GroupInvitation> delete = groupInvitationRepository.findById(invitation.get().getCode());
@@ -274,7 +274,7 @@ public class GroupServiceImpl implements GroupService {
     private int check(String code) {
         Optional<GroupInvitation> invitation = groupInvitationRepository.findById(code);
         if (invitation.isPresent()) {
-            if (LocalDateTime.now().isBefore(invitation.get().getExpired()))
+            if (LocalDateTime.now().isBefore(invitation.get().getExpiredAt()))
                 return invitation.get().getGroupIdx();
         }
 
