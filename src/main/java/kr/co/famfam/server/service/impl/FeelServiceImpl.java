@@ -54,14 +54,14 @@ public class FeelServiceImpl implements FeelService {
 
             List<Integer> types = new LinkedList<>();
             for (Feel feel : feels)
-                types.add(feel.getType());
+                types.add(feel.getFeelType());
 
             Optional<User> firstUser = userRepository.findById(feels.get(0).getUserIdx());
             if (!firstUser.isPresent())
                 return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.INTERNAL_SERVER_ERROR);
 
             FeelRes feelRes = FeelRes.builder()
-                    .types(feels)
+                    .feelTypes(feels)
                     .firstUserName(firstUser.get().getUserName())
                     .feelCount(feels.size())
                     .build();
@@ -105,20 +105,17 @@ public class FeelServiceImpl implements FeelService {
     public DefaultRes save(FeelReq feelReq) {
         try {
             Optional<Feel> feel = feelRepository.findFeelByContentIdxAndUserIdx(feelReq.getContentIdx(), feelReq.getUserIdx());
-            Optional<User> user = userRepository.findById(feelReq.getUserIdx());
-            if(!user.isPresent())
-                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
             if (feel.isPresent()) {
-                feel.get().setType(feelReq.getType());
-                feel.get().setCreatedDate(LocalDateTime.now());
+                feel.get().setFeelType(feelReq.getFeelType());
+                feel.get().setCreatedAt(LocalDateTime.now());
                 feelRepository.save(feel.get());
 
                 return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_FEEL);
             } else {
                 feelRepository.save(new Feel(feelReq));
 
-                HistoryDto historyDto = new HistoryDto(feelReq.getUserIdx(), user.get().getGroupIdx(), ADD_EMOTION);
+                HistoryDto historyDto = new HistoryDto(feelReq.getUserIdx(), userRepository.findById(feelReq.getUserIdx()).get().getGroupIdx(), ADD_EMOTION);
                 historyService.add(historyDto);
 
                 return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_FEEL);

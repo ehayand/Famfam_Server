@@ -93,8 +93,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public DefaultRes save(CommentDto commentDto) {
         Optional<Content> content = contentRepository.findById(commentDto.getContentIdx());
-        Optional<User> user = userRepository.findById(commentDto.getUserIdx());
-        if (!content.isPresent() || !user.isPresent())
+        if (!content.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
 
         try {
@@ -103,7 +102,7 @@ public class CommentServiceImpl implements CommentService {
             content.get().setCommentCount(content.get().getCommentCount() + 1);
             contentRepository.save(content.get());
 
-            HistoryDto historyDto = new HistoryDto(commentDto.getUserIdx(), user.get().getGroupIdx(), ADD_COMMENT);
+            HistoryDto historyDto = new HistoryDto(commentDto.getUserIdx(), userRepository.findById(commentDto.getUserIdx()).get().getGroupIdx(), ADD_COMMENT);
             historyService.add(historyDto);
 
             return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_COMMENT);

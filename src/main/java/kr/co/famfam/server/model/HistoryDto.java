@@ -17,24 +17,24 @@ public class HistoryDto {
     private int groupIdx;
 
     // TODO edit String to enum
-    private String type;
+    private String historyType;
     private String content;
-    private LocalDateTime created;
+    private LocalDateTime createdAt;
 
 
 
-    public HistoryDto(int userIdx, int groupIdx, String type) {
+    public HistoryDto(int userIdx, int groupIdx, String historyType) {
         this.userIdx = userIdx;
         this.groupIdx = groupIdx;
-        this.type = type;
-        this.created = LocalDateTime.now();
+        this.historyType = historyType;
+        this.createdAt = LocalDateTime.now();
     }
 
     public History toEntity() {
         return History.builder()
                 .userIdx(userIdx)
                 .groupIdx(groupIdx)
-                .type(type)
+                .historyType(historyType)
                 .content(content)
                 .build();
     }

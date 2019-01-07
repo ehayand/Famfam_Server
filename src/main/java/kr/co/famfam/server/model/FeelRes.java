@@ -16,7 +16,7 @@ import java.util.List;
 @Builder
 public class FeelRes {
 
-    private List<Feel> types;
+    private List<Feel> feelTypes;
     private String firstUserName;
     private int feelCount;
 }

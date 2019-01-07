@@ -24,10 +24,10 @@ public class Feel {
     @Column(name = "feelIdx")
     private int feelIdx;
 
-    @Column(name = "type")
-    private int type;
-    @Column(name = "createdDate")
-    private LocalDateTime createdDate;
+    @Column(name = "feelType")
+    private int feelType;
+    @Column(name = "createdAt")
+    private LocalDateTime createdAt;
 
     @Column(name = "userIdx")
     private int userIdx;
@@ -35,9 +35,9 @@ public class Feel {
     private int contentIdx;
 
     public Feel(FeelReq feelReq) {
-        this.type = feelReq.getType();
+        this.feelType = feelReq.getType();
         this.userIdx = feelReq.getUserIdx();
         this.contentIdx = feelReq.getContentIdx();
-        this.createdDate = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
     }
 }
