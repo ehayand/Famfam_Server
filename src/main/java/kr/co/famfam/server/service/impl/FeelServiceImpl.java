@@ -5,6 +5,7 @@ import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.model.FeelReq;
 import kr.co.famfam.server.model.FeelRes;
+import kr.co.famfam.server.model.HistoryDto;
 import kr.co.famfam.server.repository.FeelRepository;
 import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.FeelService;
@@ -21,6 +22,9 @@ import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.util.*;
 
+import static kr.co.famfam.server.utils.HistoryType.ADD_COMMENT;
+import static kr.co.famfam.server.utils.HistoryType.ADD_EMOTION;
+
 /**
  * Created by ehay@naver.com on 2018-12-25
  * Blog : http://ehay.tistory.com
@@ -33,10 +37,12 @@ public class FeelServiceImpl implements FeelService {
 
     private final FeelRepository feelRepository;
     private final UserRepository userRepository;
+    private final HistoryServiceImpl historyService;
 
-    public FeelServiceImpl(FeelRepository feelRepository, UserRepository userRepository) {
+    public FeelServiceImpl(FeelRepository feelRepository, UserRepository userRepository, HistoryServiceImpl historyService) {
         this.feelRepository = feelRepository;
         this.userRepository = userRepository;
+        this.historyService = historyService;
     }
 
     public DefaultRes findFeelsByContentIdx(int contentIdx) {
@@ -99,6 +105,9 @@ public class FeelServiceImpl implements FeelService {
     public DefaultRes save(FeelReq feelReq) {
         try {
             Optional<Feel> feel = feelRepository.findFeelByContentIdxAndUserIdx(feelReq.getContentIdx(), feelReq.getUserIdx());
+            Optional<User> user = userRepository.findById(feelReq.getUserIdx());
+            if(!user.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
             if (feel.isPresent()) {
                 feel.get().setType(feelReq.getType());
@@ -108,6 +117,9 @@ public class FeelServiceImpl implements FeelService {
                 return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_FEEL);
             } else {
                 feelRepository.save(new Feel(feelReq));
+
+                HistoryDto historyDto = new HistoryDto(feelReq.getUserIdx(), user.get().getGroupIdx(), ADD_EMOTION);
+                historyService.add(historyDto);
 
                 return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_FEEL);
             }

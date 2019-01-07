@@ -1,9 +1,12 @@
 package kr.co.famfam.server.service.impl;
 
 import kr.co.famfam.server.domain.IndividualCalendar;
+import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.CalendarReq;
 import kr.co.famfam.server.model.DefaultRes;
+import kr.co.famfam.server.model.HistoryDto;
 import kr.co.famfam.server.repository.IndividualCalendarRepository;
+import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.IndividualCalendarService;
 import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
@@ -14,6 +17,9 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
+import static kr.co.famfam.server.utils.HistoryType.ADD_SCHEDULE;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -26,9 +32,13 @@ import java.util.List;
 public class IndividualCalendarServiceImpl implements IndividualCalendarService {
 
     private final IndividualCalendarRepository individualCalendarRepository;
+    private final UserRepository userRepository;
+    private final HistoryServiceImpl historyService;
 
-    public IndividualCalendarServiceImpl(IndividualCalendarRepository individualCalendarRepository) {
+    public IndividualCalendarServiceImpl(IndividualCalendarRepository individualCalendarRepository, UserRepository userRepository, HistoryServiceImpl historyService) {
         this.individualCalendarRepository = individualCalendarRepository;
+        this.userRepository = userRepository;
+        this.historyService = historyService;
     }
 
     public List<IndividualCalendar> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate, final int groupIdx) {
@@ -67,6 +77,10 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
     public DefaultRes addSchedule(final CalendarReq calendarReq, final int authUserIdx, final String allDateStr) {
         // 일정 추가
         try {
+            Optional<User> user = userRepository.findById(authUserIdx);
+            if(!user.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
             IndividualCalendar schedule = new IndividualCalendar();
             schedule.setUserIdx(authUserIdx);
             schedule.setContent(calendarReq.getContent());
@@ -74,10 +88,13 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
             schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
             schedule.setAllDate(allDateStr);
 
-            if(calendarReq.getReturningTime() != -1) schedule.setReturningTime(calendarReq.getReturningTime());
-            if(calendarReq.getDinner() != -1) schedule.setDinner(calendarReq.getDinner());
+            if (calendarReq.getReturningTime() != -1) schedule.setReturningTime(calendarReq.getReturningTime());
+            if (calendarReq.getDinner() != -1) schedule.setDinner(calendarReq.getDinner());
 
             individualCalendarRepository.save(schedule);
+
+            HistoryDto historyDto = new HistoryDto(authUserIdx, user.get().getGroupIdx(), ADD_SCHEDULE);
+            historyService.add(historyDto);
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.CREATED_CALENDAR);
         } catch (Exception e) {
@@ -96,12 +113,13 @@ public class IndividualCalendarServiceImpl implements IndividualCalendarService 
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDAR);
 
             IndividualCalendar schedule = individualCalendarRepository.findById(calendarIdx).get();
-            if(!calendarReq.getContent().isEmpty()) schedule.setContent(calendarReq.getContent());
-            if(!calendarReq.getStartDate().isEmpty()) schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
-            if(!calendarReq.getEndDate().isEmpty()) schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
-            if(allDateStr != "") schedule.setAllDate(allDateStr);
-            if(calendarReq.getReturningTime() != -1) schedule.setReturningTime(calendarReq.getReturningTime());
-            if(calendarReq.getDinner() != -1) schedule.setDinner(calendarReq.getDinner());
+            if (!calendarReq.getContent().isEmpty()) schedule.setContent(calendarReq.getContent());
+            if (!calendarReq.getStartDate().isEmpty())
+                schedule.setStartDate(LocalDateTime.parse(calendarReq.getStartDate()));
+            if (!calendarReq.getEndDate().isEmpty()) schedule.setEndDate(LocalDateTime.parse(calendarReq.getEndDate()));
+            if (allDateStr != "") schedule.setAllDate(allDateStr);
+            if (calendarReq.getReturningTime() != -1) schedule.setReturningTime(calendarReq.getReturningTime());
+            if (calendarReq.getDinner() != -1) schedule.setDinner(calendarReq.getDinner());
 
             individualCalendarRepository.save(schedule);
 

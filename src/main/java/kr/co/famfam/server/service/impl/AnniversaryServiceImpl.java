@@ -5,6 +5,7 @@ import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.AnniversaryDeleteReq;
 import kr.co.famfam.server.model.AnniversaryReq;
 import kr.co.famfam.server.model.DefaultRes;
+import kr.co.famfam.server.model.HistoryDto;
 import kr.co.famfam.server.repository.AnniversaryRepository;
 import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.AnniversaryService;
@@ -19,6 +20,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static kr.co.famfam.server.utils.HistoryType.ADD_ANNIVERSARY;
+
 /**
  * Created by ehay@naver.com on 2018-12-25
  * Blog : http://ehay.tistory.com
@@ -31,10 +34,12 @@ public class AnniversaryServiceImpl implements AnniversaryService {
 
     private final AnniversaryRepository anniversaryRepository;
     private final UserRepository userRepository;
+    private final HistoryServiceImpl historyService;
 
-    public AnniversaryServiceImpl(AnniversaryRepository anniversaryRepository, UserRepository userRepository) {
+    public AnniversaryServiceImpl(AnniversaryRepository anniversaryRepository, UserRepository userRepository, HistoryServiceImpl historyService) {
         this.anniversaryRepository = anniversaryRepository;
         this.userRepository = userRepository;
+        this.historyService = historyService;
     }
 
     public DefaultRes findAll(final int authUserIdx) {
@@ -84,6 +89,9 @@ public class AnniversaryServiceImpl implements AnniversaryService {
             } else {
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_ANNIVERSARY_TYPE);
             }
+            HistoryDto historyDto = new HistoryDto(authUserIdx, user.get().getGroupIdx(), ADD_ANNIVERSARY);
+            historyService.add(historyDto);
+
             return DefaultRes.res(StatusCode.OK, ResponseMessage.CREATED_ANNIVERSARY);
         } catch (Exception e) {
             //Rollback
