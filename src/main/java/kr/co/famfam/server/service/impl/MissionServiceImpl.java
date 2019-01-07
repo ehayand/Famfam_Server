@@ -81,29 +81,10 @@ public class MissionServiceImpl implements MissionService {
     }
 
     @Transactional
-    public Boolean save(String text) {
-        int missionType = 0;
-        int suffixType = 0;
-        String content;
-
-        String[] temp = text.split(" ");
-        if (temp == null || temp.length != 3) return false;
-
-        if ("하트".equals(temp[0])) missionType = 1;
-        else if ("요리".equals(temp[0])) missionType = 2;
-        else if ("선물상자".equals(temp[0])) missionType = 3;
-        else if ("음악".equals(temp[0])) missionType = 4;
-        else if ("책".equals(temp[0])) missionType = 5;
-        else if ("카메라".equals(temp[0])) missionType = 6;
-        else if ("편지".equals(temp[0])) missionType = 7;
-
-        if ("님에게".equals(temp[1])) suffixType = 1;
-        else if ("님과".equals(temp[1])) suffixType = 2;
-
-        content = temp[2];
-
+    public Boolean save(Mission mission) {
         try {
-            missionRepository.save(new Mission(missionType, suffixType, content));
+            missionRepository.save(mission);
+
             return true;
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

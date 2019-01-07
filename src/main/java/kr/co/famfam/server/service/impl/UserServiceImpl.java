@@ -74,16 +74,18 @@ public class UserServiceImpl implements UserService {
     public DefaultRes save(final SignUpReq signUpReq) {
         try {
 
-            Optional<User> user = userRepository.findUserByUserId(signUpReq.getUserId());
+            Optional<User> temp = userRepository.findUserByUserId(signUpReq.getUserId());
 
-            if (user.isPresent())
+            if (temp.isPresent())
                 return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.DUPLICATED_ID);
 
-            final JwtService.TokenRes tokenRes = new JwtService.TokenRes(jwtService.create(user.get().getUserIdx()));
             PasswordUtil util = new PasswordUtil();
             signUpReq.setUserPw(util.encryptSHA256(signUpReq.getUserPw()));
-            UserRes userRes = new UserRes(userRepository.save(new User(signUpReq)));
 
+            User user = new User(signUpReq);
+            UserRes userRes = new UserRes(userRepository.save(user));
+
+            final JwtService.TokenRes tokenRes = new JwtService.TokenRes(jwtService.create(user.getUserIdx()));
             Map<String, Object> result = new HashMap<>();
             result.put("token", tokenRes.getToken());
             result.put("user", userRes);
