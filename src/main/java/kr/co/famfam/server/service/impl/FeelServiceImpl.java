@@ -47,7 +47,7 @@ public class FeelServiceImpl implements FeelService {
 
     public DefaultRes findFeelsByContentIdx(int contentIdx) {
         try {
-            final List<Feel> feels = feelRepository.findFeelsByContentIdxOrderByCreatedDateAsc(contentIdx);
+            final List<Feel> feels = feelRepository.findFeelsByContentIdxOrderByCreatedAtAsc(contentIdx);
 
             if (feels.isEmpty())
                 return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_FEEL);
@@ -88,7 +88,7 @@ public class FeelServiceImpl implements FeelService {
             long count = 0;
 
             for (User u : groupUsers) {
-                count += feelRepository.countByUserIdxAndCreatedDateBetween(u.getUserIdx(), startDateTime, endDateTime);
+                count += feelRepository.countByUserIdxAndCreatedAtBetween(u.getUserIdx(), startDateTime, endDateTime);
             }
 
             Map<String, Long> result = new HashMap<>();

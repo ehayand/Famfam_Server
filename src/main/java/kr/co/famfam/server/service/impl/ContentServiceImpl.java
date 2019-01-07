@@ -164,7 +164,7 @@ public class ContentServiceImpl implements ContentService {
         LocalDateTime startDateTime = getStartDateTime();
         LocalDateTime endDateTime = LocalDateTime.of(startDateTime.plusDays(6).toLocalDate(), LocalTime.of(23, 59, 59));
 
-        long count = contentRepository.countByGroupIdxAndCreatedDateBetween(user.get().getGroupIdx(), startDateTime, endDateTime);
+        long count = contentRepository.countByGroupIdxAndCreatedAtBetween(user.get().getGroupIdx(), startDateTime, endDateTime);
 
         Map<String, Long> result = new HashMap<>();
         result.put("count", count);

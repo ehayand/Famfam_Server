@@ -16,7 +16,7 @@ import java.util.List;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
 
-    List<Comment> findCommentsByContentIdxOrderByCreatedDateAsc(int contentIdx);
+    List<Comment> findCommentsByContentIdxOrderByCreatedAtAsc(int contentIdx);
 
-    long countByUserIdxAndCreatedDateBetween(int userIdx, LocalDateTime startDateTime, LocalDateTime endDateTime);
+    long countByUserIdxAndCreatedAtBetween(int userIdx, LocalDateTime startDateTime, LocalDateTime endDateTime);
 }
