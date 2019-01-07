@@ -51,6 +51,10 @@ public class User {
 
     @Column(name = "groupIdx")
     private int groupIdx;
+    @Column(name = "missionIdx")
+    private int missionIdx;
+    @Column(name = "missionTargetUserIdx")
+    private int missionTargetUserIdx;
 
     public User(SignUpReq signUpReq) {
         this.userId = signUpReq.getUserId();
