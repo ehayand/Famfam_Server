@@ -47,7 +47,7 @@ public class HistoryServiceImpl implements HistoryService {
             StringBuilder stb = new StringBuilder();
             stb.append(userName);
 
-            switch (historyDto.getType()) {
+            switch (historyDto.getHistoryType()) {
                 case HistoryType.ADD_SCHEDULE:
                     stb.append(" 님이 일정을 추가했습니다.");
                     break;

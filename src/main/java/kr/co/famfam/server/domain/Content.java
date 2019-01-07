@@ -26,8 +26,8 @@ public class Content {
 
     @Column(name = "content")
     private String content;
-    @Column(name = "createdDate")
-    private LocalDateTime createdDate;
+    @Column(name = "createdAt")
+    private LocalDateTime createdAt;
     @Column(name = "commentCount")
     private int commentCount;
 
@@ -40,7 +40,7 @@ public class Content {
         this.content = contentReq.getContent();
         this.userIdx = contentReq.getUserIdx();
         this.groupIdx = contentReq.getGroupIdx();
-        this.createdDate = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
         this.commentCount = 0;
     }
 }

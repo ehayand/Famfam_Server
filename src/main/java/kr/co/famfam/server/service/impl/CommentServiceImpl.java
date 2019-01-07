@@ -5,6 +5,7 @@ import kr.co.famfam.server.domain.Content;
 import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.CommentDto;
 import kr.co.famfam.server.model.DefaultRes;
+import kr.co.famfam.server.model.HistoryDto;
 import kr.co.famfam.server.repository.CommentRepository;
 import kr.co.famfam.server.repository.ContentRepository;
 import kr.co.famfam.server.repository.UserRepository;
@@ -24,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static kr.co.famfam.server.utils.HistoryType.ADD_COMMENT;
+
 /**
  * Created by ehay@naver.com on 2018-12-25
  * Blog : http://ehay.tistory.com
@@ -37,16 +40,18 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final ContentRepository contentRepository;
     private final UserRepository userRepository;
+    private final HistoryServiceImpl historyService;
 
-    public CommentServiceImpl(CommentRepository commentRepository, ContentRepository contentRepository, UserRepository userRepository) {
+    public CommentServiceImpl(CommentRepository commentRepository, ContentRepository contentRepository, UserRepository userRepository, HistoryServiceImpl historyService) {
         this.commentRepository = commentRepository;
         this.contentRepository = contentRepository;
         this.userRepository = userRepository;
+        this.historyService = historyService;
     }
 
     public DefaultRes findCommentsByContentIdx(int contentIdx) {
         try {
-            final List<Comment> comments = commentRepository.findCommentsByContentIdxOrderByCreatedDateAsc(contentIdx);
+            final List<Comment> comments = commentRepository.findCommentsByContentIdxOrderByCreatedAtAsc(contentIdx);
             if (comments.isEmpty())
                 return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_COMMENT);
 
@@ -72,7 +77,7 @@ public class CommentServiceImpl implements CommentService {
             long count = 0;
 
             for (User u : groupUsers) {
-                count += commentRepository.countByUserIdxAndCreatedDateBetween(u.getUserIdx(), startDateTime, endDateTime);
+                count += commentRepository.countByUserIdxAndCreatedAtBetween(u.getUserIdx(), startDateTime, endDateTime);
             }
 
             Map<String, Long> result = new HashMap<>();
@@ -88,7 +93,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public DefaultRes save(CommentDto commentDto) {
         Optional<Content> content = contentRepository.findById(commentDto.getContentIdx());
-        if(!content.isPresent())
+        if (!content.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
 
         try {
@@ -96,6 +101,10 @@ public class CommentServiceImpl implements CommentService {
 
             content.get().setCommentCount(content.get().getCommentCount() + 1);
             contentRepository.save(content.get());
+
+            HistoryDto historyDto = new HistoryDto(commentDto.getUserIdx(), userRepository.findById(commentDto.getUserIdx()).get().getGroupIdx(), ADD_COMMENT);
+            historyService.add(historyDto);
+
             return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_COMMENT);
         } catch (Exception e) {
             //Rollback
@@ -131,7 +140,7 @@ public class CommentServiceImpl implements CommentService {
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_COMMENT);
 
         Optional<Content> content = contentRepository.findById(comment.get().getContentIdx());
-        if(!content.isPresent())
+        if (!content.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
 
         try {

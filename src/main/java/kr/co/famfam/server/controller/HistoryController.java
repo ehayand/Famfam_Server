@@ -44,7 +44,7 @@ public class HistoryController {
 
             HistoryDto historyDto = new HistoryDto();
             historyDto.setUserIdx(1);
-            historyDto.setType(HistoryType.ADD_ANNIVERSARY);
+            historyDto.setHistoryType(HistoryType.ADD_ANNIVERSARY);
 
             historyService.add(historyDto);
 

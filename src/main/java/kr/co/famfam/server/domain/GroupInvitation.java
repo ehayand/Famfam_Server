@@ -25,6 +25,6 @@ public class GroupInvitation {
     @Indexed
     private int groupIdx;
 
-    private LocalDateTime created;
-    private LocalDateTime expired;
+    private LocalDateTime createdAt;
+    private LocalDateTime expiredAt;
 }

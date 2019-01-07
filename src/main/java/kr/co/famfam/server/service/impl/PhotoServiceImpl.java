@@ -42,7 +42,7 @@ public class PhotoServiceImpl implements PhotoService {
         if (!user.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
-        Page<Photo> photos = photoRepository.findPhotosByUserIdxOrderByCreatedDateDesc(userIdx, pageable);
+        Page<Photo> photos = photoRepository.findPhotosByUserIdxOrderByCreatedAtDesc(userIdx, pageable);
         if (photos.isEmpty())
             return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_PHOTO);
 

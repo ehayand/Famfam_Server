@@ -26,8 +26,8 @@ public class Comment {
 
     @Column(name = "content")
     private String content;
-    @Column(name = "createdDate")
-    private LocalDateTime createdDate;
+    @Column(name = "createdAt")
+    private LocalDateTime createdAt;
 
     @Column(name = "contentIdx")
     private int contentIdx;
@@ -38,6 +38,6 @@ public class Comment {
         this.content = commentDto.getContent();
         this.contentIdx = commentDto.getContentIdx();
         this.userIdx = commentDto.getUserIdx();
-        this.createdDate = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
     }
 }

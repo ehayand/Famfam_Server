@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 public class FeelReq {
 
-    private int type;
+    private int feelType;
 
     private int userIdx;
     private int contentIdx;

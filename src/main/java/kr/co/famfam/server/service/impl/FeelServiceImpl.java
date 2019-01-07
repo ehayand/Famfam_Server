@@ -5,6 +5,7 @@ import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.model.FeelReq;
 import kr.co.famfam.server.model.FeelRes;
+import kr.co.famfam.server.model.HistoryDto;
 import kr.co.famfam.server.repository.FeelRepository;
 import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.FeelService;
@@ -21,6 +22,9 @@ import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.util.*;
 
+import static kr.co.famfam.server.utils.HistoryType.ADD_COMMENT;
+import static kr.co.famfam.server.utils.HistoryType.ADD_EMOTION;
+
 /**
  * Created by ehay@naver.com on 2018-12-25
  * Blog : http://ehay.tistory.com
@@ -33,29 +37,31 @@ public class FeelServiceImpl implements FeelService {
 
     private final FeelRepository feelRepository;
     private final UserRepository userRepository;
+    private final HistoryServiceImpl historyService;
 
-    public FeelServiceImpl(FeelRepository feelRepository, UserRepository userRepository) {
+    public FeelServiceImpl(FeelRepository feelRepository, UserRepository userRepository, HistoryServiceImpl historyService) {
         this.feelRepository = feelRepository;
         this.userRepository = userRepository;
+        this.historyService = historyService;
     }
 
     public DefaultRes findFeelsByContentIdx(int contentIdx) {
         try {
-            final List<Feel> feels = feelRepository.findFeelsByContentIdxOrderByCreatedDateAsc(contentIdx);
+            final List<Feel> feels = feelRepository.findFeelsByContentIdxOrderByCreatedAtAsc(contentIdx);
 
             if (feels.isEmpty())
                 return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_FEEL);
 
             List<Integer> types = new LinkedList<>();
             for (Feel feel : feels)
-                types.add(feel.getType());
+                types.add(feel.getFeelType());
 
             Optional<User> firstUser = userRepository.findById(feels.get(0).getUserIdx());
             if (!firstUser.isPresent())
                 return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.INTERNAL_SERVER_ERROR);
 
             FeelRes feelRes = FeelRes.builder()
-                    .types(feels)
+                    .feelTypes(feels)
                     .firstUserName(firstUser.get().getUserName())
                     .feelCount(feels.size())
                     .build();
@@ -82,7 +88,7 @@ public class FeelServiceImpl implements FeelService {
             long count = 0;
 
             for (User u : groupUsers) {
-                count += feelRepository.countByUserIdxAndCreatedDateBetween(u.getUserIdx(), startDateTime, endDateTime);
+                count += feelRepository.countByUserIdxAndCreatedAtBetween(u.getUserIdx(), startDateTime, endDateTime);
             }
 
             Map<String, Long> result = new HashMap<>();
@@ -101,13 +107,16 @@ public class FeelServiceImpl implements FeelService {
             Optional<Feel> feel = feelRepository.findFeelByContentIdxAndUserIdx(feelReq.getContentIdx(), feelReq.getUserIdx());
 
             if (feel.isPresent()) {
-                feel.get().setType(feelReq.getType());
-                feel.get().setCreatedDate(LocalDateTime.now());
+                feel.get().setFeelType(feelReq.getFeelType());
+                feel.get().setCreatedAt(LocalDateTime.now());
                 feelRepository.save(feel.get());
 
                 return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_FEEL);
             } else {
                 feelRepository.save(new Feel(feelReq));
+
+                HistoryDto historyDto = new HistoryDto(feelReq.getUserIdx(), userRepository.findById(feelReq.getUserIdx()).get().getGroupIdx(), ADD_EMOTION);
+                historyService.add(historyDto);
 
                 return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_FEEL);
             }

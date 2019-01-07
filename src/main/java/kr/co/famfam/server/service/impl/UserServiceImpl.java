@@ -82,10 +82,10 @@ public class UserServiceImpl implements UserService {
             PasswordUtil util = new PasswordUtil();
             signUpReq.setUserPw(util.encryptSHA256(signUpReq.getUserPw()));
 
-            User user = new User(signUpReq);
-            UserRes userRes = new UserRes(userRepository.save(user));
+            User user = userRepository.save(new User(signUpReq));
+            UserRes userRes = new UserRes(user);
+            final JwtService.TokenRes tokenRes = new JwtService.TokenRes(jwtService.create((user.getUserIdx())));
 
-            final JwtService.TokenRes tokenRes = new JwtService.TokenRes(jwtService.create(user.getUserIdx()));
             Map<String, Object> result = new HashMap<>();
             result.put("token", tokenRes.getToken());
             result.put("user", userRes);

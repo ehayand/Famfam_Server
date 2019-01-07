@@ -21,5 +21,5 @@ public interface ContentRepository extends JpaRepository<Content, Integer> {
 
     Page<Content> findContentsByUserIdx(int userIdx, Pageable pageable);
 
-    long countByGroupIdxAndCreatedDateBetween(int groupIdx, LocalDateTime startDateTime, LocalDateTime endDateTime);
+    long countByGroupIdxAndCreatedAtBetween(int groupIdx, LocalDateTime startDateTime, LocalDateTime endDateTime);
 }
