@@ -8,10 +8,12 @@ import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
 import kr.co.famfam.server.utils.auth.Auth;
 import kr.co.famfam.server.utils.security.PasswordUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import static kr.co.famfam.server.model.DefaultRes.FAIL_DEFAULT_RES;
 
@@ -21,6 +23,7 @@ import static kr.co.famfam.server.model.DefaultRes.FAIL_DEFAULT_RES;
  * Github : http://github.com/ehayand
  */
 
+@Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -85,20 +88,38 @@ public class UserController {
                                                  @RequestBody final UserinfoReq userinfoReq) {
         try {
             int authIdx = jwtService.decode(header).getUser_idx();
+            log.info("ID : " + authIdx);
+
             return new ResponseEntity<>(userService.update(authIdx, userinfoReq), HttpStatus.OK);
-
         } catch (Exception e) {
-
             e.printStackTrace();
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
+    @Auth
+    @PutMapping("/photo")
+    public ResponseEntity<DefaultRes> updateUserPhoto(@RequestHeader(value = "Authorization") final String header,
+                                                      final UserinfoPhotoReq userinfoPhotoReq,
+                                                      @RequestPart(value = "profilePhoto", required = false) final MultipartFile profilePhoto,
+                                                      @RequestPart(value = "backPhoto", required = false) final MultipartFile backPhoto) {
+        try {
+            int authIdx = jwtService.decode(header).getUser_idx();
+            log.info("ID : " + authIdx);
+
+            if (profilePhoto != null) userinfoPhotoReq.setProfilePhoto(profilePhoto);
+            if (backPhoto != null) userinfoPhotoReq.setBackPhoto(backPhoto);
+            return new ResponseEntity<>(userService.updatePhoto(authIdx, userinfoPhotoReq), HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping("/id")
     public ResponseEntity<DefaultRes> checkDuplicationId(@RequestBody final DuplicationIdReq duplicationIdReq) {
         try {
-            if(duplicationIdReq == null)
+            if (duplicationIdReq == null)
                 return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.BAD_REQUEST);
             return new ResponseEntity<>(userService.checkDuplicationId(duplicationIdReq.getUserId()), HttpStatus.OK);
         } catch (Exception e) {
