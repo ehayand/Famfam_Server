@@ -264,7 +264,8 @@ public class GroupServiceImpl implements GroupService {
                 return invitation.get();
             else {
                 Optional<GroupInvitation> delete = groupInvitationRepository.findById(invitation.get().getCode());
-                groupInvitationRepository.delete(delete.get());
+                if(delete.isPresent())
+                    groupInvitationRepository.delete(delete.get());
             }
         }
 
