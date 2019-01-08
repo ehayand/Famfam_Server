@@ -63,7 +63,7 @@ public class BatchService {
      * W : 월~금요일 또는 가장 가까운 월/금요일
      * # : 몇 번째 무슨 요일 2#1 => 첫 번째 월요일
      */
-    @Scheduled(cron = "0 0/2 * * * *")
+    @Scheduled(cron = "0 0 1 * * *")
     public void missionBatch() {
         log.info("############ Mission Batch Start : " + LocalTime.now());
         List<Group> allGroups = groupRepository.findAll();
@@ -84,44 +84,45 @@ public class BatchService {
         }
     }
 
-    @Scheduled(cron = "0 1/2 * * * *")
+    @Scheduled(cron = "0 5 1 * * *")
     public void historyBatch() {
         log.info("############ History Batch Start : " + LocalTime.now());
 
         List<FamilyCalendar> allFamilyCalendars = familyCalendarRepository.findFamilyCalendarsByStartDate(LocalDateTime.of(LocalDate.now().plusDays(6), LocalTime.of(0, 0, 0)));
-       if (allFamilyCalendars.isEmpty())
-           log.error("FamilyCalendars Empty");
-       else {
-           try {
-               for (FamilyCalendar f : allFamilyCalendars) {
-                   Optional<User> user = userRepository.findById(f.getUserIdx());
-                   if(!user.isPresent()) continue;
-
-                   List<User> users = userRepository.findUsersByGroupIdxAndAndCalendarConsent(user.get().getGroupIdx(), 1);
-                   for (User u : users) historyService.batchHistory(new HistoryDto(u.getUserIdx(), u.getGroupIdx(), HistoryType.ADD_FAMILYCALENDAR_PUSH), f.getContent());
-               }
-           } catch (Exception e) {
-
-           }
-       }
-
-        List<Anniversary> allAnniversaries = anniversaryRepository.findAnniversariesByDate(LocalDateTime.of(LocalDate.now().plusDays(6), LocalTime.of(0, 0, 0)));
-
-        List<Group> allGroups = groupRepository.findAll();
-        if (allGroups.isEmpty())
-            log.error("Groups Empty");
+        if (allFamilyCalendars.isEmpty())
+            log.error("FamilyCalendars Empty");
         else {
             try {
-                for (Group g : allGroups) {
-                    List<User> calendarUsers = userRepository.findUsersByGroupIdxAndAndCalendarConsent(g.getGroupIdx(), 1);
+                for (FamilyCalendar f : allFamilyCalendars) {
+                    Optional<User> user = userRepository.findById(f.getUserIdx());
+                    if (!user.isPresent()) continue;
 
-
+                    List<User> users = userRepository.findUsersByGroupIdxAndAndCalendarConsent(user.get().getGroupIdx(), 1);
+                    for (User u : users)
+                        historyService.batchHistory(new HistoryDto(u.getUserIdx(), u.getGroupIdx(), HistoryType.ADD_FAMILYCALENDAR_PUSH), f.getContent());
                 }
             } catch (Exception e) {
                 log.error(e.getMessage());
             }
         }
 
+        List<Anniversary> allAnniversaries = anniversaryRepository.findAnniversariesByDate(LocalDateTime.of(LocalDate.now().plusDays(6), LocalTime.of(0, 0, 0)));
+        if (allAnniversaries.isEmpty())
+            log.error("Anniversaries Empty");
+        else {
+            try {
+                for (Anniversary a : allAnniversaries) {
+                    List<User> users = userRepository.findUsersByGroupIdxAndContentConsent(a.getGroupIdx(), 1);
+                    if(users.isEmpty())
+                        log.error("users empty");
+
+                    for (User u : users)
+                        historyService.batchHistory(new HistoryDto(u.getUserIdx(), u.getGroupIdx(), HistoryType.ADD_ANNIVERSARY_PUSH), a.getContent());
+                }
+            } catch (Exception e) {
+                log.error(e.getMessage());
+            }
+        }
 
         log.info("############ History Batch End : " + LocalTime.now());
     }
@@ -130,8 +131,8 @@ public class BatchService {
     private void missionTask() {
         DefaultMission defaultMission = new DefaultMission();
 
-        try{
-            for(Mission mission : defaultMission.getMissionList())
+        try {
+            for (Mission mission : defaultMission.getMissionList())
                 missionService.save(mission);
         } catch (Exception e) {
             log.error(e.getMessage());
