@@ -19,15 +19,15 @@ import java.util.List;
 @Repository
 public interface IndividualCalendarRepository extends JpaRepository<IndividualCalendar, Integer> {
 
-    @Query(value = "SELECT i.* FROM Individual_calendar i JOIN user u ON u.group_idx = :groupIdx WHERE (u.user_idx = i.user_idx) AND (i.start_date between :startDate and :endDate)", nativeQuery = true)
+    @Query(value = "SELECT i.* FROM individual_calendar i JOIN user u ON u.group_idx = :groupIdx WHERE (u.user_idx = i.user_idx) AND (i.start_date between :startDate and :endDate)", nativeQuery = true)
     List<IndividualCalendar> findByYearAndMonth(@Param("startDate") final LocalDateTime startDate, @Param("endDate") final LocalDateTime endDate, @Param("groupIdx") final int groupIdx);
 //    List<IndividualCalendar> findIndividualCalendarsByStartDateBetween(@Param("startDate") final LocalDateTime startDate, @Param("endDate") final LocalDateTime endDate);
 
-    @Query(value = "SELECT i.* FROM Individual_calendar i JOIN user u ON u.group_idx = :groupIdx WHERE (u.user_idx = i.user_idx) AND (i.all_date LIKE :dateStr)", nativeQuery = true)
+    @Query(value = "SELECT i.* FROM individual_calendar i JOIN user u ON u.group_idx = :groupIdx WHERE (u.user_idx = i.user_idx) AND (i.all_date LIKE :dateStr)", nativeQuery = true)
     List<IndividualCalendar> findByYearAndMonthAndDate(@Param("dateStr") final String dateStr, @Param("groupIdx") final int groupIdx);
 //    List<IndividualCalendar> findIndividualCalendarsByAllDateLike(@Param("dateStr") final String dateStr);
 
-    @Query(value = "SELECT i.* FROM Individual_calendar i JOIN user u ON u.group_idx = :groupIdx WHERE (u.user_idx = i.user_idx) AND (i.content LIKE :content)", nativeQuery = true)
+    @Query(value = "SELECT i.* FROM individual_calendar i JOIN user u ON u.group_idx = :groupIdx WHERE (u.user_idx = i.user_idx) AND (i.content LIKE :content)", nativeQuery = true)
     List<IndividualCalendar> findByContetnt(@Param("content") final String content, @Param("groupIdx") final int groupIdx);
 //    List<IndividualCalendar> findIndividualCalendarsByContentLike(@Param("content") final String content);
 
