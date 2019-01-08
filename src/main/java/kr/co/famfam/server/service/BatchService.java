@@ -1,18 +1,23 @@
 package kr.co.famfam.server.service;
 
-import kr.co.famfam.server.domain.Group;
-import kr.co.famfam.server.domain.Mission;
-import kr.co.famfam.server.domain.User;
+import kr.co.famfam.server.domain.*;
+import kr.co.famfam.server.model.HistoryDto;
+import kr.co.famfam.server.repository.AnniversaryRepository;
+import kr.co.famfam.server.repository.FamilyCalendarRepository;
 import kr.co.famfam.server.repository.GroupRepository;
 import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.utils.DefaultMission;
+import kr.co.famfam.server.utils.HistoryType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by ehay@naver.com on 2019-01-07
@@ -26,12 +31,16 @@ public class BatchService {
 
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
+    private final AnniversaryRepository anniversaryRepository;
+    private final FamilyCalendarRepository familyCalendarRepository;
     private final MissionService missionService;
     private final HistoryService historyService;
 
-    public BatchService(GroupRepository groupRepository, UserRepository userRepository, MissionService missionService, HistoryService historyService) {
+    public BatchService(GroupRepository groupRepository, UserRepository userRepository, AnniversaryRepository anniversaryRepository, FamilyCalendarRepository familyCalendarRepository, MissionService missionService, HistoryService historyService) {
         this.groupRepository = groupRepository;
         this.userRepository = userRepository;
+        this.anniversaryRepository = anniversaryRepository;
+        this.familyCalendarRepository = familyCalendarRepository;
         this.missionService = missionService;
         this.historyService = historyService;
     }
@@ -54,37 +63,75 @@ public class BatchService {
      * W : 월~금요일 또는 가장 가까운 월/금요일
      * # : 몇 번째 무슨 요일 2#1 => 첫 번째 월요일
      */
-    @Scheduled(cron = "0 0/3 * * * *")
+    @Scheduled(cron = "0 0/2 * * * *")
     public void missionBatch() {
-        log.info("Mission Batch Start : " + LocalTime.now());
+        log.info("############ Mission Batch Start : " + LocalTime.now());
         List<Group> allGroups = groupRepository.findAll();
-        if(allGroups.isEmpty())
+        if (allGroups.isEmpty())
             log.error("Groups Empty");
+        else {
+            try {
+                for (Group g : allGroups) {
+                    if (2 > userRepository.countByGroupIdx(g.getGroupIdx())) continue;
 
-        try {
-            for (Group g : allGroups) {
-                if (2 > userRepository.countByGroupIdx(g.getGroupIdx())) continue;
-
-                List<User> users = userRepository.findUsersByGroupIdx(g.getGroupIdx());
-                for (User u : users) missionService.updateUser(u);
+                    List<User> users = userRepository.findUsersByGroupIdx(g.getGroupIdx());
+                    for (User u : users) missionService.updateUser(u);
+                }
+            } catch (Exception e) {
+                log.error(e.getMessage());
             }
-        } catch (Exception e) {
-            log.error(e.getMessage());
+            log.info("############ Mission Batch End : " + LocalTime.now());
         }
-        log.info("Mission Batch End : " + LocalTime.now());
     }
 
-//    @Scheduled
-//    public void historyBatch() {
-//
-//    }
+    @Scheduled(cron = "0 1/2 * * * *")
+    public void historyBatch() {
+        log.info("############ History Batch Start : " + LocalTime.now());
+
+        List<FamilyCalendar> allFamilyCalendars = familyCalendarRepository.findFamilyCalendarsByStartDate(LocalDateTime.of(LocalDate.now().plusDays(6), LocalTime.of(0, 0, 0)));
+       if (allFamilyCalendars.isEmpty())
+           log.error("FamilyCalendars Empty");
+       else {
+           try {
+               for (FamilyCalendar f : allFamilyCalendars) {
+                   Optional<User> user = userRepository.findById(f.getUserIdx());
+                   if(!user.isPresent()) continue;
+
+                   List<User> users = userRepository.findUsersByGroupIdxAndAndCalendarConsent(user.get().getGroupIdx(), 1);
+                   for (User u : users) historyService.batchHistory(new HistoryDto(u.getUserIdx(), u.getGroupIdx(), HistoryType.ADD_FAMILYCALENDAR_PUSH), f.getContent());
+               }
+           } catch (Exception e) {
+
+           }
+       }
+
+        List<Anniversary> allAnniversaries = anniversaryRepository.findAnniversariesByDate(LocalDateTime.of(LocalDate.now().plusDays(6), LocalTime.of(0, 0, 0)));
+
+        List<Group> allGroups = groupRepository.findAll();
+        if (allGroups.isEmpty())
+            log.error("Groups Empty");
+        else {
+            try {
+                for (Group g : allGroups) {
+                    List<User> calendarUsers = userRepository.findUsersByGroupIdxAndAndCalendarConsent(g.getGroupIdx(), 1);
+
+
+                }
+            } catch (Exception e) {
+                log.error(e.getMessage());
+            }
+        }
+
+
+        log.info("############ History Batch End : " + LocalTime.now());
+    }
 
     @PostConstruct
     private void missionTask() {
         DefaultMission defaultMission = new DefaultMission();
 
-        try{
-            for(Mission mission : defaultMission.getMissionList())
+        try {
+            for (Mission mission : defaultMission.getMissionList())
                 missionService.save(mission);
         } catch (Exception e) {
             log.error(e.getMessage());

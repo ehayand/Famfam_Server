@@ -80,6 +80,21 @@ public class HistoryServiceImpl implements HistoryService {
         }
     }
 
+    public Boolean batchHistory(final HistoryDto historyDto, String content) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[").append(content).append("]");
+
+        switch (historyDto.getHistoryType()) {
+            case HistoryType.ADD_FAMILYCALENDAR_PUSH:
+                sb.append(" ");
+                break;
+            case HistoryType.ADD_ANNIVERSARY_PUSH:
+                sb.append(" 님이 감정을 표현했습니다.");
+                break;
+        }
+
+    }
+
 
     public DefaultRes findAllHistoryByUserIdx(int userIdx) {
         Optional<User> user = userRepository.findById(userIdx);
