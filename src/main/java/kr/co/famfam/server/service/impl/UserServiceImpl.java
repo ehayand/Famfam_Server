@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -200,6 +201,41 @@ public class UserServiceImpl implements UserService {
         try {
             userRepository.deleteById(userIdx);
             return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_USER);
+        } catch (Exception e) {
+            //Rollback
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
+    }
+
+    @Transactional
+    public DefaultRes findUserId(final FindUserIdReq findUserIdReq){
+        try{
+            LocalDateTime birthday = LocalDateTime.parse(findUserIdReq.getBirthday());
+            Optional<User> user = userRepository.findUserByUserPhoneAndBirthday(findUserIdReq.getNumber(), birthday);
+
+            if(!user.isPresent()){
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+            }
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, user.get().getUserId());
+        } catch (Exception e) {
+            //Rollback
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
+    }
+
+    @Transactional
+    public DefaultRes findUserPassword(final FindUserPasswordReq findUserPasswordReq){
+        try{
+            Optional<User> user = userRepository.findUserByUserIdAndUserPhone(findUserPasswordReq.getUserId(), findUserPasswordReq.getNumber());
+
+            if(!user.isPresent()){
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+            }
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, user.get().getUserIdx());
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

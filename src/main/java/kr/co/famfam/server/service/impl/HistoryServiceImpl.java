@@ -17,10 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.io.ObjectInput;
+import java.util.*;
 
 
 @Slf4j
@@ -126,7 +124,17 @@ public class HistoryServiceImpl implements HistoryService {
             if (historyPage.isEmpty())
                 return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_HISTORY);
 
-            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_HISTORY, historyPage);
+            Map<String, Object> result = new HashMap<>();
+            List<History> histories = new LinkedList<>();
+
+            for (History history : historyPage) {
+                histories.add(history);
+            }
+
+            result.put("histories", histories);
+            result.put("totalPage", historyPage.getTotalPages());
+
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_HISTORY, result);
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

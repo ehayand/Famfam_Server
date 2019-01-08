@@ -69,21 +69,22 @@ public class ContentServiceImpl implements ContentService {
 
         Map<Object, Object> result = new HashMap<>();
         List<Object> contents = new LinkedList<>();
+        List<Object> photoUrls = new LinkedList<>();
 
         for (Content content : contentPage) {
             Map<Object, Object> map = new HashMap<>();
             List<Photo> photos = photoRepository.findPhotosByContentIdx(content.getContentIdx());
 
             for (final Photo photo : photos)
-                photo.setPhotoName(bucketPrefix + bucketOrigin + photo.getPhotoName());
+                photoUrls.add(bucketPrefix + bucketOrigin + photo.getPhotoName());
 
             Optional<User> contentUser = userRepository.findById(content.getUserIdx());
-            if(!contentUser.isPresent())
+            if (!contentUser.isPresent())
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
             map.put("userName", contentUser.get().getUserName());
             map.put("content", content);
-            map.put("photos", photos);
+            map.put("photos", photoUrls);
             contents.add(map);
         }
 
@@ -113,7 +114,7 @@ public class ContentServiceImpl implements ContentService {
                 photo.setPhotoName(bucketPrefix + bucketOrigin + photo.getPhotoName());
 
             Optional<User> contentUser = userRepository.findById(content.getUserIdx());
-            if(!contentUser.isPresent())
+            if (!contentUser.isPresent())
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
             map.put("userName", contentUser.get().getUserName());
@@ -140,7 +141,7 @@ public class ContentServiceImpl implements ContentService {
             photo.setPhotoName(bucketPrefix + bucketOrigin + photo.getPhotoName());
 
         Optional<User> contentUser = userRepository.findById(content.get().getUserIdx());
-        if(!contentUser.isPresent())
+        if (!contentUser.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
         result.put("userName", contentUser.get().getUserName());

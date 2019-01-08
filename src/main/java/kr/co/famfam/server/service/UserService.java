@@ -28,4 +28,9 @@ public interface UserService {
     DefaultRes checkDuplicationId(final String userId);
 
     DefaultRes deleteByUserIdx(final int userIdx);
+
+    DefaultRes findUserId(final FindUserIdReq findUserIdReq);
+
+    DefaultRes findUserPassword(final FindUserPasswordReq findUserPasswordReq);
+
 }
