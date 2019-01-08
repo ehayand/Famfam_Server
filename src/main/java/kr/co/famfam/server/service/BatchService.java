@@ -130,8 +130,8 @@ public class BatchService {
     private void missionTask() {
         DefaultMission defaultMission = new DefaultMission();
 
-        try {
-            for (Mission mission : defaultMission.getMissionList())
+        try{
+            for(Mission mission : defaultMission.getMissionList())
                 missionService.save(mission);
         } catch (Exception e) {
             log.error(e.getMessage());

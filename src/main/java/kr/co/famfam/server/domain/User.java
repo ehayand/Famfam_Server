@@ -81,8 +81,6 @@ public class User {
         this.birthday = userinfoReq.getBirthday();
         this.sexType = userinfoReq.getSexType();
         this.statusMessage = userinfoReq.getStatusMessage();
-        this.profilePhoto = userinfoReq.getProfilePhoto();
-        this.backPhoto = userinfoReq.getBackPhoto();
     }
 
 }

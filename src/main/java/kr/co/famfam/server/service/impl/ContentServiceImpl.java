@@ -77,6 +77,11 @@ public class ContentServiceImpl implements ContentService {
             for (final Photo photo : photos)
                 photo.setPhotoName(bucketPrefix + bucketOrigin + photo.getPhotoName());
 
+            Optional<User> contentUser = userRepository.findById(content.getUserIdx());
+            if(!contentUser.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+            map.put("userName", contentUser.get().getUserName());
             map.put("content", content);
             map.put("photos", photos);
             contents.add(map);
@@ -107,6 +112,11 @@ public class ContentServiceImpl implements ContentService {
             for (final Photo photo : photos)
                 photo.setPhotoName(bucketPrefix + bucketOrigin + photo.getPhotoName());
 
+            Optional<User> contentUser = userRepository.findById(content.getUserIdx());
+            if(!contentUser.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+            map.put("userName", contentUser.get().getUserName());
             map.put("content", content);
             map.put("photos", photos);
             contents.add(map);
@@ -129,6 +139,11 @@ public class ContentServiceImpl implements ContentService {
         for (final Photo photo : photos)
             photo.setPhotoName(bucketPrefix + bucketOrigin + photo.getPhotoName());
 
+        Optional<User> contentUser = userRepository.findById(content.get().getUserIdx());
+        if(!contentUser.isPresent())
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+        result.put("userName", contentUser.get().getUserName());
         result.put("content", content);
         result.put("photos", photos);
 
