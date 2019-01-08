@@ -1,9 +1,11 @@
 package kr.co.famfam.server.service.impl;
 
+import kr.co.famfam.server.domain.Group;
 import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.model.LoginReq;
 import kr.co.famfam.server.model.UserRes;
+import kr.co.famfam.server.repository.GroupRepository;
 import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.JwtService;
 import kr.co.famfam.server.service.LoginService;
@@ -19,52 +21,56 @@ import java.util.Optional;
 public class LoginServiceImpl implements LoginService {
 
     private final UserRepository userRepository;
+    private final GroupRepository groupRepository;
     private final JwtService jwtService;
 
-    public LoginServiceImpl(UserRepository userRepository, JwtService jwtService) {
-
+    public LoginServiceImpl(UserRepository userRepository, GroupRepository groupRepository, JwtService jwtService) {
         this.userRepository = userRepository;
+        this.groupRepository = groupRepository;
         this.jwtService = jwtService;
     }
 
-    /***
-     *
-     * @param loginReq
-     * @return
-     */
     public DefaultRes login(LoginReq loginReq) {
-        if (loginReq.isLogin()) {
-            User loginUser = new User(loginReq);
+        if (!loginReq.isLogin())
+            return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.LOGIN_FAIL);
 
-            final Optional<User> user = userRepository.findUserByUserIdAndUserPw(loginUser.getUserId(), loginUser.getUserPw());
+        User loginUser = new User(loginReq);
 
-            if (user.isPresent()) {
-                final JwtService.TokenRes tokenRes = new JwtService.TokenRes(jwtService.create(user.get().getUserIdx()));
+        final Optional<User> user = userRepository.findUserByUserIdAndUserPw(loginUser.getUserId(), loginUser.getUserPw());
+        if (!user.isPresent())
+            return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.LOGIN_FAIL);
 
-                Map<String, Object> result = new HashMap<>();
-                result.put("token", tokenRes.getToken());
-                result.put("user", new UserRes(user.get()));
+        Map<String, Object> result = new HashMap<>();
 
-                return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, result);
-            }
+        if (user.get().getGroupIdx() != -1) {
+            Optional<Group> group = groupRepository.findById(user.get().getGroupIdx());
+            result.put("groupId", group.get().getGroupId());
         }
-        return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.LOGIN_FAIL);
+        final JwtService.TokenRes tokenRes = new JwtService.TokenRes(jwtService.create(user.get().getUserIdx()));
+
+        result.put("token", tokenRes.getToken());
+        result.put("user", new UserRes(user.get()));
+
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, result);
     }
 
     public DefaultRes login(final int userIdx) {
         final Optional<User> user = userRepository.findById(userIdx);
+        if (!user.isPresent())
+            return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.LOGIN_FAIL);
 
-        if (user.isPresent()) {
-            final JwtService.TokenRes tokenRes = new JwtService.TokenRes(jwtService.create(user.get().getUserIdx()));
-            Map<String, Object> result = new HashMap<>();
-            result.put("token", tokenRes.getToken());
-            result.put("user", user);
+        Map<String, Object> result = new HashMap<>();
 
-            return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, tokenRes);
+        if (user.get().getGroupIdx() != -1) {
+            Optional<Group> group = groupRepository.findById(user.get().getGroupIdx());
+            result.put("groupId", group.get().getGroupId());
         }
+        final JwtService.TokenRes tokenRes = new JwtService.TokenRes(jwtService.create(user.get().getUserIdx()));
 
+        result.put("token", tokenRes.getToken());
+        result.put("user", new UserRes(user.get()));
 
-        return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.LOGIN_FAIL);
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, result);
     }
 }
 
