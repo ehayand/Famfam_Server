@@ -36,7 +36,7 @@ public class ContentController {
     public ResponseEntity<DefaultRes> getContents(
             @RequestHeader("Authorization") final String header,
             @RequestParam("userIdx") final Optional<Integer> userIdx,
-            @PageableDefault(sort = {"createdDate"}, direction = Sort.Direction.DESC, size = 5) Pageable pageable) {
+            @PageableDefault(sort = {"createdAt"}, direction = Sort.Direction.DESC, size = 5) Pageable pageable) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
             log.info("ID : " + authUserIdx);

@@ -1,7 +1,6 @@
 package kr.co.famfam.server.domain;
 
 
-import kr.co.famfam.server.model.HistoryDto;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,28 +20,28 @@ public class History {
     @Column(name = "historyIdx")
     private int historyIdx;
 
-    @Column
+    @Column(name = "userIdx")
     private int userIdx;
 
-    @Column
+    @Column(name = "groupIdx")
     private int groupIdx;
 
-    @Column
-    private String type;
+    @Column(name = "historyType")
+    private String historyType;
 
-    @Column
+    @Column(name = "content")
     private String content;
 
-    @Column
-    private LocalDateTime created;
+    @Column(name = "createdAt")
+    private LocalDateTime createdAt;
 
 
     @Builder
-    public History(int userIdx, int groupIdx, String type, String content) {
+    public History(int userIdx, int groupIdx, String historyType, String content) {
         this.userIdx = userIdx;
         this.groupIdx = groupIdx;
-        this.type = type;
+        this.historyType = historyType;
         this.content = content;
-        this.created = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
     }
 }

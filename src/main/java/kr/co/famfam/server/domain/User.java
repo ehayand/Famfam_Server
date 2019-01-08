@@ -51,6 +51,10 @@ public class User {
 
     @Column(name = "groupIdx")
     private int groupIdx;
+    @Column(name = "missionIdx")
+    private int missionIdx;
+    @Column(name = "missionTargetUserIdx")
+    private int missionTargetUserIdx;
 
     public User(SignUpReq signUpReq) {
         this.userId = signUpReq.getUserId();
@@ -73,8 +77,6 @@ public class User {
         this.birthday = userinfoReq.getBirthday();
         this.sexType = userinfoReq.getSexType();
         this.statusMessage = userinfoReq.getStatusMessage();
-        this.profilePhoto = userinfoReq.getProfilePhoto();
-        this.backPhoto = userinfoReq.getBackPhoto();
     }
 
 }

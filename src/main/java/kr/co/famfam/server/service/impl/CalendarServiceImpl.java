@@ -89,11 +89,14 @@ public class CalendarServiceImpl implements CalendarService {
     public DefaultRes addSchedule(final int calendarType, final CalendarReq calendarReq, final int authUserIdx) {
         // 타입값에 따라서 가족/개인 캘린더서비스 불러서 일정 추가하기
 
+        System.out.println("1");
         String allDateStr = allDate(calendarReq);
 
+        System.out.println("2");
         if (calendarType == 1) {
             return individualCalendarService.addSchedule(calendarReq, authUserIdx, allDateStr);
         } else if (calendarType == 2) {
+            System.out.println("3");
             return familyCalendarService.addSchedule(calendarReq, authUserIdx, allDateStr);
         } else {
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CALENDAR_TYPE);

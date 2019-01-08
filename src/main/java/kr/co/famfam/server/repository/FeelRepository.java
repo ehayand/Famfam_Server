@@ -19,7 +19,7 @@ public interface FeelRepository extends JpaRepository<Feel, Integer> {
 
     Optional<Feel> findFeelByContentIdxAndUserIdx(int contentIdx, int userIdx);
 
-    List<Feel> findFeelsByContentIdxOrderByCreatedDateAsc(int contentIdx);
+    List<Feel> findFeelsByContentIdxOrderByCreatedAtAsc(int contentIdx);
 
-    long countByUserIdxAndCreatedDateBetween(int userIdx, LocalDateTime startDateTime, LocalDateTime endDateTime);
+    long countByUserIdxAndCreatedAtBetween(int userIdx, LocalDateTime startDateTime, LocalDateTime endDateTime);
 }

@@ -1,6 +1,7 @@
 package kr.co.famfam.server.service.impl;
 
 import kr.co.famfam.server.domain.Anniversary;
+import kr.co.famfam.server.domain.Photo;
 import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.*;
 import kr.co.famfam.server.repository.AnniversaryRepository;
@@ -15,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
@@ -52,7 +54,7 @@ public class UserServiceImpl implements UserService {
 
     public DefaultRes findUsersByGroupIdx(final int userIdx) {
         Optional<User> user = userRepository.findById(userIdx);
-        if(!user.isPresent())
+        if (!user.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
         List<User> groupUsers = userRepository.findUsersByGroupIdx(user.get().getGroupIdx());
@@ -62,7 +64,7 @@ public class UserServiceImpl implements UserService {
         Map<String, Object> result = new HashMap<>();
         List<UserRes> users = new LinkedList<>();
 
-        for(User u : groupUsers)
+        for (User u : groupUsers)
             users.add(new UserRes(u));
 
         result.put("users", users);
@@ -106,20 +108,15 @@ public class UserServiceImpl implements UserService {
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
         Optional<Anniversary> anniversary = anniversaryRepository.findById(temp.get().getUserIdx());
-        if(!anniversary.isPresent())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
-
+        if (!anniversary.isPresent())
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_ANNIVERSARY);
 
         try {
-            /*
-                null 검사
-            */
-            temp.get().setUserName(userinfoReq.getUserName());
-            temp.get().setBirthday(userinfoReq.getBirthday());
-            temp.get().setSexType(userinfoReq.getSexType());
-            temp.get().setStatusMessage(userinfoReq.getStatusMessage());
-            temp.get().setProfilePhoto(userinfoReq.getProfilePhoto());
-            temp.get().setBackPhoto(userinfoReq.getBackPhoto());
+            if (!userinfoReq.getUserName().isEmpty()) temp.get().setUserName(userinfoReq.getUserName());
+            if (userinfoReq.getBirthday() != null) temp.get().setBirthday(userinfoReq.getBirthday());
+            if (userinfoReq.getSexType() != -1) temp.get().setSexType(userinfoReq.getSexType());
+            if (!userinfoReq.getStatusMessage().isEmpty()) temp.get().setStatusMessage(userinfoReq.getStatusMessage());
+
             userRepository.save(temp.get());
 
             anniversary.get().setDate(temp.get().getBirthday());
@@ -134,9 +131,32 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    public DefaultRes updatePhoto(final int userIdx, final UserinfoPhotoReq userinfoPhotoReq){
+        // 프로필 사진, 배경 사진 수정
+        Optional<User> temp = userRepository.findById(userIdx);
+        if (!temp.isPresent())
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+        try {
+            if (userinfoPhotoReq.getProfilePhoto() != null)
+                temp.get().setProfilePhoto(fileUploadService.reload(temp.get().getProfilePhoto(), userinfoPhotoReq.getProfilePhoto()));
+            if (userinfoPhotoReq.getBackPhoto() != null)
+                temp.get().setBackPhoto(fileUploadService.reload(temp.get().getBackPhoto(), userinfoPhotoReq.getBackPhoto()));
+
+            userRepository.save(temp.get());
+
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_USER);
+        } catch (Exception e) {
+            //Rollback
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
+    }
+
     public DefaultRes checkDuplicationId(final String userId) {
         Optional<User> user = userRepository.findUserByUserId(userId);
-        if(user.isPresent())
+        if (user.isPresent())
             return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.DUPLICATED_ID);
         else
             return DefaultRes.res(StatusCode.OK, ResponseMessage.AVALIABLE_ID);

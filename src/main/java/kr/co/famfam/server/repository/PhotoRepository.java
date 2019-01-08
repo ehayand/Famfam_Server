@@ -19,5 +19,5 @@ public interface PhotoRepository extends JpaRepository<Photo, Integer> {
 
     List<Photo> findPhotosByContentIdx(int contentIdx);
 
-    Page<Photo> findPhotosByUserIdxOrderByCreatedDateDesc(int userIdx, Pageable pageable);
+    Page<Photo> findPhotosByUserIdxOrderByCreatedAtDesc(int userIdx, Pageable pageable);
 }
