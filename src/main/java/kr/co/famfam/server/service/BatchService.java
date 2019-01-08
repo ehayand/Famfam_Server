@@ -54,7 +54,7 @@ public class BatchService {
      * W : 월~금요일 또는 가장 가까운 월/금요일
      * # : 몇 번째 무슨 요일 2#1 => 첫 번째 월요일
      */
-    @Scheduled(cron = "0 0/3 * * * *")
+    @Scheduled(cron = "0 0/10 * * * *")
     public void missionBatch() {
         log.info("Mission Batch Start : " + LocalTime.now());
         List<Group> allGroups = groupRepository.findAll();
