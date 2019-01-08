@@ -84,6 +84,35 @@ public class HistoryServiceImpl implements HistoryService {
         }
     }
 
+    public Boolean batchHistory(final HistoryDto historyDto, String content) {
+        try {
+            log.info("batchHistory start");
+            StringBuilder sb = new StringBuilder();
+            sb.append("\"").append(content).append("\"");
+
+            switch (historyDto.getHistoryType()) {
+                case HistoryType.ADD_FAMILYCALENDAR_PUSH:
+                    sb.append(" -7일전입니다.");
+                    break;
+                case HistoryType.ADD_ANNIVERSARY_PUSH:
+                    sb.append(" -7일전입니다.");
+                    break;
+            }
+
+            historyDto.setContent(sb.toString());
+
+            History history = historyDto.toEntity();
+
+            historyRepository.save(history);
+            log.info("batchHistory finished");
+            return true;
+        } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return false;
+        }
+    }
+
 
     public DefaultRes findAllHistoryByUserIdx(int userIdx, Pageable pageable) {
         try {
