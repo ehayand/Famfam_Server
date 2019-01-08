@@ -1,11 +1,8 @@
 package kr.co.famfam.server.service;
 
-import kr.co.famfam.server.domain.History;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.model.HistoryDto;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 
 public interface HistoryService {
@@ -14,5 +11,6 @@ public interface HistoryService {
 
     Boolean batchHistory(final HistoryDto historyDto, String content);
 
-    DefaultRes findAllHistoryByUserIdx(int userIdx);
+    DefaultRes findAllHistoryByUserIdx(int userIdx, Pageable pageable);
+
 }

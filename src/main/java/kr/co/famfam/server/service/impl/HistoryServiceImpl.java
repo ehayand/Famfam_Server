@@ -11,12 +11,14 @@ import kr.co.famfam.server.utils.HistoryType;
 import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import java.util.List;
-import java.util.Optional;
+import java.io.ObjectInput;
+import java.util.*;
 
 
 @Slf4j
@@ -110,7 +112,7 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
 
-    public DefaultRes findAllHistoryByUserIdx(int userIdx) {
+    public DefaultRes findAllHistoryByUserIdx(int userIdx, Pageable pageable) {
         try {
             Optional<User> user = userRepository.findById(userIdx);
             if (!user.isPresent())
@@ -118,11 +120,21 @@ public class HistoryServiceImpl implements HistoryService {
 
             int groupIdx = user.get().getGroupIdx();
 
-            List<History> history = historyRepository.findAllByGroupIdxAndUserIdxIsNotIn(groupIdx, userIdx);
-            if (history.isEmpty())
+            Page<History> historyPage = historyRepository.findAllByGroupIdxAndUserIdxIsNotIn(groupIdx, userIdx, pageable);
+            if (historyPage.isEmpty())
                 return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_HISTORY);
 
-            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_HISTORY, history);
+            Map<String, Object> result = new HashMap<>();
+            List<History> histories = new LinkedList<>();
+
+            for (History history : historyPage) {
+                histories.add(history);
+            }
+
+            result.put("histories", histories);
+            result.put("totalPage", historyPage.getTotalPages());
+
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_HISTORY, result);
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
