@@ -12,6 +12,7 @@ public interface HistoryService {
     Boolean add(HistoryDto historyDto);
 //    Boolean add(int userIdx, String type);
 
-    DefaultRes findAllHistoryByUserIdx(int userIdx);
+    Boolean batchHistory(final HistoryDto historyDto, String content);
 
+    DefaultRes findAllHistoryByUserIdx(int userIdx);
 }
