@@ -82,11 +82,11 @@ public class HistoryServiceImpl implements HistoryService {
 
     public Boolean batchHistory(final HistoryDto historyDto, String content) {
         StringBuilder sb = new StringBuilder();
-        sb.append("[").append(content).append("]");
+        sb.append("\"").append(content).append("\"");
 
         switch (historyDto.getHistoryType()) {
             case HistoryType.ADD_FAMILYCALENDAR_PUSH:
-                sb.append(" ");
+                sb.append(" -7일전입니다.");
                 break;
             case HistoryType.ADD_ANNIVERSARY_PUSH:
                 sb.append(" 님이 감정을 표현했습니다.");
