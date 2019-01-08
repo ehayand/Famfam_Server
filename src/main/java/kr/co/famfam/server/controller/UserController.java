@@ -53,6 +53,7 @@ public class UserController {
 
         } catch (Exception e) {
             e.printStackTrace();
+
             //  TODO multivalue 수정
             return new ResponseEntity<>((MultiValueMap<String, String>) FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
