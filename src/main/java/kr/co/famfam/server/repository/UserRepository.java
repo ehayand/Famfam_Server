@@ -22,4 +22,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findUserByUserId(String userId);
 
+    List<User> findUsersByGroupIdxAndUserIdxIsNotIn(int groupIdx, int userIdx);
+
+    int countByGroupIdx(int groupIdx);
 }

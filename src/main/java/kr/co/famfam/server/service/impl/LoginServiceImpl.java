@@ -46,6 +46,7 @@ public class LoginServiceImpl implements LoginService {
             Optional<Group> group = groupRepository.findById(user.get().getGroupIdx());
             result.put("groupId", group.get().getGroupId());
         }
+      
         final JwtService.TokenRes tokenRes = new JwtService.TokenRes(jwtService.create(user.get().getUserIdx()));
 
         result.put("token", tokenRes.getToken());
@@ -65,6 +66,7 @@ public class LoginServiceImpl implements LoginService {
             Optional<Group> group = groupRepository.findById(user.get().getGroupIdx());
             result.put("groupId", group.get().getGroupId());
         }
+      
         final JwtService.TokenRes tokenRes = new JwtService.TokenRes(jwtService.create(user.get().getUserIdx()));
 
         result.put("token", tokenRes.getToken());
