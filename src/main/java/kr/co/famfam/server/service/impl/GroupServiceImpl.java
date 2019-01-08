@@ -116,7 +116,7 @@ public class GroupServiceImpl implements GroupService {
             anniversary.setGroupIdx(user.get().getGroupIdx());
             anniversary.setDate(user.get().getBirthday());
             anniversary.setAnniversaryType(0);
-            anniversary.setContent(user.get().getUserName() + " 생일");
+            anniversary.setContent(user.get().getUserName() + "님의 생일");
             anniversaryRepository.save(anniversary);
 
             Optional<Group> group = groupRepository.findById(groupIdx);
@@ -153,7 +153,7 @@ public class GroupServiceImpl implements GroupService {
             anniversary.setGroupIdx(user.get().getGroupIdx());
             anniversary.setDate(user.get().getBirthday());
             anniversary.setAnniversaryType(0);
-            anniversary.setContent(user.get().getUserName() + " 생일");
+            anniversary.setContent(user.get().getUserName() + "님의 생일");
             anniversaryRepository.save(anniversary);
 
             Map<String, String> result = new HashMap<>();
