@@ -2,6 +2,7 @@ package kr.co.famfam.server.service.impl;
 
 import kr.co.famfam.server.domain.*;
 import kr.co.famfam.server.model.DefaultRes;
+import kr.co.famfam.server.model.GroupRes;
 import kr.co.famfam.server.model.HomePhotoReq;
 import kr.co.famfam.server.repository.*;
 import kr.co.famfam.server.service.FileUploadService;
@@ -120,10 +121,8 @@ public class GroupServiceImpl implements GroupService {
             anniversaryRepository.save(anniversary);
 
             Optional<Group> group = groupRepository.findById(groupIdx);
-            Map<String, String> result = new HashMap<>();
-            result.put("groupId", group.get().getGroupId());
 
-            return DefaultRes.res(StatusCode.OK, ResponseMessage.JOIN_SUCCESS_GROUP, result);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.JOIN_SUCCESS_GROUP, new GroupRes(group.get()));
         } catch (Exception e) {
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
@@ -156,10 +155,7 @@ public class GroupServiceImpl implements GroupService {
             anniversary.setContent(user.get().getUserName() + "님의 생일");
             anniversaryRepository.save(anniversary);
 
-            Map<String, String> result = new HashMap<>();
-            result.put("groupId", group.getGroupId());
-
-            return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_GROUP, result);
+            return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_GROUP, new GroupRes(group));
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

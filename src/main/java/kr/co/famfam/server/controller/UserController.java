@@ -178,7 +178,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/id")
+    @PostMapping("/id/forget")
     public ResponseEntity findUserId(@RequestBody FindUserIdReq findUserIdReq) {
         try {
             return new ResponseEntity<>(userService.findUserId(findUserIdReq), HttpStatus.OK);
@@ -188,7 +188,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/password")
+    @PostMapping("/password/forget")
     public ResponseEntity findUserPassword(@RequestBody FindUserPasswordReq findUserPasswordReq) {
         try {
             return new ResponseEntity<>(userService.findUserPassword(findUserPasswordReq), HttpStatus.OK);

@@ -218,7 +218,11 @@ public class UserServiceImpl implements UserService {
             if(!user.isPresent()){
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
             }
-            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, user.get().getUserId());
+
+            Map<Object, Object> result = new HashMap<>();
+            result.put("userId", user.get().getUserId());
+
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, result);
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -235,7 +239,11 @@ public class UserServiceImpl implements UserService {
             if(!user.isPresent()){
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
             }
-            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, user.get().getUserIdx());
+
+            Map<Object, Object> result = new HashMap<>();
+            result.put("userIdx", user.get().getUserIdx());
+
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, result);
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
