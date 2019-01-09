@@ -55,6 +55,10 @@ public class User {
     private int missionIdx;
     @Column(name = "missionTargetUserIdx")
     private int missionTargetUserIdx;
+    @Column(name = "calendarConsent")
+    private int calendarConsent;
+    @Column(name = "contentConsent")
+    private int contentConsent;
 
     public User(SignUpReq signUpReq) {
         this.userId = signUpReq.getUserId();

@@ -1,7 +1,6 @@
 package kr.co.famfam.server.service.impl;
 
 import kr.co.famfam.server.domain.Anniversary;
-import kr.co.famfam.server.domain.Photo;
 import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.*;
 import kr.co.famfam.server.repository.AnniversaryRepository;
@@ -16,8 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -120,6 +119,7 @@ public class UserServiceImpl implements UserService {
             userRepository.save(temp.get());
 
             anniversary.get().setDate(temp.get().getBirthday());
+            anniversary.get().setContent(temp.get().getUserName() + "님의 생일");
             anniversaryRepository.save(anniversary.get());
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_USER);
@@ -131,7 +131,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public DefaultRes updatePhoto(final int userIdx, final UserinfoPhotoReq userinfoPhotoReq){
+    public DefaultRes updatePhoto(final int userIdx, final UserinfoPhotoReq userinfoPhotoReq) {
         // 프로필 사진, 배경 사진 수정
         Optional<User> temp = userRepository.findById(userIdx);
         if (!temp.isPresent())
@@ -201,6 +201,41 @@ public class UserServiceImpl implements UserService {
         try {
             userRepository.deleteById(userIdx);
             return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_USER);
+        } catch (Exception e) {
+            //Rollback
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
+    }
+
+    @Transactional
+    public DefaultRes findUserId(final FindUserIdReq findUserIdReq){
+        try{
+            LocalDateTime birthday = LocalDateTime.parse(findUserIdReq.getBirthday());
+            Optional<User> user = userRepository.findUserByUserPhoneAndBirthday(findUserIdReq.getNumber(), birthday);
+
+            if(!user.isPresent()){
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+            }
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, user.get().getUserId());
+        } catch (Exception e) {
+            //Rollback
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
+    }
+
+    @Transactional
+    public DefaultRes findUserPassword(final FindUserPasswordReq findUserPasswordReq){
+        try{
+            Optional<User> user = userRepository.findUserByUserIdAndUserPhone(findUserPasswordReq.getUserId(), findUserPasswordReq.getNumber());
+
+            if(!user.isPresent()){
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+            }
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, user.get().getUserIdx());
         } catch (Exception e) {
             //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
