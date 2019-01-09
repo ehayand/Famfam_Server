@@ -30,5 +30,4 @@ public interface FamilyCalendarRepository extends JpaRepository<FamilyCalendar, 
     List<FamilyCalendar> findByContetnt(@Param("content") final String content, @Param("groupIdx") final int groupIdx);
 //    List<FamilyCalendar> findFamilyCalendarsByContentLike(@Param("content") final String content);
 
-    List<FamilyCalendar> findFamilyCalendarsByStartDate(final LocalDateTime startDate);
 }

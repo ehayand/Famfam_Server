@@ -32,6 +32,4 @@ public interface AnniversaryRepository extends JpaRepository<Anniversary, Intege
 //    List<Anniversary> findAnniversariesByContentLike(@Param("content") final String content);
 
     List<Anniversary> findAnniversariesByGroupIdx(final int groupIdx);
-
-    List<Anniversary> findAnniversariesByDate(final LocalDateTime Date);
 }
