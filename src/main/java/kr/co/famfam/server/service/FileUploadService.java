@@ -51,8 +51,7 @@ public class FileUploadService {
 
     public String reload(String deleteUrl, MultipartFile uploadFile) {
         try {
-            if(deleteUrl != null)
-                s3Service.deleteS3(deleteUrl);
+            s3Service.deleteS3(deleteUrl);
             return upload(uploadFile);
         } catch (Exception e) {
             //파일이 없을 경우
