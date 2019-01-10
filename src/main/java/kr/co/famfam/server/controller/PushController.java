@@ -1,7 +1,12 @@
 package kr.co.famfam.server.controller;
 
 
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import kr.co.famfam.server.service.FirebaseAdminService;
 import kr.co.famfam.server.service.PushService;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
@@ -12,12 +17,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.*;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+
+@Slf4j
 @RestController
 @RequestMapping("/send")
 public class PushController {
@@ -29,56 +39,65 @@ public class PushController {
     }
 
     @PostMapping("")
-    public ResponseEntity<String> send(@RequestBody Map<String, Object> paramInfo){
-
-        JSONObject body = new JSONObject();
-
-        List<String> tokenList = new ArrayList<>();
-
-        Object object = paramInfo.get("token");
-
-        List<String> list = (ArrayList<String>)object;
-
-        list.forEach(item -> {
-            tokenList.add(item);
-        });
-
-
-        JSONArray array = new JSONArray();
-
-        tokenList.forEach(item ->
-            array.put(item)
-        );
-
-
-        body.put("registration_ids", array);
-
-        JSONObject notification = new JSONObject();
-        notification.put("title", "hi");
-        notification.put("body", paramInfo.get("message"));
-
-        body.put("notification", notification);
-
-
-
-        HttpEntity<String> request = new HttpEntity<>(body.toString());
-
-        CompletableFuture<String> pushNotification = pushService.send(request);
-        CompletableFuture.allOf(pushNotification).join();
-
+    public ResponseEntity<String> send(@RequestBody Map<String, Object> paramInfo) {
         try {
-          String firebaseResponse = pushNotification.get();
+            JSONObject body = new JSONObject();
 
-          return new ResponseEntity<>(firebaseResponse, HttpStatus.OK);
+            List<String> tokenList = new ArrayList<>();
+
+            Object object = paramInfo.get("token");
+
+            List<String> list = (ArrayList<String>) object;
+
+            list.forEach(item -> {
+                tokenList.add(item);
+            });
+
+
+            JSONArray array = new JSONArray();
+
+            tokenList.forEach(item ->
+                    array.put(item)
+            );
+
+
+            body.put("registration_ids", array);
+
+            String message = new String(paramInfo.get("message").toString().getBytes("UTF-8"), "UTF-8");
+
+//            String title = URLEncoder.encode("빰빰", StandardCharsets.UTF_8);
+            String content = URLEncoder.encode(message, "UTF-8");
+            String decode = URLDecoder.decode(content, "UTF-8");
+
+            System.out.println("ddd: "+decode);
+
+            JSONObject notification = new JSONObject();
+            notification.put("title", "pu푸시sh");
+            notification.put("body", decode);
+
+
+            body.put("notification", notification);
+
+
+            HttpEntity<String> request = new HttpEntity<>(body.toString());
+
+            CompletableFuture<String> pushNotification = pushService.send(request);
+            CompletableFuture.allOf(pushNotification).join();
+
+
+            String firebaseResponse = pushNotification.get();
+
+            return new ResponseEntity<>(firebaseResponse, HttpStatus.OK);
         } catch (InterruptedException e) {
             e.getStackTrace();
         } catch (ExecutionException e) {
             e.getStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.getStackTrace();
         }
-
-
 
 
         return new ResponseEntity<>("Push Errorrrrrr", HttpStatus.BAD_REQUEST);
     }
+
 }
