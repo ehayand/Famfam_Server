@@ -43,6 +43,7 @@ public class FeelServiceImpl implements FeelService {
         this.historyService = historyService;
     }
 
+    @Override
     public DefaultRes findFeelsByContentIdx(int contentIdx) {
         try {
             final List<Feel> feels = feelRepository.findFeelsByContentIdxOrderByCreatedAtAsc(contentIdx);
@@ -71,23 +72,24 @@ public class FeelServiceImpl implements FeelService {
         }
     }
 
+    @Override
     public DefaultRes countThisWeek(int userIdx) {
-        Optional<User> user = userRepository.findById(userIdx);
-        if (!user.isPresent())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
-
-        final List<User> groupUsers = userRepository.findUsersByGroupIdx(user.get().getGroupIdx());
-        if (groupUsers.isEmpty())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_GROUP);
-
         try {
+            Optional<User> user = userRepository.findById(userIdx);
+            if (!user.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+            final List<User> groupUsers = userRepository.findUsersByGroupIdx(user.get().getGroupIdx());
+            if (groupUsers.isEmpty())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_GROUP);
+
             LocalDateTime startDateTime = getStartDateTime();
             LocalDateTime endDateTime = LocalDateTime.of(startDateTime.plusDays(6).toLocalDate(), LocalTime.of(23, 59, 59));
+
             long count = 0;
 
-            for (User u : groupUsers) {
+            for (User u : groupUsers)
                 count += feelRepository.countByUserIdxAndCreatedAtBetween(u.getUserIdx(), startDateTime, endDateTime);
-            }
 
             Map<String, Long> result = new HashMap<>();
             result.put("count", count);
@@ -99,6 +101,7 @@ public class FeelServiceImpl implements FeelService {
         }
     }
 
+    @Override
     @Transactional
     public DefaultRes save(FeelReq feelReq) {
         try {
@@ -119,13 +122,13 @@ public class FeelServiceImpl implements FeelService {
                 return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_FEEL);
             }
         } catch (Exception e) {
-            //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
     }
 
+    @Override
     @Transactional
     public DefaultRes delete(int contentIdx, int userIdx) {
         try {
@@ -147,6 +150,7 @@ public class FeelServiceImpl implements FeelService {
         LocalDate today = LocalDate.now();
         LocalDateTime startDateTime =
                 LocalDateTime.of(today.minusDays(today.getDayOfWeek().getValue() - 1), LocalTime.of(0, 0, 0));
+
         return startDateTime;
     }
 }

@@ -35,8 +35,9 @@ public class MissionController {
     @Auth
     @GetMapping("")
     public ResponseEntity getMission(@RequestHeader(value = "Authorization") final String header) {
-        try{
+        try {
             int authIdx = jwtService.decode(header).getUser_idx();
+
             return new ResponseEntity(missionService.findById(authIdx), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());

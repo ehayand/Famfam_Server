@@ -28,12 +28,8 @@ public class CommentController {
     @Auth
     @GetMapping("/contents/{contentIdx}")
     public ResponseEntity<DefaultRes> getComments(
-            @RequestHeader("Authorization") final String header,
             @PathVariable("contentIdx") final int contentIdx) {
         try {
-            int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
-
             return new ResponseEntity<>(commentService.findCommentsByContentIdx(contentIdx), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -47,7 +43,6 @@ public class CommentController {
             @RequestHeader("Authorization") final String header) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
 
             return new ResponseEntity<>(commentService.countThisWeek(authUserIdx), HttpStatus.OK);
         } catch (Exception e) {
@@ -64,11 +59,9 @@ public class CommentController {
             @RequestBody final CommentDto commentDto) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
 
             commentDto.setUserIdx(authUserIdx);
             commentDto.setContentIdx(contentIdx);
-
 
             return new ResponseEntity<>(commentService.save(commentDto), HttpStatus.OK);
         } catch (Exception e) {
@@ -85,7 +78,6 @@ public class CommentController {
             @RequestBody final CommentDto commentDto) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
 
             return new ResponseEntity<>(commentService.update(commentIdx, commentDto), HttpStatus.OK);
         } catch (Exception e) {
@@ -101,7 +93,6 @@ public class CommentController {
             @PathVariable("commentIdx") final int commentIdx) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
 
             return new ResponseEntity<>(commentService.delete(commentIdx), HttpStatus.OK);
         } catch (Exception e) {

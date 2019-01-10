@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public class UserRes {
 
     private int userIdx;
+
     private String userId;
     private String userName;
     private String userPhone;
@@ -17,6 +18,7 @@ public class UserRes {
     private String statusMessage;
     private String profilePhoto;
     private String backPhoto;
+
     private int groupIdx;
 
     public UserRes(User user) {

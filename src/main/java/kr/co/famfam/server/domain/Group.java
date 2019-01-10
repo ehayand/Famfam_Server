@@ -25,7 +25,6 @@ public class Group {
 
     @Column(name = "groupId")
     private String groupId;
-
     @Column(name = "homePhoto")
     private String homePhoto;
 

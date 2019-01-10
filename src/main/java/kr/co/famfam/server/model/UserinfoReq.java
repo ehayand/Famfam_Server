@@ -11,5 +11,4 @@ public class UserinfoReq {
     private LocalDateTime birthday;
     private int sexType = -1;
     private String statusMessage;
-
 }

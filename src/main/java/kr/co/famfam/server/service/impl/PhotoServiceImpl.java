@@ -8,6 +8,7 @@ import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.PhotoService;
 import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,7 @@ import java.util.Optional;
  * Github : http://github.com/ehayand
  */
 
+@Slf4j
 @Service
 public class PhotoServiceImpl implements PhotoService {
 
@@ -39,23 +41,29 @@ public class PhotoServiceImpl implements PhotoService {
         this.photoRepository = photoRepository;
     }
 
+    @Override
     public DefaultRes findPhotosByUserIdx(int userIdx, Pageable pageable) {
-        Optional<User> user = userRepository.findById(userIdx);
-        if (!user.isPresent())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+        try {
+            Optional<User> user = userRepository.findById(userIdx);
+            if (!user.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
-        Page<Photo> photos = photoRepository.findPhotosByUserIdxOrderByCreatedAtDesc(userIdx, pageable);
-        if (photos.isEmpty())
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_PHOTO);
+            Page<Photo> photos = photoRepository.findPhotosByUserIdxOrderByCreatedAtDesc(userIdx, pageable);
+            if (photos.isEmpty())
+                return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_PHOTO);
 
-        Map<String, Object> result = new HashMap<>();
+            Map<String, Object> result = new HashMap<>();
 
-        for(final Photo photo : photos)
-            photo.setPhotoName(bucketPrefix + bucketResized + photo.getPhotoName());
+            for (final Photo photo : photos)
+                photo.setPhotoName(bucketPrefix + bucketResized + photo.getPhotoName());
 
-        result.put("photos", photos.getContent());
-        result.put("totalPage", photos.getTotalPages());
+            result.put("photos", photos.getContent());
+            result.put("totalPage", photos.getTotalPages());
 
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_PHOTO, result);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_PHOTO, result);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
     }
 }

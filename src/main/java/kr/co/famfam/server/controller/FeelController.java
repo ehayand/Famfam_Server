@@ -33,9 +33,6 @@ public class FeelController {
             @RequestHeader("Authorization") final String header,
             @PathVariable("contentIdx") final int contentIdx) {
         try {
-            int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
-
             return new ResponseEntity<>(feelService.findFeelsByContentIdx(contentIdx), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -49,7 +46,6 @@ public class FeelController {
             @RequestHeader("Authorization") final String header) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
 
             return new ResponseEntity<>(feelService.countThisWeek(authUserIdx), HttpStatus.OK);
         } catch (Exception e) {
@@ -66,9 +62,8 @@ public class FeelController {
             @RequestBody final Optional<FeelReq> feelReq) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
 
-            if(!feelReq.isPresent())
+            if (!feelReq.isPresent())
                 return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.BAD_REQUEST);
 
             feelReq.get().setContentIdx(contentIdx);
@@ -88,7 +83,6 @@ public class FeelController {
             @PathVariable("contentIdx") final int contentIdx) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
 
             return new ResponseEntity<>(feelService.delete(contentIdx, authUserIdx), HttpStatus.OK);
         } catch (Exception e) {

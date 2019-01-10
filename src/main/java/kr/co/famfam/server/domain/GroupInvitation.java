@@ -22,9 +22,10 @@ public class GroupInvitation {
     @Id
     private String code;
 
+    private LocalDateTime createdAt;
+    private LocalDateTime expiredAt;
+
     @Indexed
     private int groupIdx;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime expiredAt;
 }

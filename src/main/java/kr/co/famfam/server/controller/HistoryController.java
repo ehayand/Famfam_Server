@@ -1,12 +1,12 @@
 package kr.co.famfam.server.controller;
 
 
-
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.model.HistoryDto;
 import kr.co.famfam.server.service.HistoryService;
 import kr.co.famfam.server.service.JwtService;
 import kr.co.famfam.server.utils.HistoryType;
+import kr.co.famfam.server.utils.auth.Auth;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -28,6 +28,7 @@ public class HistoryController {
         this.jwtService = jwtService;
     }
 
+    @Auth
     @GetMapping("")
     public ResponseEntity<DefaultRes> getHistory(@RequestHeader(value = "Authorization") final String header,
                                                  @PageableDefault(sort = {"createdAt"}, direction = Sort.Direction.DESC, size = 12) Pageable pageable) {
@@ -41,11 +42,10 @@ public class HistoryController {
         }
     }
 
-
+    @Auth
     @PostMapping("")
     public ResponseEntity addHistory(@RequestHeader(value = "Authorization") final String header) {
         try {
-
             HistoryDto historyDto = new HistoryDto();
             historyDto.setUserIdx(1);
             historyDto.setHistoryType(HistoryType.ADD_ANNIVERSARY);
