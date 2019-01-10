@@ -11,12 +11,14 @@ import kr.co.famfam.server.service.JwtService;
 import kr.co.famfam.server.service.LoginService;
 import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class LoginServiceImpl implements LoginService {
 
@@ -30,49 +32,61 @@ public class LoginServiceImpl implements LoginService {
         this.jwtService = jwtService;
     }
 
+    @Override
     public DefaultRes login(LoginReq loginReq) {
-        if (!loginReq.isLogin())
-            return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.LOGIN_FAIL);
+        try {
+            if (!loginReq.isLogin())
+                return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.LOGIN_FAIL);
 
-        User loginUser = new User(loginReq);
+            User loginUser = new User(loginReq);
 
-        final Optional<User> user = userRepository.findUserByUserIdAndUserPw(loginUser.getUserId(), loginUser.getUserPw());
-        if (!user.isPresent())
-            return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.LOGIN_FAIL);
+            final Optional<User> user = userRepository.findUserByUserIdAndUserPw(loginUser.getUserId(), loginUser.getUserPw());
+            if (!user.isPresent())
+                return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.LOGIN_FAIL);
 
-        Map<String, Object> result = new HashMap<>();
+            Map<String, Object> result = new HashMap<>();
 
-        if (user.get().getGroupIdx() != -1) {
-            Optional<Group> group = groupRepository.findById(user.get().getGroupIdx());
-            result.put("groupId", group.get().getGroupId());
+            if (user.get().getGroupIdx() != -1) {
+                Optional<Group> group = groupRepository.findById(user.get().getGroupIdx());
+                result.put("groupId", group.get().getGroupId());
+            }
+
+            final JwtService.TokenRes tokenRes = new JwtService.TokenRes(jwtService.create(user.get().getUserIdx()));
+
+            result.put("token", tokenRes.getToken());
+            result.put("user", new UserRes(user.get()));
+
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, result);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
-      
-        final JwtService.TokenRes tokenRes = new JwtService.TokenRes(jwtService.create(user.get().getUserIdx()));
-
-        result.put("token", tokenRes.getToken());
-        result.put("user", new UserRes(user.get()));
-
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, result);
     }
 
+    @Override
     public DefaultRes login(final int userIdx) {
-        final Optional<User> user = userRepository.findById(userIdx);
-        if (!user.isPresent())
-            return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.LOGIN_FAIL);
+        try {
+            final Optional<User> user = userRepository.findById(userIdx);
+            if (!user.isPresent())
+                return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.LOGIN_FAIL);
 
-        Map<String, Object> result = new HashMap<>();
+            Map<String, Object> result = new HashMap<>();
 
-        if (user.get().getGroupIdx() != -1) {
-            Optional<Group> group = groupRepository.findById(user.get().getGroupIdx());
-            result.put("groupId", group.get().getGroupId());
+            if (user.get().getGroupIdx() != -1) {
+                Optional<Group> group = groupRepository.findById(user.get().getGroupIdx());
+                result.put("groupId", group.get().getGroupId());
+            }
+
+            final JwtService.TokenRes tokenRes = new JwtService.TokenRes(jwtService.create(user.get().getUserIdx()));
+
+            result.put("token", tokenRes.getToken());
+            result.put("user", new UserRes(user.get()));
+
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, result);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
-      
-        final JwtService.TokenRes tokenRes = new JwtService.TokenRes(jwtService.create(user.get().getUserIdx()));
-
-        result.put("token", tokenRes.getToken());
-        result.put("user", new UserRes(user.get()));
-
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, result);
     }
 }
 

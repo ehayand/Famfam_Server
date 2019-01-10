@@ -37,6 +37,5 @@ public class ServerApplication {
             log.error(e.getMessage());
         }
     }
-
 }
 

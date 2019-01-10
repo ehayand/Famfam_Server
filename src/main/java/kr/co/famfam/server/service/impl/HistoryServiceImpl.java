@@ -27,12 +27,12 @@ public class HistoryServiceImpl implements HistoryService {
     private HistoryRepository historyRepository;
     private UserRepository userRepository;
 
-
     public HistoryServiceImpl(HistoryRepository historyRepository, UserRepository userRepository) {
         this.historyRepository = historyRepository;
         this.userRepository = userRepository;
     }
 
+    @Override
     @Transactional
     public Boolean add(final HistoryDto historyDto) {
         try {
@@ -81,9 +81,9 @@ public class HistoryServiceImpl implements HistoryService {
         }
     }
 
+    @Override
     public Boolean batchHistory(final HistoryDto historyDto, String content) {
         try {
-            log.info("batchHistory start");
             StringBuilder sb = new StringBuilder();
             sb.append("\"").append(content).append("\"");
 
@@ -101,7 +101,7 @@ public class HistoryServiceImpl implements HistoryService {
             History history = historyDto.toEntity();
 
             historyRepository.save(history);
-            log.info("batchHistory finished");
+
             return true;
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -111,6 +111,7 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
 
+    @Override
     public DefaultRes findAllHistoryByUserIdx(int userIdx, Pageable pageable) {
         try {
             Optional<User> user = userRepository.findById(userIdx);
@@ -126,16 +127,15 @@ public class HistoryServiceImpl implements HistoryService {
             Map<String, Object> result = new HashMap<>();
             List<History> histories = new LinkedList<>();
 
-            for (History history : historyPage) {
+            for (History history : historyPage)
                 histories.add(history);
-            }
+
 
             result.put("histories", histories);
             result.put("totalPage", historyPage.getTotalPages());
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_HISTORY, result);
         } catch (Exception e) {
-            //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
