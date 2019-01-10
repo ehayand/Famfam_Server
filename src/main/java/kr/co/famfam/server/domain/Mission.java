@@ -28,14 +28,6 @@ public class Mission {
 
     @Column(name = "missionType")
     private int missionType;
-    @Column(name = "suffixType")
-    private int suffixType;
     @Column(name = "content")
     private String content;
-
-    public Mission(int missionType, int suffixType, String content) {
-        this.missionType = missionType;
-        this.suffixType = suffixType;
-        this.content = content;
-    }
 }

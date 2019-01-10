@@ -50,7 +50,7 @@ public class MissionServiceImpl implements MissionService {
 
             Map<String, Object> result = new HashMap<>();
             result.put("mission", mission);
-            result.put("targetUser", target);
+            result.put("target", target.get().getUserName());
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_MISSION, result);
         } catch (Exception e) {
@@ -71,7 +71,11 @@ public class MissionServiceImpl implements MissionService {
             if (users.isEmpty())
                 return false;
 
-            Mission mission = missions.get(new Random().nextInt(missions.size()));
+            int randomMission = 0;
+            while(randomMission == 0)
+                randomMission = new Random().nextInt(missions.size());
+
+            Mission mission = missions.get(randomMission);
             User target = users.get(new Random().nextInt(users.size()));
 
             user.setMissionIdx(mission.getMissionIdx());

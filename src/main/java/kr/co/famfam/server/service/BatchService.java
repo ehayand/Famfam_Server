@@ -63,7 +63,7 @@ public class BatchService {
      * W : 월~금요일 또는 가장 가까운 월/금요일
      * # : 몇 번째 무슨 요일 2#1 => 첫 번째 월요일
      */
-    @Scheduled(cron = "0 0 1 * * *")
+    @Scheduled(cron = "0 0/5 * * * *")
     public void missionBatch() {
         log.info("############ Mission Batch Start : " + LocalTime.now());
         List<Group> allGroups = groupRepository.findAll();
@@ -132,6 +132,14 @@ public class BatchService {
         DefaultMission defaultMission = new DefaultMission();
 
         try {
+            Mission defaultZeroMission = Mission.builder()
+                    .missionIdx(1)
+                    .missionType(0)
+                    .content("가족을 초대해보세요!")
+                    .build();
+
+            missionService.save(defaultZeroMission);
+
             for (Mission mission : defaultMission.getMissionList())
                 missionService.save(mission);
         } catch (Exception e) {

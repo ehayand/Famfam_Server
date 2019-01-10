@@ -232,7 +232,6 @@ public class ContentServiceImpl implements ContentService {
             int contentIdx = contentRepository.save(content).getContentIdx();
 
             if (contentReq.getPhotos() != null) {
-                log.info("photos != null");
                 for (MultipartFile file : contentReq.getPhotos()) {
                     log.info(file.getOriginalFilename());
                     Photo photo = new Photo(contentIdx, contentReq.getUserIdx());
