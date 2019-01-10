@@ -113,7 +113,7 @@ public class BatchService {
             try {
                 for (Anniversary a : allAnniversaries) {
                     List<User> users = userRepository.findUsersByGroupIdxAndContentConsent(a.getGroupIdx(), 1);
-                    if(users.isEmpty())
+                    if (users.isEmpty())
                         log.error("users empty");
 
                     for (User u : users)
