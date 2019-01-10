@@ -3,6 +3,7 @@ package kr.co.famfam.server.service.impl;
 import com.google.firebase.messaging.*;
 import kr.co.famfam.server.service.PushService;
 import kr.co.famfam.server.utils.HeaderRequestInterceptor;
+import kr.co.famfam.server.utils.PushType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -26,19 +27,20 @@ public class PushServiceImpl implements PushService {
     private String API_URL = "https://fcm.googleapis.com/fcm/send";
 
 
-    @Override
     @Async
     public CompletableFuture<String> send(HttpEntity<String> httpEntity) {
+        RestTemplate restTemplate = new RestTemplate();
 
-        try {
-            RestTemplate restTemplate = new RestTemplate();
-
+        ArrayList<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
 
         interceptors.add(new HeaderRequestInterceptor("Authorization", "key="+SERVER_KEY));
         interceptors.add(new HeaderRequestInterceptor("Content-Type", "application/json;charset=UTF-8"));
         restTemplate.setInterceptors(interceptors);
 
+        String firebaseResponse = restTemplate.postForObject(API_URL, httpEntity, String.class);
+
         return CompletableFuture.completedFuture(firebaseResponse);
+
     }
 
 
@@ -72,7 +74,7 @@ public class PushServiceImpl implements PushService {
     }
 
 
-    public boolean sendToTopic(int groupIdx) {
+    public boolean sendToTopic(int groupIdx, PushType pushType) {
         try {
             String topic = String.valueOf(groupIdx);
 
@@ -95,7 +97,7 @@ public class PushServiceImpl implements PushService {
     }
 
 
-    public boolean sendToDevice(String token) {
+    public boolean sendToDevice(String token, PushType pushType) {
         try {
 
             String registrationToken = token;
