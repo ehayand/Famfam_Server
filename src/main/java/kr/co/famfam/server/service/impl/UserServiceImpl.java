@@ -7,6 +7,7 @@ import kr.co.famfam.server.repository.AnniversaryRepository;
 import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.FileUploadService;
 import kr.co.famfam.server.service.JwtService;
+import kr.co.famfam.server.service.PushService;
 import kr.co.famfam.server.service.UserService;
 import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
@@ -32,12 +33,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final FileUploadService fileUploadService;
     private final AnniversaryRepository anniversaryRepository;
+    private final PushService pushService;
     private final JwtService jwtService;
 
-    public UserServiceImpl(UserRepository userRepository, FileUploadService fileUploadService, AnniversaryRepository anniversaryRepository, JwtService jwtService) {
+    public UserServiceImpl(UserRepository userRepository, FileUploadService fileUploadService, AnniversaryRepository anniversaryRepository, PushService pushService, JwtService jwtService) {
         this.userRepository = userRepository;
         this.fileUploadService = fileUploadService;
         this.anniversaryRepository = anniversaryRepository;
+        this.pushService = pushService;
         this.jwtService = jwtService;
     }
 
