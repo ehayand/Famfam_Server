@@ -28,6 +28,8 @@ public class Mission {
 
     @Column(name = "missionType")
     private int missionType;
+    @Column(name = "suffixType")
+    private int suffixType;
     @Column(name = "content")
     private String content;
 }
