@@ -102,19 +102,13 @@ public class ContentController {
     @PostMapping("")
     public ResponseEntity<DefaultRes> save(
             @RequestHeader("Authorization") final String header,
-            ContentReq contentReq,
-            @RequestPart(value = "photos", required = false) final MultipartFile[] files) {
+            ContentReq contentReq) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
             log.info("ID : " + authUserIdx);
 
             contentReq.setUserIdx(authUserIdx);
 
-            if (files != null) {
-                log.info("files is not null");
-                log.info("" + files.length);
-                contentReq.setPhotos(files);
-            }
             return new ResponseEntity<>(contentService.save(contentReq), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
