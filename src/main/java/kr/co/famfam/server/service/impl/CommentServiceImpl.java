@@ -49,6 +49,7 @@ public class CommentServiceImpl implements CommentService {
         this.historyService = historyService;
     }
 
+    @Override
     public DefaultRes findCommentsByContentIdx(int contentIdx) {
         try {
             final List<Comment> comments = commentRepository.findCommentsByContentIdxOrderByCreatedAtAsc(contentIdx);
@@ -62,23 +63,24 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
+    @Override
     public DefaultRes countThisWeek(int userIdx) {
-        Optional<User> user = userRepository.findById(userIdx);
-        if (!user.isPresent())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
-
-        final List<User> groupUsers = userRepository.findUsersByGroupIdx(user.get().getGroupIdx());
-        if (groupUsers.isEmpty())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
-
         try {
+            Optional<User> user = userRepository.findById(userIdx);
+            if (!user.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+            final List<User> groupUsers = userRepository.findUsersByGroupIdx(user.get().getGroupIdx());
+            if (groupUsers.isEmpty())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
             LocalDateTime startDateTime = getStartDateTime();
             LocalDateTime endDateTime = LocalDateTime.of(startDateTime.plusDays(6).toLocalDate(), LocalTime.of(23, 59, 59));
+
             long count = 0;
 
-            for (User u : groupUsers) {
+            for (User u : groupUsers)
                 count += commentRepository.countByUserIdxAndCreatedAtBetween(u.getUserIdx(), startDateTime, endDateTime);
-            }
 
             Map<String, Long> result = new HashMap<>();
             result.put("count", count);
@@ -90,13 +92,14 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
+    @Override
     @Transactional
     public DefaultRes save(CommentDto commentDto) {
-        Optional<Content> content = contentRepository.findById(commentDto.getContentIdx());
-        if (!content.isPresent())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
-
         try {
+            Optional<Content> content = contentRepository.findById(commentDto.getContentIdx());
+            if (!content.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
+
             commentRepository.save(new Comment(commentDto));
 
             content.get().setCommentCount(content.get().getCommentCount() + 1);
@@ -107,13 +110,13 @@ public class CommentServiceImpl implements CommentService {
 
             return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_COMMENT);
         } catch (Exception e) {
-            //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
     }
 
+    @Override
     @Transactional
     public DefaultRes update(int commentIdx, CommentDto commentDto) {
         try {
@@ -122,35 +125,35 @@ public class CommentServiceImpl implements CommentService {
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_COMMENT);
 
             comment.get().setContent(commentDto.getContent());
-
             commentRepository.save(comment.get());
+
             return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_COMMENT);
         } catch (Exception e) {
-            //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
     }
 
+    @Override
     @Transactional
     public DefaultRes delete(int commentIdx) {
-        Optional<Comment> comment = commentRepository.findById(commentIdx);
-        if (!comment.isPresent())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_COMMENT);
-
-        Optional<Content> content = contentRepository.findById(comment.get().getContentIdx());
-        if (!content.isPresent())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
-
         try {
+            Optional<Comment> comment = commentRepository.findById(commentIdx);
+            if (!comment.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_COMMENT);
+
+            Optional<Content> content = contentRepository.findById(comment.get().getContentIdx());
+            if (!content.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
+
             commentRepository.delete(comment.get());
 
             content.get().setCommentCount(content.get().getCommentCount() - 1);
             contentRepository.save(content.get());
+
             return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_COMMENT);
         } catch (Exception e) {
-            //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);

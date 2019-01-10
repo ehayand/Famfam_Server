@@ -37,6 +37,7 @@ public class CalendarServiceImpl implements CalendarService {
         this.userRepository = userRepository;
     }
 
+    @Override
     public DefaultRes findAllSchedule(final String dateStr, final int authUserIdx) {
         // 가족 일정, 개인 일정 합치기
         Optional<User> user = userRepository.findById(authUserIdx);
@@ -62,6 +63,7 @@ public class CalendarServiceImpl implements CalendarService {
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CALENDAR, map);
     }
 
+    @Override
     public DefaultRes findDaySchedule(final String dateStrTemp, final int authUserIdx) {
         // 가족 일정, 개인 일정 합치기
         Optional<User> user = userRepository.findById(authUserIdx);
@@ -85,6 +87,7 @@ public class CalendarServiceImpl implements CalendarService {
         return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CALENDAR, map);
     }
 
+    @Override
     @Transactional
     public DefaultRes addSchedule(final int calendarType, final CalendarReq calendarReq, final int authUserIdx) {
         // 타입값에 따라서 가족/개인 캘린더서비스 불러서 일정 추가하기
@@ -103,12 +106,13 @@ public class CalendarServiceImpl implements CalendarService {
         }
     }
 
+    @Override
     @Transactional
     public DefaultRes updateSchedule(final int calendarType, final int calendarIdx, final CalendarReq calendarReq) {
         // 타입값에 따라서 가족/개인 캘린더서비스 불러서 일정 수정하기
 
         String allDateStr = "";
-        if(!calendarReq.getStartDate().isEmpty() || !calendarReq.getEndDate().isEmpty())
+        if (!calendarReq.getStartDate().isEmpty() || !calendarReq.getEndDate().isEmpty())
             allDateStr = allDate(calendarReq);
 
         if (calendarType == 1) {
@@ -120,6 +124,7 @@ public class CalendarServiceImpl implements CalendarService {
         }
     }
 
+    @Override
     @Transactional
     public DefaultRes deleteSchedule(final int calendarType, final int calendarIdx) {
         // 타입값에 따라서 가족/개인 캘린더서비스 불러서 일정 삭제하기
@@ -132,6 +137,7 @@ public class CalendarServiceImpl implements CalendarService {
         }
     }
 
+    @Override
     @Transactional
     public DefaultRes searchSchedule(final CalendarSearchReq calendarSearchReq, final int authUserIdx) {
         // 일정 검색

@@ -7,6 +7,7 @@ import kr.co.famfam.server.model.HomePhotoReq;
 import kr.co.famfam.server.repository.*;
 import kr.co.famfam.server.service.FileUploadService;
 import kr.co.famfam.server.service.GroupService;
+import kr.co.famfam.server.service.MissionService;
 import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
 import lombok.extern.slf4j.Slf4j;
@@ -41,21 +42,24 @@ public class GroupServiceImpl implements GroupService {
     private final FileUploadService fileUploadService;
     private final PhotoRepository photoRepository;
     private final AnniversaryRepository anniversaryRepository;
+    private final MissionService missionService;
 
-    public GroupServiceImpl(GroupRepository groupRepository, UserRepository userRepository, GroupInvitationRepository groupInvitationRepository, FileUploadService fileUploadService, PhotoRepository photoRepository, AnniversaryRepository anniversaryRepository) {
+    public GroupServiceImpl(GroupRepository groupRepository, UserRepository userRepository, GroupInvitationRepository groupInvitationRepository, FileUploadService fileUploadService, PhotoRepository photoRepository, AnniversaryRepository anniversaryRepository, MissionService missionService) {
         this.groupRepository = groupRepository;
         this.userRepository = userRepository;
         this.groupInvitationRepository = groupInvitationRepository;
         this.fileUploadService = fileUploadService;
         this.photoRepository = photoRepository;
         this.anniversaryRepository = anniversaryRepository;
+        this.missionService = missionService;
     }
 
+    @Override
     public DefaultRes findGroupByUserIdx(int userIdx) {
-        Optional<User> user = userRepository.findById(userIdx);
-        if (!user.isPresent()) return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
-
         try {
+            Optional<User> user = userRepository.findById(userIdx);
+            if (!user.isPresent()) return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
             int groupIdx = user.get().getGroupIdx();
 
             if (groupIdx == -1)
@@ -69,7 +73,6 @@ public class GroupServiceImpl implements GroupService {
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_GROUP, group.get());
         } catch (Exception e) {
-            //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
@@ -77,12 +80,13 @@ public class GroupServiceImpl implements GroupService {
 
     }
 
+    @Override
     @Transactional
     public DefaultRes getInvitationCode(int userIdx) {
-        Optional<User> user = userRepository.findById(userIdx);
-        if (!user.isPresent()) return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
-
         try {
+            Optional<User> user = userRepository.findById(userIdx);
+            if (!user.isPresent()) return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
             int groupIdx = user.get().getGroupIdx();
 
             if (groupIdx == -1)
@@ -90,23 +94,23 @@ public class GroupServiceImpl implements GroupService {
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_COED, check(groupIdx));
         } catch (Exception e) {
-            //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
     }
 
+    @Override
     @Transactional
     public DefaultRes joinGroup(int userIdx, String code) {
         // 그룹 참여
-        Optional<User> user = userRepository.findById(userIdx);
-        if (!user.isPresent()) return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
-
-        if (user.get().getGroupIdx() != -1)
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.ALREADY_JOINED_GROUP);
-
         try {
+            Optional<User> user = userRepository.findById(userIdx);
+            if (!user.isPresent()) return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+            if (user.get().getGroupIdx() != -1)
+                return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.ALREADY_JOINED_GROUP);
+
             int groupIdx = check(code);
 
             if (groupIdx == -1)
@@ -114,6 +118,12 @@ public class GroupServiceImpl implements GroupService {
 
             user.get().setGroupIdx(groupIdx);
             userRepository.save(user.get());
+            missionService.updateUser(user.get());
+
+            Optional<Group> group = groupRepository.findById(groupIdx);
+            Optional<User> groupUser = userRepository.findById(group.get().getUserIdx());
+            if(groupUser.get().getMissionIdx() == 0)
+                missionService.updateUser(groupUser.get());
 
             Anniversary anniversary = new Anniversary();
             anniversary.setGroupIdx(user.get().getGroupIdx());
@@ -122,26 +132,26 @@ public class GroupServiceImpl implements GroupService {
             anniversary.setContent(user.get().getUserName() + "님의 생일");
             anniversaryRepository.save(anniversary);
 
-            Optional<Group> group = groupRepository.findById(groupIdx);
-
             return DefaultRes.res(StatusCode.OK, ResponseMessage.JOIN_SUCCESS_GROUP, new GroupRes(group.get()));
         } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
     }
 
+    @Override
     @Transactional
     public DefaultRes save(int userIdx) {
         // 그룹 생성
-        Optional<User> user = userRepository.findById(userIdx);
-        if (!user.isPresent())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
-
-        if (user.get().getGroupIdx() != -1)
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.ALREADY_JOINED_GROUP);
-
         try {
+            Optional<User> user = userRepository.findById(userIdx);
+            if (!user.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+            if (user.get().getGroupIdx() != -1)
+                return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.ALREADY_JOINED_GROUP);
+
             Group group = new Group();
             group.setUserIdx(userIdx);
             group.setGroupId(getUUID());
@@ -159,23 +169,23 @@ public class GroupServiceImpl implements GroupService {
 
             return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_GROUP, new GroupRes(group));
         } catch (Exception e) {
-            //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
     }
 
+    @Override
     @Transactional
     public DefaultRes delete(int groupIdx, int userIdx) {
-        Optional<User> user = userRepository.findById(userIdx);
-        if (!user.isPresent())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
-
-        if (user.get().getGroupIdx() == -1)
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_JOIN_GROUP);
-
         try {
+            Optional<User> user = userRepository.findById(userIdx);
+            if (!user.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+            if (user.get().getGroupIdx() == -1)
+                return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_JOIN_GROUP);
+
             user.get().setGroupIdx(-1);
             userRepository.save(user.get());
 
@@ -191,41 +201,41 @@ public class GroupServiceImpl implements GroupService {
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_GROUP);
         } catch (Exception e) {
-            //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
     }
 
+    @Override
     @Transactional
     public DefaultRes withdraw(final int userIdx) {
-        final Optional<User> user = userRepository.findById(userIdx);
-        if (!user.isPresent())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
-
-        if (user.get().getGroupIdx() == -1)
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_JOIN_GROUP);
-
         try {
+            Optional<User> user = userRepository.findById(userIdx);
+            if (!user.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+            if (user.get().getGroupIdx() == -1)
+                return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_JOIN_GROUP);
+
             user.get().setGroupIdx(-1);
             userRepository.save(user.get());
             return DefaultRes.res(StatusCode.OK, ResponseMessage.WITHDRAW_SUCCESS_GROUP);
         } catch (Exception e) {
-            //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
     }
 
+    @Override
     @Transactional
     public DefaultRes photoUpdate(HomePhotoReq homePhotoReq) {
-        Optional<Group> group = groupRepository.findById(homePhotoReq.getGroupIdx());
-        if (!group.isPresent())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_GROUP);
-
         try {
+            Optional<Group> group = groupRepository.findById(homePhotoReq.getGroupIdx());
+            if (!group.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_GROUP);
+
             if (homePhotoReq.getPhoto() != null) {
                 Photo photo = new Photo();
                 photo.setContentIdx(-1);
@@ -235,7 +245,6 @@ public class GroupServiceImpl implements GroupService {
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_GROUP);
         } catch (Exception e) {
-            //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
@@ -245,42 +254,57 @@ public class GroupServiceImpl implements GroupService {
     private GroupInvitation create(int groupIdx) {
         String code = UUID.randomUUID().toString().split("-")[4];
 
-        Optional<GroupInvitation> overlapCheck = groupInvitationRepository.findById(code);
-        if (overlapCheck.isPresent()) {
-            return create(groupIdx);
+        try {
+            Optional<GroupInvitation> overlapCheck = groupInvitationRepository.findById(code);
+            if (overlapCheck.isPresent())
+                return create(groupIdx);
+
+            LocalDateTime current = LocalDateTime.now();
+            GroupInvitation invitation = GroupInvitation.builder()
+                    .code(code)
+                    .groupIdx(groupIdx)
+                    .createdAt(current)
+                    .expiredAt(current.plusMinutes(10))
+                    .build();
+
+            return groupInvitationRepository.save(invitation);
+        } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return null;
         }
-
-        LocalDateTime current = LocalDateTime.now();
-        GroupInvitation invitation = GroupInvitation.builder()
-                .code(code)
-                .groupIdx(groupIdx)
-                .createdAt(current)
-                .expiredAt(current.plusMinutes(10))
-                .build();
-
-        return groupInvitationRepository.save(invitation);
     }
 
     private GroupInvitation check(int groupIdx) {
-        Optional<GroupInvitation> invitation = groupInvitationRepository.findGroupInvitationByGroupIdx(groupIdx);
-        if (invitation.isPresent()) {
-            if (LocalDateTime.now().isBefore(invitation.get().getExpiredAt()))
-                return invitation.get();
-            else {
-                Optional<GroupInvitation> delete = groupInvitationRepository.findById(invitation.get().getCode());
-                if(delete.isPresent())
-                    groupInvitationRepository.delete(delete.get());
+        try {
+            Optional<GroupInvitation> invitation = groupInvitationRepository.findGroupInvitationByGroupIdx(groupIdx);
+            if (invitation.isPresent()) {
+                if (LocalDateTime.now().isBefore(invitation.get().getExpiredAt()))
+                    return invitation.get();
+                else {
+                    Optional<GroupInvitation> delete = groupInvitationRepository.findById(invitation.get().getCode());
+                    if (delete.isPresent())
+                        groupInvitationRepository.delete(delete.get());
+                }
             }
-        }
 
-        return create(groupIdx);
+            return create(groupIdx);
+        } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return null;
+        }
     }
 
     private int check(String code) {
-        Optional<GroupInvitation> invitation = groupInvitationRepository.findById(code);
-        if (invitation.isPresent()) {
-            if (LocalDateTime.now().isBefore(invitation.get().getExpiredAt()))
-                return invitation.get().getGroupIdx();
+        try {
+            Optional<GroupInvitation> invitation = groupInvitationRepository.findById(code);
+            if (invitation.isPresent()) {
+                if (LocalDateTime.now().isBefore(invitation.get().getExpiredAt()))
+                    return invitation.get().getGroupIdx();
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
         }
 
         return -1;
@@ -288,6 +312,7 @@ public class GroupServiceImpl implements GroupService {
 
     private String getUUID() {
         UUID uuid = UUID.randomUUID();
+
         return uuid.toString().replace("-", "");
     }
 }

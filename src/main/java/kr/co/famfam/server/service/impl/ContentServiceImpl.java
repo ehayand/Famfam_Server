@@ -58,136 +58,167 @@ public class ContentServiceImpl implements ContentService {
         this.historyService = historyService;
     }
 
+    @Override
     public DefaultRes findContentsByUserIdx(int userIdx, Pageable pageable) {
-        Optional<User> user = userRepository.findById(userIdx);
-        if (!user.isPresent())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
-
-        Page<Content> contentPage = contentRepository.findContentsByUserIdx(userIdx, pageable);
-        if (contentPage.isEmpty())
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_CONTENT);
-
-        Map<Object, Object> result = new HashMap<>();
-        List<Object> contents = new LinkedList<>();
-        List<Object> photoUrls = new LinkedList<>();
-
-        for (Content content : contentPage) {
-            Map<Object, Object> map = new HashMap<>();
-            List<Photo> photos = photoRepository.findPhotosByContentIdx(content.getContentIdx());
-
-            for (final Photo photo : photos)
-                photoUrls.add(bucketPrefix + bucketOrigin + photo.getPhotoName());
-
-            Optional<User> contentUser = userRepository.findById(content.getUserIdx());
-            if (!contentUser.isPresent())
+        try {
+            Optional<User> user = userRepository.findById(userIdx);
+            if (!user.isPresent())
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
-            map.put("userName", contentUser.get().getUserName());
-            map.put("content", content);
-            map.put("photos", photoUrls);
-            contents.add(map);
+            Page<Content> contentPage = contentRepository.findContentsByUserIdx(userIdx, pageable);
+            if (contentPage.isEmpty())
+                return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_CONTENT);
+
+            Map<Object, Object> result = new HashMap<>();
+            List<Object> contents = new LinkedList<>();
+            List<Object> photoUrls = new LinkedList<>();
+
+            for (Content content : contentPage) {
+                Map<Object, Object> map = new HashMap<>();
+                List<Photo> photos = photoRepository.findPhotosByContentIdx(content.getContentIdx());
+
+                for (final Photo photo : photos)
+                    photoUrls.add(bucketPrefix + bucketOrigin + photo.getPhotoName());
+
+                Optional<User> contentUser = userRepository.findById(content.getUserIdx());
+                if (!contentUser.isPresent())
+                    return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+                map.put("userName", contentUser.get().getUserName());
+                map.put("content", content);
+                map.put("photos", photoUrls);
+                contents.add(map);
+            }
+
+            result.put("contents", contents);
+            result.put("totalPage", contentPage.getTotalPages());
+
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, result);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
-
-        result.put("contents", contents);
-        result.put("totalPage", contentPage.getTotalPages());
-
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, result);
     }
 
+    @Override
     public DefaultRes findContentsByGroupIdx(int userIdx, Pageable pageable) {
-        Optional<User> user = userRepository.findById(userIdx);
-        if (!user.isPresent())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+        try {
+            Optional<User> user = userRepository.findById(userIdx);
+            if (!user.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
-        Page<Content> contentPage = contentRepository.findContentsByGroupIdx(user.get().getGroupIdx(), pageable);
-        if (contentPage.isEmpty())
-            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_CONTENT);
+            Page<Content> contentPage = contentRepository.findContentsByGroupIdx(user.get().getGroupIdx(), pageable);
+            if (contentPage.isEmpty())
+                return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_CONTENT);
 
-        Map<Object, Object> result = new HashMap<>();
-        List<Object> contents = new LinkedList<>();
+            Map<Object, Object> result = new HashMap<>();
+            List<Object> contents = new LinkedList<>();
 
-        for (Content content : contentPage) {
-            Map<Object, Object> map = new HashMap<>();
-            List<Photo> photos = photoRepository.findPhotosByContentIdx(content.getContentIdx());
+            for (Content content : contentPage) {
+                Map<Object, Object> map = new HashMap<>();
+                List<Photo> photos = photoRepository.findPhotosByContentIdx(content.getContentIdx());
+
+                for (final Photo photo : photos)
+                    photo.setPhotoName(bucketPrefix + bucketOrigin + photo.getPhotoName());
+
+                Optional<User> contentUser = userRepository.findById(content.getUserIdx());
+                if (!contentUser.isPresent())
+                    return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+                map.put("userName", contentUser.get().getUserName());
+                map.put("content", content);
+                map.put("photos", photos);
+                contents.add(map);
+            }
+
+            result.put("contents", contents);
+            result.put("totalPage", contentPage.getTotalPages());
+
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, result);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
+    }
+
+    @Override
+    public DefaultRes findContentById(int contentIdx) {
+        try {
+            Optional<Content> content = contentRepository.findById(contentIdx);
+            if (!content.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
+
+            Map<Object, Object> result = new HashMap<>();
+            List<Photo> photos = photoRepository.findPhotosByContentIdx(content.get().getContentIdx());
 
             for (final Photo photo : photos)
                 photo.setPhotoName(bucketPrefix + bucketOrigin + photo.getPhotoName());
 
-            Optional<User> contentUser = userRepository.findById(content.getUserIdx());
+            Optional<User> contentUser = userRepository.findById(content.get().getUserIdx());
             if (!contentUser.isPresent())
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
-            map.put("userName", contentUser.get().getUserName());
-            map.put("content", content);
-            map.put("photos", photos);
-            contents.add(map);
+            result.put("userName", contentUser.get().getUserName());
+            result.put("content", content);
+            result.put("photos", photos);
+
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, result);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
-
-        result.put("contents", contents);
-        result.put("totalPage", contentPage.getTotalPages());
-
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, result);
     }
 
-    public DefaultRes findContentById(int contentIdx) {
-        Optional<Content> content = contentRepository.findById(contentIdx);
-        if (!content.isPresent())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
-
-        Map<Object, Object> result = new HashMap<>();
-        List<Photo> photos = photoRepository.findPhotosByContentIdx(content.get().getContentIdx());
-
-        for (final Photo photo : photos)
-            photo.setPhotoName(bucketPrefix + bucketOrigin + photo.getPhotoName());
-
-        Optional<User> contentUser = userRepository.findById(content.get().getUserIdx());
-        if (!contentUser.isPresent())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
-
-        result.put("userName", contentUser.get().getUserName());
-        result.put("content", content);
-        result.put("photos", photos);
-
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, result);
-    }
-
+    @Override
     public DefaultRes findContentByPhotoId(int photoIdx) {
-        Optional<Photo> temp = photoRepository.findById(photoIdx);
-        if (!temp.isPresent())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_PHOTO);
+        try {
+            Optional<Photo> temp = photoRepository.findById(photoIdx);
+            if (!temp.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_PHOTO);
 
-        Optional<Content> content = contentRepository.findById(temp.get().getContentIdx());
-        if (!content.isPresent())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
+            Optional<Content> content = contentRepository.findById(temp.get().getContentIdx());
+            if (!content.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
 
-        Map<Object, Object> result = new HashMap<>();
-        List<Photo> photos = photoRepository.findPhotosByContentIdx(content.get().getContentIdx());
+            Map<Object, Object> result = new HashMap<>();
+            List<Photo> photos = photoRepository.findPhotosByContentIdx(content.get().getContentIdx());
 
-        for (final Photo photo : photos)
-            photo.setPhotoName(bucketPrefix + bucketOrigin + photo.getPhotoName());
+            for (final Photo photo : photos)
+                photo.setPhotoName(bucketPrefix + bucketOrigin + photo.getPhotoName());
 
-        result.put("content", content);
-        result.put("photos", photos);
+            result.put("content", content);
+            result.put("photos", photos);
 
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, content);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, content);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
     }
 
+    @Override
     public DefaultRes countThisWeek(int userIdx) {
-        Optional<User> user = userRepository.findById(userIdx);
-        if (!user.isPresent())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+        try {
+            Optional<User> user = userRepository.findById(userIdx);
+            if (!user.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
-        LocalDateTime startDateTime = getStartDateTime();
-        LocalDateTime endDateTime = LocalDateTime.of(startDateTime.plusDays(6).toLocalDate(), LocalTime.of(23, 59, 59));
+            LocalDateTime startDateTime = getStartDateTime();
+            LocalDateTime endDateTime = LocalDateTime.of(startDateTime.plusDays(6).toLocalDate(), LocalTime.of(23, 59, 59));
 
-        long count = contentRepository.countByGroupIdxAndCreatedAtBetween(user.get().getGroupIdx(), startDateTime, endDateTime);
+            long count = contentRepository.countByGroupIdxAndCreatedAtBetween(user.get().getGroupIdx(), startDateTime, endDateTime);
 
-        Map<String, Long> result = new HashMap<>();
-        result.put("count", count);
+            Map<String, Long> result = new HashMap<>();
+            result.put("count", count);
 
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, result);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, result);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
     }
 
+    @Override
     @Transactional
     public DefaultRes save(final ContentReq contentReq) {
         if (contentReq == null)
@@ -197,10 +228,10 @@ public class ContentServiceImpl implements ContentService {
             int groupIdx = userRepository.findById(contentReq.getUserIdx()).get().getGroupIdx();
             contentReq.setGroupIdx(groupIdx);
             Content content = new Content(contentReq);
+
             int contentIdx = contentRepository.save(content).getContentIdx();
 
             if (contentReq.getPhotos() != null) {
-                log.info("photos != null");
                 for (MultipartFile file : contentReq.getPhotos()) {
                     log.info(file.getOriginalFilename());
                     Photo photo = new Photo(contentIdx, contentReq.getUserIdx());
@@ -214,48 +245,49 @@ public class ContentServiceImpl implements ContentService {
 
             return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_CONTENT);
         } catch (Exception e) {
-            //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
     }
 
+    @Override
     @Transactional
     public DefaultRes update(final int contentIdx, final ContentReq contentReq) {
-        Optional<Content> oldContent = contentRepository.findById(contentIdx);
-        if (!oldContent.isPresent())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
-
         if (contentReq == null)
             return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.NULL_POINTER);
 
         try {
+            Optional<Content> oldContent = contentRepository.findById(contentIdx);
+            if (!oldContent.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
+
             oldContent.get().setContent(contentReq.getContent());
             contentRepository.save(oldContent.get());
+
             return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_CONTENT);
         } catch (Exception e) {
-            //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
     }
 
+    @Override
     @Transactional
     public DefaultRes deleteByContentId(final int userIdx, final int contentIdx) {
-        Optional<Content> content = contentRepository.findById(contentIdx);
-        if (!content.isPresent())
-            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
-
-        if (content.get().getUserIdx() != userIdx)
-            return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.UNAUTHORIZED);
-
         try {
+            Optional<Content> content = contentRepository.findById(contentIdx);
+            if (!content.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
+
+            if (content.get().getUserIdx() != userIdx)
+                return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.UNAUTHORIZED);
+
             contentRepository.delete(content.get());
+
             return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_CONTENT);
         } catch (Exception e) {
-            //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
@@ -266,6 +298,7 @@ public class ContentServiceImpl implements ContentService {
         LocalDate today = LocalDate.now();
         LocalDateTime startDateTime =
                 LocalDateTime.of(today.minusDays(today.getDayOfWeek().getValue() - 1), LocalTime.of(0, 0, 0));
+
         return startDateTime;
     }
 }

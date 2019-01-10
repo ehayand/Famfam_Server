@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import static kr.co.famfam.server.model.DefaultRes.FAIL_DEFAULT_RES;
 
@@ -38,23 +37,15 @@ public class UserController {
         this.jwtService = jwtService;
     }
 
-    /**
-     * 회원 조회
-     *
-     * @param header jwt token
-     * @return ResponseEntity
-     */
     @Auth
     @GetMapping("")
     public ResponseEntity<DefaultRes> getUser(@RequestHeader(value = "Authorization") final String header) {
         try {
             int authIdx = jwtService.decode(header).getUser_idx();
-            return new ResponseEntity<>(userService.findById(authIdx), HttpStatus.OK);
 
+            return new ResponseEntity<>(userService.findById(authIdx), HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-
-            //  TODO multivalue 수정
             return new ResponseEntity<>((MultiValueMap<String, String>) FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -64,11 +55,10 @@ public class UserController {
     public ResponseEntity<DefaultRes> getGroup(@RequestHeader(value = "Authorization") final String header) {
         try {
             int authIdx = jwtService.decode(header).getUser_idx();
-            return new ResponseEntity<>(userService.findUsersByGroupIdx(authIdx), HttpStatus.OK);
 
+            return new ResponseEntity<>(userService.findUsersByGroupIdx(authIdx), HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-            //  TODO multivalue 수정
             return new ResponseEntity<>((MultiValueMap<String, String>) FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -89,7 +79,6 @@ public class UserController {
                                                  @RequestBody final UserinfoReq userinfoReq) {
         try {
             int authIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authIdx);
 
             return new ResponseEntity<>(userService.update(authIdx, userinfoReq), HttpStatus.OK);
         } catch (Exception e) {
@@ -101,15 +90,10 @@ public class UserController {
     @Auth
     @PutMapping("/photo")
     public ResponseEntity<DefaultRes> updateUserPhoto(@RequestHeader(value = "Authorization") final String header,
-                                                      final UserinfoPhotoReq userinfoPhotoReq,
-                                                      @RequestPart(value = "profilePhoto", required = false) final MultipartFile profilePhoto,
-                                                      @RequestPart(value = "backPhoto", required = false) final MultipartFile backPhoto) {
+                                                      final UserinfoPhotoReq userinfoPhotoReq) {
         try {
             int authIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authIdx);
 
-            if (profilePhoto != null) userinfoPhotoReq.setProfilePhoto(profilePhoto);
-            if (backPhoto != null) userinfoPhotoReq.setBackPhoto(backPhoto);
             return new ResponseEntity<>(userService.updatePhoto(authIdx, userinfoPhotoReq), HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
@@ -122,6 +106,7 @@ public class UserController {
         try {
             if (duplicationIdReq == null)
                 return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.BAD_REQUEST);
+
             return new ResponseEntity<>(userService.checkDuplicationId(duplicationIdReq.getUserId()), HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
@@ -135,17 +120,16 @@ public class UserController {
                                                     @RequestBody final PasswordReq passwordReq) {
         try {
             int authIdx = jwtService.decode(header).getUser_idx();
+
             PasswordUtil util = new PasswordUtil();
             passwordReq.setUserPw(util.encryptSHA256(passwordReq.getUserPw()));
+
             return new ResponseEntity<>(userService.checkPw(authIdx, passwordReq), HttpStatus.OK);
         } catch (Exception e) {
-
             e.printStackTrace();
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
-
         }
     }
-
 
     @Auth
     @PutMapping("/password")
@@ -153,10 +137,11 @@ public class UserController {
                                                      @RequestBody final PasswordReq passwordReq) {
         try {
             int authIdx = jwtService.decode(header).getUser_idx();
+
             PasswordUtil util = new PasswordUtil();
             passwordReq.setUserPw(util.encryptSHA256(passwordReq.getUserPw()));
-            return new ResponseEntity<>(userService.updatePw(authIdx, passwordReq), HttpStatus.OK);
 
+            return new ResponseEntity<>(userService.updatePw(authIdx, passwordReq), HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -168,10 +153,11 @@ public class UserController {
     public ResponseEntity deleteUser(@RequestHeader(value = "Authorization") final String header) {
         try {
             int authIdx = jwtService.decode(header).getUser_idx();
+
             if (jwtService.checkAuth(header, authIdx))
                 return new ResponseEntity<>(userService.deleteByUserIdx(authIdx), HttpStatus.OK);
-            return new ResponseEntity<>(UNAUTHORIZED_RES, HttpStatus.OK);
 
+            return new ResponseEntity<>(UNAUTHORIZED_RES, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -208,7 +194,6 @@ public class UserController {
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 }
 
 
