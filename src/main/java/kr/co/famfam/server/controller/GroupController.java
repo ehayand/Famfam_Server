@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import static kr.co.famfam.server.model.DefaultRes.FAIL_DEFAULT_RES;
 
@@ -31,7 +30,6 @@ public class GroupController {
     public ResponseEntity getGroup(@RequestHeader("Authorization") final String header) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
 
             return new ResponseEntity<>(groupService.findGroupByUserIdx(authUserIdx), HttpStatus.OK);
         } catch (Exception e) {
@@ -45,7 +43,6 @@ public class GroupController {
     public ResponseEntity createInvitationCode(@RequestHeader("Authorization") final String header) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
 
             return new ResponseEntity<>(groupService.getInvitationCode(authUserIdx), HttpStatus.OK);
         } catch (Exception e) {
@@ -59,7 +56,6 @@ public class GroupController {
     public ResponseEntity createGroup(@RequestHeader("Authorization") final String header) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
 
             return new ResponseEntity<>(groupService.save(authUserIdx), HttpStatus.OK);
         } catch (Exception e) {
@@ -74,7 +70,6 @@ public class GroupController {
                                     @RequestBody final GroupJoinReq groupJoinReq) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
 
             return new ResponseEntity<>(groupService.joinGroup(authUserIdx, groupJoinReq.getCode()), HttpStatus.OK);
         } catch (Exception e) {
@@ -86,13 +81,10 @@ public class GroupController {
     @Auth
     @PutMapping("")
     public ResponseEntity updateGroup(@RequestHeader("Authorization") final String header,
-                                      HomePhotoReq homePhotoReq,
-                                      @RequestPart(value = "photo", required = false) final MultipartFile photo) {
+                                      HomePhotoReq homePhotoReq) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
 
-            if (photo != null) homePhotoReq.setPhoto(photo);
             return new ResponseEntity<>(groupService.photoUpdate(homePhotoReq), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -107,7 +99,6 @@ public class GroupController {
             int authIdx = jwtService.decode(header).getUser_idx();
 
             return new ResponseEntity<>(groupService.withdraw(authIdx), HttpStatus.OK);
-
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -121,7 +112,6 @@ public class GroupController {
                                       @PathVariable("groupIdx") final int groupIdx) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
 
             return new ResponseEntity<>(groupService.delete(groupIdx, authUserIdx), HttpStatus.OK);
         } catch (Exception e) {

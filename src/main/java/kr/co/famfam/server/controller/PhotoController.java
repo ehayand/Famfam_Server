@@ -33,10 +33,9 @@ public class PhotoController {
     public ResponseEntity getPhotos(
             @RequestHeader("Authorization") final String header,
             @RequestParam("userIdx") final Optional<Integer> userIdx,
-            @PageableDefault(sort = {"createdDate"}, direction = Sort.Direction.DESC, size = 20) Pageable pageable) {
+            @PageableDefault(sort = {"createAt"}, direction = Sort.Direction.DESC, size = 20) Pageable pageable) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
 
             if (userIdx.isPresent())
                 return new ResponseEntity<>(photoService.findPhotosByUserIdx(userIdx.get(), pageable), HttpStatus.OK);

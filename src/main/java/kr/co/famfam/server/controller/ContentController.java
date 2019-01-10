@@ -88,7 +88,6 @@ public class ContentController {
             @RequestHeader("Authorization") final String header) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
 
             return new ResponseEntity<>(contentService.countThisWeek(authUserIdx), HttpStatus.OK);
         } catch (Exception e) {
@@ -104,7 +103,6 @@ public class ContentController {
             ContentReq contentReq) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
 
             contentReq.setUserIdx(authUserIdx);
 
@@ -123,7 +121,6 @@ public class ContentController {
             @RequestBody ContentReq contentReq) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
 
             return new ResponseEntity<>(contentService.update(contentIdx, contentReq), HttpStatus.OK);
         } catch (Exception e) {
@@ -139,7 +136,6 @@ public class ContentController {
             @PathVariable("contentIdx") final int contentIdx) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
 
             return new ResponseEntity<>(contentService.deleteByContentId(authUserIdx, contentIdx), HttpStatus.OK);
         } catch (Exception e) {

@@ -41,6 +41,7 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
         this.userRepository = userRepository;
     }
 
+    @Override
     public List<FamilyCalendar> findByYearAndMonth(final LocalDateTime startDate, final LocalDateTime endDate, final int groupIdx) {
         // 년, 월에 맞는 (앞달, 뒷달 포함)세달치 일정 조회
         try {
@@ -48,13 +49,13 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
 
             return familyCalendars;
         } catch (Exception e) {
-            //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
             return null;
         }
     }
 
+    @Override
     public List<FamilyCalendar> findByYearAndMonthAndDate(final String dateStr, final int groupIdx) {
         // 날짜에 맞는 일정 조회
         try {
@@ -66,19 +67,19 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
 
             return familyCalendars;
         } catch (Exception e) {
-            //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
             return null;
         }
     }
 
+    @Override
     @Transactional
     public DefaultRes addSchedule(final CalendarReq calendarReq, final int authUserIdx, final String allDateStr) {
         // 일정 추가
         try {
             Optional<User> user = userRepository.findById(authUserIdx);
-            if(!user.isPresent())
+            if (!user.isPresent())
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
             FamilyCalendar schedule = new FamilyCalendar();
@@ -95,13 +96,13 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.CREATED_CALENDAR);
         } catch (Exception e) {
-            //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
     }
 
+    @Override
     @Transactional
     public DefaultRes updateSchedule(final int calendarIdx, final CalendarReq calendarReq, final String allDateStr) {
         // 일정 수정
@@ -120,13 +121,13 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_CALENDAR);
         } catch (Exception e) {
-            //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
     }
 
+    @Override
     @Transactional
     public DefaultRes deleteSchedule(final int calendarIdx) {
         // 일정 삭제
@@ -138,13 +139,13 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_CALENDAR);
         } catch (Exception e) {
-            //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
     }
 
+    @Override
     @Transactional
     public List<FamilyCalendar> searchSchedule(final String content, final int groupIdx) {
         // 일정 검색
@@ -153,7 +154,6 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
 
             return familyCalendars;
         } catch (Exception e) {
-            //Rollback
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
             return null;
