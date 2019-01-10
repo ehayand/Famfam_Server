@@ -46,8 +46,9 @@ public class GroupServiceImpl implements GroupService {
     private final PhotoRepository photoRepository;
     private final AnniversaryRepository anniversaryRepository;
     private final MissionService missionService;
+    private final PushService pushService;
 
-    public GroupServiceImpl(GroupRepository groupRepository, UserRepository userRepository, GroupInvitationRepository groupInvitationRepository, FileUploadService fileUploadService, PhotoRepository photoRepository, AnniversaryRepository anniversaryRepository, MissionService missionService) {
+    public GroupServiceImpl(GroupRepository groupRepository, UserRepository userRepository, GroupInvitationRepository groupInvitationRepository, FileUploadService fileUploadService, PhotoRepository photoRepository, AnniversaryRepository anniversaryRepository, MissionService missionService, PushService pushService) {
         this.groupRepository = groupRepository;
         this.userRepository = userRepository;
         this.groupInvitationRepository = groupInvitationRepository;
@@ -55,7 +56,7 @@ public class GroupServiceImpl implements GroupService {
         this.photoRepository = photoRepository;
         this.anniversaryRepository = anniversaryRepository;
         this.missionService = missionService;
-
+        this.pushService = pushService;
     }
 
     @Override
@@ -138,8 +139,6 @@ public class GroupServiceImpl implements GroupService {
 
 
             pushService.subscribeToTopic(user.get().getFcmToken(), groupIdx);
-
-            Optional<Group> group = groupRepository.findById(groupIdx);
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.JOIN_SUCCESS_GROUP, new GroupRes(group.get()));
         } catch (Exception e) {
