@@ -7,6 +7,7 @@ import kr.co.famfam.server.model.HomePhotoReq;
 import kr.co.famfam.server.repository.*;
 import kr.co.famfam.server.service.FileUploadService;
 import kr.co.famfam.server.service.GroupService;
+import kr.co.famfam.server.service.MissionService;
 import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
 import lombok.extern.slf4j.Slf4j;
@@ -41,14 +42,16 @@ public class GroupServiceImpl implements GroupService {
     private final FileUploadService fileUploadService;
     private final PhotoRepository photoRepository;
     private final AnniversaryRepository anniversaryRepository;
+    private final MissionService missionService;
 
-    public GroupServiceImpl(GroupRepository groupRepository, UserRepository userRepository, GroupInvitationRepository groupInvitationRepository, FileUploadService fileUploadService, PhotoRepository photoRepository, AnniversaryRepository anniversaryRepository) {
+    public GroupServiceImpl(GroupRepository groupRepository, UserRepository userRepository, GroupInvitationRepository groupInvitationRepository, FileUploadService fileUploadService, PhotoRepository photoRepository, AnniversaryRepository anniversaryRepository, MissionService missionService) {
         this.groupRepository = groupRepository;
         this.userRepository = userRepository;
         this.groupInvitationRepository = groupInvitationRepository;
         this.fileUploadService = fileUploadService;
         this.photoRepository = photoRepository;
         this.anniversaryRepository = anniversaryRepository;
+        this.missionService = missionService;
     }
 
     @Override
@@ -115,6 +118,12 @@ public class GroupServiceImpl implements GroupService {
 
             user.get().setGroupIdx(groupIdx);
             userRepository.save(user.get());
+            missionService.updateUser(user.get());
+
+            Optional<Group> group = groupRepository.findById(groupIdx);
+            Optional<User> groupUser = userRepository.findById(group.get().getUserIdx());
+            if(groupUser.get().getMissionIdx() == 0)
+                missionService.updateUser(groupUser.get());
 
             Anniversary anniversary = new Anniversary();
             anniversary.setGroupIdx(user.get().getGroupIdx());
@@ -122,8 +131,6 @@ public class GroupServiceImpl implements GroupService {
             anniversary.setAnniversaryType(0);
             anniversary.setContent(user.get().getUserName() + "님의 생일");
             anniversaryRepository.save(anniversary);
-
-            Optional<Group> group = groupRepository.findById(groupIdx);
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.JOIN_SUCCESS_GROUP, new GroupRes(group.get()));
         } catch (Exception e) {

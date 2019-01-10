@@ -38,7 +38,6 @@ public class ContentController {
             @PageableDefault(sort = {"createdAt"}, direction = Sort.Direction.DESC, size = 5) Pageable pageable) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
 
             if (userIdx.isPresent())
                 return new ResponseEntity<>(contentService.findContentsByUserIdx(userIdx.get(), pageable), HttpStatus.OK);
@@ -57,7 +56,6 @@ public class ContentController {
             @PathVariable("contentIdx") final int contentIdx) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
 
             return new ResponseEntity<>(contentService.findContentById(contentIdx), HttpStatus.OK);
         } catch (Exception e) {
@@ -73,7 +71,6 @@ public class ContentController {
             @PathVariable("photoIdx") final int photoIdx) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
 
             return new ResponseEntity<>(contentService.findContentByPhotoId(photoIdx), HttpStatus.OK);
         } catch (Exception e) {
