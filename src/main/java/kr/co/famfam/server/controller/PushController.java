@@ -69,8 +69,6 @@ public class PushController {
             String content = URLEncoder.encode(message, "UTF-8");
             String decode = URLDecoder.decode(content, "UTF-8");
 
-            System.out.println("ddd: "+decode);
-
             JSONObject notification = new JSONObject();
             notification.put("title", "pu푸시sh");
             notification.put("body", decode);
@@ -88,16 +86,11 @@ public class PushController {
             String firebaseResponse = pushNotification.get();
 
             return new ResponseEntity<>(firebaseResponse, HttpStatus.OK);
-        } catch (InterruptedException e) {
-            e.getStackTrace();
-        } catch (ExecutionException e) {
-            e.getStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.getStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Push Errorrrrrr", HttpStatus.BAD_REQUEST);
         }
 
-
-        return new ResponseEntity<>("Push Errorrrrrr", HttpStatus.BAD_REQUEST);
     }
 
 }

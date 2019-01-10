@@ -37,6 +37,8 @@ public class User {
     private String userName;
     @Column(name = "userPhone")
     private String userPhone;
+    @Column(name = "fcmToken")
+    private String fcmToken;
     @Column(name = "birthday")
     private LocalDateTime birthday;
     @Column(name = "sexType")
@@ -67,6 +69,7 @@ public class User {
         this.birthday = LocalDateTime.parse(signUpReq.getBirthday());
         this.userPhone = signUpReq.getUserPhone();
         this.sexType = signUpReq.getSexType();
+        this.fcmToken = signUpReq.getFcmToken();
         this.statusMessage = "상태메세지를 등록하세요.";
         this.groupIdx = -1;
     }

@@ -66,7 +66,7 @@ public class FirebaseAdminServiceImpl implements FirebaseAdminService {
 
         try {
             // This registration token comes from the client FCM SDKs.
-            String registrationToken = "enDURHklpaw:APA91bE36pALtNsqNePVt8E5QeK_sK8JDuxotmduTdHfRgJlTekxA1oug_FhuQys32owCRLyRxvr11-wE_WZc2kKb_QTcYN2OL1Ux46rHffPUP2WjHMCDFqJzNeyRItdEijXSuCvFVmT";
+            String registrationToken = "";
 
             String msg = "민석아 안녕!!";
 //            String encodeMessage = new String(msg.getBytes("UTF-8"),"UTF-8");
