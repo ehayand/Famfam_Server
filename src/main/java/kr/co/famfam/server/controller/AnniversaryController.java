@@ -27,6 +27,7 @@ public class AnniversaryController {
     public ResponseEntity getAllAnniversary(@RequestHeader("Authorization") final String header) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
+
             return new ResponseEntity<>(anniversaryService.findAll(authUserIdx), HttpStatus.OK);
 
         } catch (Exception e) {
@@ -41,6 +42,7 @@ public class AnniversaryController {
                                          @RequestHeader("Authorization") final String header) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
+
             return new ResponseEntity<>(anniversaryService.addAnniversary(anniversaryType, anniversaryReq, authUserIdx), HttpStatus.OK);
 
         } catch (Exception e) {

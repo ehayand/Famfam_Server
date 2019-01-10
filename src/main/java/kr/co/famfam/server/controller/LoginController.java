@@ -25,17 +25,12 @@ public class LoginController {
         this.jwtService = jwtService;
     }
 
-    /**
-     * 로그인
-     *
-     * @param loginReq 로그인 폼
-     * @return ResponseEntity
-     */
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody final LoginReq loginReq) {
         try {
-            PasswordUtil util=new PasswordUtil();
+            PasswordUtil util = new PasswordUtil();
             loginReq.setUserPw(util.encryptSHA256(loginReq.getUserPw()));
+
             return new ResponseEntity<>(loginService.login(loginReq), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -47,7 +42,7 @@ public class LoginController {
     @GetMapping("/login")
     public ResponseEntity<DefaultRes> login(@RequestHeader(value = "Authorization") final String header) {
         try {
-            int authIdx=jwtService.decode(header).getUser_idx();
+            int authIdx = jwtService.decode(header).getUser_idx();
 
             return new ResponseEntity<>(loginService.login(authIdx), HttpStatus.OK);
         } catch (Exception e) {
