@@ -22,7 +22,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Table(name = "user")
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @SequenceGenerator(name = "user_seq_generator", sequenceName = "user_seq", allocationSize = 1)
@@ -41,13 +40,16 @@ public class User {
     private LocalDateTime birthday;
     @Column(name = "sexType")
     private int sexType;
-
     @Column(name = "statusMessage")
     private String statusMessage;
     @Column(name = "profilePhoto")
     private String profilePhoto;
     @Column(name = "backPhoto")
     private String backPhoto;
+    @Column(name = "calendarConsent")
+    private int calendarConsent;
+    @Column(name = "contentConsent")
+    private int contentConsent;
 
     @Column(name = "groupIdx")
     private int groupIdx;
@@ -55,10 +57,6 @@ public class User {
     private int missionIdx;
     @Column(name = "missionTargetUserIdx")
     private int missionTargetUserIdx;
-    @Column(name = "calendarConsent")
-    private int calendarConsent;
-    @Column(name = "contentConsent")
-    private int contentConsent;
 
     public User(SignUpReq signUpReq) {
         this.userId = signUpReq.getUserId();
@@ -69,6 +67,8 @@ public class User {
         this.sexType = signUpReq.getSexType();
         this.statusMessage = "상태메세지를 등록하세요.";
         this.groupIdx = -1;
+        this.missionIdx = 0;
+        this.missionTargetUserIdx = 0;
     }
 
     public User(LoginReq loginReq) {
@@ -82,5 +82,4 @@ public class User {
         this.sexType = userinfoReq.getSexType();
         this.statusMessage = userinfoReq.getStatusMessage();
     }
-
 }
