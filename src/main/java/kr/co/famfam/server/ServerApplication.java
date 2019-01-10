@@ -7,10 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
-
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Arrays;
+
 
 
 @Slf4j
@@ -23,8 +23,9 @@ public class ServerApplication {
     public static void main(String[] args) {
         SpringApplication.run(ServerApplication.class, args);
         try {
-            serviceAccount =
-                    new FileInputStream("/Users/manhyuk/Documents/dev/sopt/appjam/Famfam_Server/src/main/java/kr/co/famfam/server/serviceAccountKey.json");
+
+            File file = new File("serviceAccountKey.json");
+            serviceAccount = new FileInputStream(file);
 
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))

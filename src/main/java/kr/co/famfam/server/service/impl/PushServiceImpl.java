@@ -3,6 +3,7 @@ package kr.co.famfam.server.service.impl;
 import com.google.firebase.messaging.*;
 import kr.co.famfam.server.service.PushService;
 import kr.co.famfam.server.utils.HeaderRequestInterceptor;
+import kr.co.famfam.server.utils.PushType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -27,32 +28,31 @@ public class PushServiceImpl implements PushService {
     private String API_URL = "https://fcm.googleapis.com/fcm/send";
 
     @Async
-    public CompletableFuture<String> send(HttpEntity<String> httpEntity){
-
+    public CompletableFuture<String> send(HttpEntity<String> httpEntity) {
         RestTemplate restTemplate = new RestTemplate();
 
         ArrayList<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
 
-        interceptors.add(new HeaderRequestInterceptor("Authorization", "key="+SERVER_KEY));
+        interceptors.add(new HeaderRequestInterceptor("Authorization", "key=" + SERVER_KEY));
         interceptors.add(new HeaderRequestInterceptor("Content-Type", "application/json;charset=UTF-8"));
         restTemplate.setInterceptors(interceptors);
 
         String firebaseResponse = restTemplate.postForObject(API_URL, httpEntity, String.class);
 
         return CompletableFuture.completedFuture(firebaseResponse);
+
     }
 
 
-
-    public boolean subscribeToTopic(String token, String groupId) {
-
+    public boolean subscribeToTopic(String token, int groupIdx) {
         try {
 
             List<String> registrationTokens = Arrays.asList(
                     token
             );
 
-            String topic = groupId;
+
+            String topic = String.valueOf(groupIdx);
 
             TopicManagementResponse response = FirebaseMessaging
                     .getInstance()
@@ -72,10 +72,9 @@ public class PushServiceImpl implements PushService {
 
     }
 
-
-    public boolean sendToTopic(String groupId) {
+    public boolean sendToTopic(int groupIdx, PushType pushType) {
         try {
-            String topic = groupId;
+            String topic = String.valueOf(groupIdx);
 
             Notification notification = new Notification("타이틀", "바디");
 
@@ -96,7 +95,8 @@ public class PushServiceImpl implements PushService {
     }
 
 
-    public boolean sendToDevice(String token) {
+    public boolean sendToDevice(String token, PushType pushType) {
+
         try {
 
             String registrationToken = token;
