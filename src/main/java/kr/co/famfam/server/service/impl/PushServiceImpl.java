@@ -44,7 +44,7 @@ public class PushServiceImpl implements PushService {
 
 
 
-    public boolean subscribeToTopic(String token, String groupId) {
+    public boolean subscribeToTopic(String token, int groupIdx) {
 
         try {
 
@@ -52,7 +52,7 @@ public class PushServiceImpl implements PushService {
                     token
             );
 
-            String topic = groupId;
+            String topic = String.valueOf(groupIdx);
 
             TopicManagementResponse response = FirebaseMessaging
                     .getInstance()
@@ -73,9 +73,9 @@ public class PushServiceImpl implements PushService {
     }
 
 
-    public boolean sendToTopic(String groupId) {
+    public boolean sendToTopic(int groupIdx) {
         try {
-            String topic = groupId;
+            String topic = String.valueOf(groupIdx);
 
             Notification notification = new Notification("타이틀", "바디");
 

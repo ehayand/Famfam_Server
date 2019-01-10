@@ -9,9 +9,9 @@ public interface PushService {
 
     CompletableFuture<String> send(HttpEntity<String> httpEntity);
 
-    boolean subscribeToTopic(String token, String groupId);
+    boolean subscribeToTopic(String token, int groupIdx);
 
-    boolean sendToTopic(String groupId);
+    boolean sendToTopic(int groupIdx);
 
     boolean sendToDevice(String token);
 }
