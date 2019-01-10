@@ -32,7 +32,6 @@ public class CalendarController {
                                                        @RequestHeader("Authorization") final String header) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
 
             return new ResponseEntity<>(calendarService.findAllSchedule(dateStr, authUserIdx), HttpStatus.OK);
 
@@ -48,7 +47,6 @@ public class CalendarController {
                                          @RequestHeader("Authorization") final String header) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
 
             return new ResponseEntity<>(calendarService.findDaySchedule(dateStr, authUserIdx), HttpStatus.OK);
 
@@ -64,7 +62,6 @@ public class CalendarController {
                                       @RequestHeader("Authorization") final String header) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
 
             return new ResponseEntity<>(calendarService.addSchedule(calendarType, calendarReq, authUserIdx), HttpStatus.OK);
 
@@ -104,7 +101,6 @@ public class CalendarController {
                                          @RequestHeader("Authorization") final String header) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
-            log.info("ID : " + authUserIdx);
 
             return new ResponseEntity<>(calendarService.searchSchedule(calendarSearchReq, authUserIdx), HttpStatus.OK);
         } catch (Exception e) {

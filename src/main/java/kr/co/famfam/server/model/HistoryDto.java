@@ -13,15 +13,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class HistoryDto {
 
-    private int userIdx;
-    private int groupIdx;
-
     // TODO edit String to enum
     private String historyType;
     private String content;
     private LocalDateTime createdAt;
 
-
+    private int userIdx;
+    private int groupIdx;
 
     public HistoryDto(int userIdx, int groupIdx, String historyType) {
         this.userIdx = userIdx;

@@ -64,7 +64,7 @@ public class JwtService {
             DecodedJWT decodedJWT = jwtVerifier.verify(token);
 
             Date expiresAt = decodedJWT.getExpiresAt();
-            if(LocalDateTime.now().isAfter(LocalDateTime.ofInstant(expiresAt.toInstant(), ZoneOffset.UTC)))
+            if (LocalDateTime.now().isAfter(LocalDateTime.ofInstant(expiresAt.toInstant(), ZoneOffset.UTC)))
                 return new Token();
 
             return new Token(decodedJWT.getClaim("user_idx").asLong().intValue());

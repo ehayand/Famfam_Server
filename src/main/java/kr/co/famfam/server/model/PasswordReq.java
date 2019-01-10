@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class PasswordReq {
+
     private String userPw;
 
     public PasswordReq(User user) {

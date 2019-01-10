@@ -20,9 +20,8 @@ public class DefaultMission {
 
         int index = 1;
 
-        for (String s : getDefaultMission()) {
+        for (String s : getDefaultMission())
             missions.add(create(s, index++));
-        }
 
         return missions;
     }
