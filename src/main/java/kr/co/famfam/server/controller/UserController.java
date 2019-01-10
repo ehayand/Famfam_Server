@@ -166,7 +166,6 @@ public class UserController {
     @Auth
     @DeleteMapping("")
     public ResponseEntity deleteUser(@RequestHeader(value = "Authorization") final String header) {
-
         try {
             int authIdx = jwtService.decode(header).getUser_idx();
             if (jwtService.checkAuth(header, authIdx))
@@ -174,13 +173,40 @@ public class UserController {
             return new ResponseEntity<>(UNAUTHORIZED_RES, HttpStatus.OK);
 
         } catch (Exception e) {
-
             e.printStackTrace();
-
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
-
         }
+    }
 
+    @PostMapping("/id/forget")
+    public ResponseEntity findUserId(@RequestBody FindUserIdReq findUserIdReq) {
+        try {
+            return new ResponseEntity<>(userService.findUserId(findUserIdReq), HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/password/forget")
+    public ResponseEntity findUserPassword(@RequestBody FindUserPasswordReq findUserPasswordReq) {
+        try {
+            return new ResponseEntity<>(userService.findUserPassword(findUserPasswordReq), HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/password/{userIdx}")
+    public ResponseEntity editUserPassword(@PathVariable("userIdx") final int userIdx,
+                                           @RequestBody PasswordReq passwordReq) {
+        try {
+            return new ResponseEntity<>(userService.updatePw(userIdx, passwordReq), HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }

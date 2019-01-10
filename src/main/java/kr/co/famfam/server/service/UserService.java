@@ -1,7 +1,6 @@
 package kr.co.famfam.server.service;
 
 import kr.co.famfam.server.model.*;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Created by ehay@naver.com on 2018-12-24
@@ -28,4 +27,9 @@ public interface UserService {
     DefaultRes checkDuplicationId(final String userId);
 
     DefaultRes deleteByUserIdx(final int userIdx);
+
+    DefaultRes findUserId(final FindUserIdReq findUserIdReq);
+
+    DefaultRes findUserPassword(final FindUserPasswordReq findUserPasswordReq);
+
 }

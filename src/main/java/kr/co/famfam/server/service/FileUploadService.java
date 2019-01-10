@@ -32,7 +32,7 @@ public class FileUploadService {
             //파일이름 암호화
             String saveFileName = getUuid() + ext;
             //파일 객체 생성
-            File file = new File(System.getProperty("user.dir") + saveFileName);
+            File file = new File(System.getProperty("user.dir") + "/" + saveFileName);
             //파일 변환
             uploadFile.transferTo(file);
             //S3 파일 업로드
@@ -51,7 +51,8 @@ public class FileUploadService {
 
     public String reload(String deleteUrl, MultipartFile uploadFile) {
         try {
-            s3Service.deleteS3(deleteUrl);
+            if(deleteUrl != null)
+                s3Service.deleteS3(deleteUrl);
             return upload(uploadFile);
         } catch (Exception e) {
             //파일이 없을 경우

@@ -19,10 +19,8 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneOffset;
 import java.util.*;
 
-import static kr.co.famfam.server.utils.HistoryType.ADD_COMMENT;
 import static kr.co.famfam.server.utils.HistoryType.ADD_EMOTION;
 
 /**

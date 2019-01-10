@@ -1,7 +1,6 @@
 package kr.co.famfam.server.repository;
 
 import kr.co.famfam.server.domain.Anniversary;
-import org.apache.tomcat.jni.Local;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -32,4 +31,6 @@ public interface AnniversaryRepository extends JpaRepository<Anniversary, Intege
 //    List<Anniversary> findAnniversariesByContentLike(@Param("content") final String content);
 
     List<Anniversary> findAnniversariesByGroupIdx(final int groupIdx);
+
+    List<Anniversary> findAnniversariesByDate(final LocalDateTime Date);
 }
