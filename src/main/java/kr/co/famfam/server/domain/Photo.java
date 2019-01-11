@@ -30,12 +30,15 @@ public class Photo {
 
     @Column(name = "contentIdx")
     private int contentIdx;
+    @Column(name = "groupIdx")
+    private int groupIdx;
     @Column(name = "userIdx")
     private int userIdx;
 
-    public Photo(int contentIdx, int userIdx) {
-        this.contentIdx = contentIdx;
-        this.userIdx = userIdx;
+    public Photo(int contentIdx, int userIdx, int groupIdx) {
         this.createdAt = LocalDateTime.now();
+        this.contentIdx = contentIdx;
+        this.groupIdx = groupIdx;
+        this.userIdx = userIdx;
     }
 }

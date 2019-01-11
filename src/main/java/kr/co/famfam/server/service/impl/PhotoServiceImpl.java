@@ -66,4 +66,29 @@ public class PhotoServiceImpl implements PhotoService {
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
     }
+
+    public DefaultRes findPhotosByGroupIdx(int userIdx, Pageable pageable) {
+        try {
+            Optional<User> user = userRepository.findById(userIdx);
+            if (!user.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+            Page<Photo> photos = photoRepository.findPhotosByGroupIdxOrderByCreatedAtDesc(user.get().getGroupIdx(), pageable);
+            if (photos.isEmpty())
+                return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_PHOTO);
+
+            Map<String, Object> result = new HashMap<>();
+
+            for (final Photo photo : photos)
+                photo.setPhotoName(bucketPrefix + bucketResized + photo.getPhotoName());
+
+            result.put("photos", photos.getContent());
+            result.put("totalPage", photos.getTotalPages());
+
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_PHOTO, result);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
+    }
 }

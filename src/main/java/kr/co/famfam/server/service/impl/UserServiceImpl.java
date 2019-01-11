@@ -121,7 +121,7 @@ public class UserServiceImpl implements UserService {
         if (!temp.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
-        Optional<Anniversary> anniversary = anniversaryRepository.findById(temp.get().getUserIdx());
+        Optional<Anniversary> anniversary = anniversaryRepository.findAnniversariesByUserIdxAndAnniversaryType(temp.get().getUserIdx(), 0);
         if (!anniversary.isPresent())
             return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_ANNIVERSARY);
 

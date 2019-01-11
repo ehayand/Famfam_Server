@@ -85,6 +85,8 @@ public class GroupController {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
 
+            homePhotoReq.setUserIdx(authUserIdx);
+
             return new ResponseEntity<>(groupService.photoUpdate(homePhotoReq), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
