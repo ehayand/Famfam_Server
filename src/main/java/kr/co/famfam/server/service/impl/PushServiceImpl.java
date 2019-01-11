@@ -3,7 +3,6 @@ package kr.co.famfam.server.service.impl;
 import com.google.firebase.messaging.*;
 import kr.co.famfam.server.service.PushService;
 import kr.co.famfam.server.utils.HeaderRequestInterceptor;
-import kr.co.famfam.server.utils.PushType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -16,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+
+import static kr.co.famfam.server.utils.PushType.*;
 
 
 @Slf4j
@@ -75,14 +76,14 @@ public class PushServiceImpl implements PushService {
             StringBuilder stb = new StringBuilder();
             stb.append(username);
 
-            if (pushType.equals("ADD_CONTENTS"))
-                stb = stb.append("님이 게시물을 올렸습니다.");
-            else if(pushType.equals("JOIN_GROUP"))
-                stb = stb.append("님이 그룹에 참여하였습니다.");
-            else if(pushType.equals("ADD_SCHEDULE"))
-                stb = stb.append("님이 일정을 등록하였습니다.");
-            else if(pushType.equals("ADD_ANNIVERSARY"))
-                stb = stb.append("님이 기념일을 등록하였습니다.");
+            if (pushType.equals(PUSH_ADD_CONTENTS))
+                stb.append("님이 게시물을 올렸습니다.");
+            else if (pushType.equals(PUSH_JOIN_GROUP))
+                stb.append("님이 그룹에 참여하였습니다.");
+            else if (pushType.equals(PUSH_ADD_SCHEDULE))
+                stb.append("님이 일정을 등록하였습니다.");
+            else if (pushType.equals(PUSH_ANNIVERSARY))
+                stb.append("님이 기념일을 등록하였습니다.");
 
             Notification notification = new Notification("Famfam", stb.toString());
 
@@ -111,10 +112,10 @@ public class PushServiceImpl implements PushService {
             StringBuilder stb = new StringBuilder();
             stb.append(username);
 
-            if (pushType.equals("ADD_COMMENT"))
-                stb = stb.append("님이 댓글을 달았습니다.");
-            else if(pushType.equals("ADD_EMOTION"))
-                stb = stb.append("님이 감정을 표현했습니다.");
+            if (pushType.equals(PUSH_ADD_COMMENT))
+                stb.append("님이 댓글을 달았습니다.");
+            else if (pushType.equals(PUSH_ADD_EMOTION))
+                stb.append("님이 감정을 표현했습니다.");
 
             Notification notification = new Notification("Famfam", stb.toString());
 
