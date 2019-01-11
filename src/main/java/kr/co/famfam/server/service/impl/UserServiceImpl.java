@@ -155,9 +155,15 @@ public class UserServiceImpl implements UserService {
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
             if (userinfoPhotoReq.getProfilePhoto() != null)
-                temp.get().setProfilePhoto(fileUploadService.reload(temp.get().getProfilePhoto(), userinfoPhotoReq.getProfilePhoto()));
+                if(temp.get().getProfilePhoto() != null)
+                    temp.get().setProfilePhoto(fileUploadService.reload(temp.get().getProfilePhoto(), userinfoPhotoReq.getProfilePhoto()));
+                else
+                    temp.get().setProfilePhoto(fileUploadService.upload(userinfoPhotoReq.getProfilePhoto()));
             if (userinfoPhotoReq.getBackPhoto() != null)
-                temp.get().setBackPhoto(fileUploadService.reload(temp.get().getBackPhoto(), userinfoPhotoReq.getBackPhoto()));
+                if(temp.get().getBackPhoto() != null)
+                    temp.get().setBackPhoto(fileUploadService.reload(temp.get().getBackPhoto(), userinfoPhotoReq.getBackPhoto()));
+                else
+                    temp.get().setBackPhoto(fileUploadService.upload(userinfoPhotoReq.getBackPhoto()));
 
             userRepository.save(temp.get());
 

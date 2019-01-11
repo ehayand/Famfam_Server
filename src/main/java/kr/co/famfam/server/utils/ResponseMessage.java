@@ -78,6 +78,7 @@ public class ResponseMessage {
 
     public static final String NOT_FOUND_MISSION = "미션을 찾을 수 없습니다.";
     public static final String READ_MISSION = "미션 조회 성공";
+    public static final String DEFAULT_MISSION = "구성원을 초대해보세요!";
 
     public static final String UNAUTHORIZED = "권한이 없습니다.";
 

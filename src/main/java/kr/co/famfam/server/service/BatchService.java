@@ -135,7 +135,8 @@ public class BatchService {
             Mission defaultZeroMission = Mission.builder()
                     .missionIdx(1)
                     .missionType(0)
-                    .content("가족을 초대해보세요!")
+                    .suffixType(0)
+                    .content("구성원을 초대해보세요!")
                     .build();
 
             missionService.save(defaultZeroMission);

@@ -70,7 +70,7 @@ public class User {
         this.fcmToken = signUpReq.getFcmToken();
         this.statusMessage = "상태메세지를 등록하세요.";
         this.groupIdx = -1;
-        this.missionIdx = 0;
+        this.missionIdx = 1;
         this.missionTargetUserIdx = 0;
     }
 
