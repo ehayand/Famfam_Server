@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static kr.co.famfam.server.utils.HistoryType.ADD_COMMENT;
+import static kr.co.famfam.server.utils.PushType.PUSH_ADD_COMMENT;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -41,12 +42,14 @@ public class CommentServiceImpl implements CommentService {
     private final ContentRepository contentRepository;
     private final UserRepository userRepository;
     private final HistoryServiceImpl historyService;
+    private final PushServiceImpl pushService;
 
-    public CommentServiceImpl(CommentRepository commentRepository, ContentRepository contentRepository, UserRepository userRepository, HistoryServiceImpl historyService) {
+    public CommentServiceImpl(CommentRepository commentRepository, ContentRepository contentRepository, UserRepository userRepository, HistoryServiceImpl historyService, PushServiceImpl pushService) {
         this.commentRepository = commentRepository;
         this.contentRepository = contentRepository;
         this.userRepository = userRepository;
         this.historyService = historyService;
+        this.pushService = pushService;
     }
 
     @Override
@@ -107,6 +110,8 @@ public class CommentServiceImpl implements CommentService {
 
             HistoryDto historyDto = new HistoryDto(commentDto.getUserIdx(), userRepository.findById(commentDto.getUserIdx()).get().getGroupIdx(), ADD_COMMENT);
             historyService.add(historyDto);
+
+            pushService.sendToDevice(userRepository.findById(content.get().getUserIdx()).get().getFcmToken(), PUSH_ADD_COMMENT, userRepository.findById(commentDto.getUserIdx()).get().getUserName());
 
             return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_COMMENT);
         } catch (Exception e) {

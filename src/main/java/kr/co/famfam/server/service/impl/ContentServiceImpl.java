@@ -28,6 +28,7 @@ import java.time.LocalTime;
 import java.util.*;
 
 import static kr.co.famfam.server.utils.HistoryType.ADD_CONTENT;
+import static kr.co.famfam.server.utils.PushType.PUSH_ADD_CONTENTS;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -49,13 +50,15 @@ public class ContentServiceImpl implements ContentService {
     private final UserRepository userRepository;
     private final FileUploadService fileUploadService;
     private final HistoryServiceImpl historyService;
+    private final PushServiceImpl pushService;
 
-    public ContentServiceImpl(ContentRepository contentRepository, PhotoRepository photoRepository, UserRepository userRepository, FileUploadService fileUploadService, HistoryServiceImpl historyService) {
+    public ContentServiceImpl(ContentRepository contentRepository, PhotoRepository photoRepository, UserRepository userRepository, FileUploadService fileUploadService, HistoryServiceImpl historyService, PushServiceImpl pushService) {
         this.contentRepository = contentRepository;
         this.photoRepository = photoRepository;
         this.userRepository = userRepository;
         this.fileUploadService = fileUploadService;
         this.historyService = historyService;
+        this.pushService = pushService;
     }
 
     @Override
@@ -242,6 +245,8 @@ public class ContentServiceImpl implements ContentService {
 
             HistoryDto historyDto = new HistoryDto(contentReq.getUserIdx(), groupIdx, ADD_CONTENT);
             historyService.add(historyDto);
+
+            pushService.sendToTopic(groupIdx, PUSH_ADD_CONTENTS, userRepository.findById(contentReq.getUserIdx()).get().getUserName());
 
             return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_CONTENT);
         } catch (Exception e) {
