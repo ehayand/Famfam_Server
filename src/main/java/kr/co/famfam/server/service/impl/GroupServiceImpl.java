@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static kr.co.famfam.server.utils.PushType.PUSH_JOIN_GROUP;
+
 /**
  * Created by ehay@naver.com on 2018-12-25
  * Blog : http://ehay.tistory.com
@@ -137,8 +139,8 @@ public class GroupServiceImpl implements GroupService {
             anniversary.setContent(user.get().getUserName() + "님의 생일");
             anniversaryRepository.save(anniversary);
 
-
             pushService.subscribeToTopic(user.get().getFcmToken(), groupIdx);
+            pushService.sendToTopic(user.get().getGroupIdx(), PUSH_JOIN_GROUP, user.get().getUserName());
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.JOIN_SUCCESS_GROUP, new GroupRes(group.get()));
         } catch (Exception e) {
