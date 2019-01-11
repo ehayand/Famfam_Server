@@ -41,22 +41,4 @@ public class HistoryController {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    @Auth
-    @PostMapping("")
-    public ResponseEntity addHistory(@RequestHeader(value = "Authorization") final String header) {
-        try {
-            HistoryDto historyDto = new HistoryDto();
-            historyDto.setUserIdx(1);
-            historyDto.setHistoryType(HistoryType.ADD_ANNIVERSARY);
-
-            historyService.add(historyDto);
-
-            return new ResponseEntity(HttpStatus.OK);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
-        }
-
-    }
 }
