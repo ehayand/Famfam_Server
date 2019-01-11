@@ -44,6 +44,8 @@ public class ContentServiceImpl implements ContentService {
     private String bucketPrefix;
     @Value("${cloud.aws.s3.bucket}")
     private String bucketOrigin;
+    @Value("${cloud.aws.s3.bucket.resized}")
+    private String bucketResized;
 
     private final ContentRepository contentRepository;
     private final PhotoRepository photoRepository;
@@ -88,6 +90,7 @@ public class ContentServiceImpl implements ContentService {
                     return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
                 map.put("userName", contentUser.get().getUserName());
+                map.put("userProfile", bucketPrefix + bucketResized + contentUser.get().getProfilePhoto());
                 map.put("content", content);
                 map.put("photos", photoUrls);
                 contents.add(map);
@@ -129,6 +132,7 @@ public class ContentServiceImpl implements ContentService {
                     return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
                 map.put("userName", contentUser.get().getUserName());
+                map.put("userProfile", bucketPrefix + bucketResized + contentUser.get().getProfilePhoto());
                 map.put("content", content);
                 map.put("photos", photos);
                 contents.add(map);
@@ -162,37 +166,11 @@ public class ContentServiceImpl implements ContentService {
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
             result.put("userName", contentUser.get().getUserName());
+            result.put("userProfile", bucketPrefix + bucketResized + contentUser.get().getProfilePhoto());
             result.put("content", content);
             result.put("photos", photos);
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, result);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
-        }
-    }
-
-    @Override
-    public DefaultRes findContentByPhotoId(int photoIdx) {
-        try {
-            Optional<Photo> temp = photoRepository.findById(photoIdx);
-            if (!temp.isPresent())
-                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_PHOTO);
-
-            Optional<Content> content = contentRepository.findById(temp.get().getContentIdx());
-            if (!content.isPresent())
-                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
-
-            Map<Object, Object> result = new HashMap<>();
-            List<Photo> photos = photoRepository.findPhotosByContentIdx(content.get().getContentIdx());
-
-            for (final Photo photo : photos)
-                photo.setPhotoName(bucketPrefix + bucketOrigin + photo.getPhotoName());
-
-            result.put("content", content);
-            result.put("photos", photos);
-
-            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, content);
         } catch (Exception e) {
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);

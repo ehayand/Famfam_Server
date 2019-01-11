@@ -1,6 +1,6 @@
 package kr.co.famfam.server.controller;
 
-import kr.co.famfam.server.model.CommentDto;
+import kr.co.famfam.server.model.CommentReq;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.service.CommentService;
 import kr.co.famfam.server.service.JwtService;
@@ -56,14 +56,14 @@ public class CommentController {
     public ResponseEntity<DefaultRes> saveComment(
             @RequestHeader("Authorization") final String header,
             @PathVariable("contentIdx") final int contentIdx,
-            @RequestBody final CommentDto commentDto) {
+            @RequestBody final CommentReq commentReq) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
 
-            commentDto.setUserIdx(authUserIdx);
-            commentDto.setContentIdx(contentIdx);
+            commentReq.setUserIdx(authUserIdx);
+            commentReq.setContentIdx(contentIdx);
 
-            return new ResponseEntity<>(commentService.save(commentDto), HttpStatus.OK);
+            return new ResponseEntity<>(commentService.save(commentReq), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -75,11 +75,11 @@ public class CommentController {
     public ResponseEntity<DefaultRes> updateComment(
             @RequestHeader("Authorization") final String header,
             @PathVariable("commentIdx") final int commentIdx,
-            @RequestBody final CommentDto commentDto) {
+            @RequestBody final CommentReq commentReq) {
         try {
             int authUserIdx = jwtService.decode(header).getUser_idx();
 
-            return new ResponseEntity<>(commentService.update(commentIdx, commentDto), HttpStatus.OK);
+            return new ResponseEntity<>(commentService.update(commentIdx, commentReq), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
