@@ -40,7 +40,6 @@ public class PushServiceImpl implements PushService {
         String firebaseResponse = restTemplate.postForObject(API_URL, httpEntity, String.class);
 
         return CompletableFuture.completedFuture(firebaseResponse);
-
     }
 
 
@@ -67,8 +66,6 @@ public class PushServiceImpl implements PushService {
             log.error(e.getErrorCode());
             return false;
         }
-
-
     }
 
     public boolean sendToTopic(int groupIdx, String pushType, String username) {
@@ -79,13 +76,13 @@ public class PushServiceImpl implements PushService {
             stb.append(username);
 
             if (pushType.equals("ADD_CONTENTS"))
-                stb.append("님이 게시물을 올렸습니다.");
+                stb = stb.append("님이 게시물을 올렸습니다.");
             else if(pushType.equals("JOIN_GROUP"))
-                stb.append("님이 그룹에 참여하였습니다.");
+                stb = stb.append("님이 그룹에 참여하였습니다.");
             else if(pushType.equals("ADD_SCHEDULE"))
-                stb.append("님이 일정을 등록하였습니다.");
+                stb = stb.append("님이 일정을 등록하였습니다.");
             else if(pushType.equals("ADD_ANNIVERSARY"))
-                stb.append("님이 기념일을 등록하였습니다.");
+                stb = stb.append("님이 기념일을 등록하였습니다.");
 
             Notification notification = new Notification("Famfam", stb.toString());
 
@@ -115,9 +112,9 @@ public class PushServiceImpl implements PushService {
             stb.append(username);
 
             if (pushType.equals("ADD_COMMENT"))
-                stb.append("님이 댓글을 달았습니다.");
+                stb = stb.append("님이 댓글을 달았습니다.");
             else if(pushType.equals("ADD_EMOTION"))
-                stb.append("님이 감정을 표현했습니다.");
+                stb = stb.append("님이 감정을 표현했습니다.");
 
             Notification notification = new Notification("Famfam", stb.toString());
 
