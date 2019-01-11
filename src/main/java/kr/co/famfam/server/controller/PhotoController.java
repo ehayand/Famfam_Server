@@ -40,7 +40,7 @@ public class PhotoController {
             if (userIdx.isPresent())
                 return new ResponseEntity<>(photoService.findPhotosByUserIdx(userIdx.get(), pageable), HttpStatus.OK);
 
-            return new ResponseEntity<>(photoService.findPhotosByUserIdx(authUserIdx, pageable), HttpStatus.OK);
+            return new ResponseEntity<>(photoService.findPhotosByGroupIdx(authUserIdx, pageable), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
