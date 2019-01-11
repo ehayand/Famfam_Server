@@ -40,6 +40,9 @@ public class MissionServiceImpl implements MissionService {
             if (!user.isPresent())
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
+            if(user.get().getMissionIdx() == 1)
+                return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.DEFAULT_MISSION);
+
             Optional<Mission> mission = missionRepository.findById(user.get().getMissionIdx());
             if (!mission.isPresent())
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_MISSION);

@@ -34,8 +34,10 @@ public class UserRes {
         this.birthday = user.getBirthday();
         this.sexType = user.getSexType();
         this.statusMessage = user.getStatusMessage();
-        this.profilePhoto = this.bucketPrefix + this.bucketResized + user.getProfilePhoto();
-        this.backPhoto = this.bucketPrefix + this.bucketOrigin + user.getBackPhoto();
         this.groupIdx = user.getGroupIdx();
+        if(user.getProfilePhoto() != null) this.profilePhoto = this.bucketPrefix + this.bucketResized + user.getProfilePhoto();
+        else this.profilePhoto = null;
+        if(user.getBackPhoto() != null) this.backPhoto = this.bucketPrefix + this.bucketOrigin + user.getBackPhoto();
+        else this.backPhoto = null;
     }
 }

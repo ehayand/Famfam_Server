@@ -3,6 +3,8 @@ package kr.co.famfam.server.service;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
@@ -34,6 +36,10 @@ public class S3Service {
     private String bucketResized;
     @Value("${cloud.aws.region.static}")
     private String region;
+    @Value("${cloud.aws.credentials.accessKey}")
+    private String accessKeyId;
+    @Value("${cloud.aws.credentials.secretKey}")
+    private String secretKeyId;
 
     private final AmazonS3Client amazonS3Client;
 
@@ -64,8 +70,9 @@ public class S3Service {
     @Transactional
     public void deleteS3(final String fileName) {
         try {
+            BasicAWSCredentials awsCreds = new BasicAWSCredentials(accessKeyId, secretKeyId);
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
-                    .withCredentials(new ProfileCredentialsProvider())
+                    .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
                     .withRegion(region)
                     .build();
 

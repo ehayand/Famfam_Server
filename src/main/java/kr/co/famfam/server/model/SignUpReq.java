@@ -12,4 +12,5 @@ public class SignUpReq {
     private String userPhone;
     private String birthday;
     private int sexType;
+    private String fcmToken;
 }

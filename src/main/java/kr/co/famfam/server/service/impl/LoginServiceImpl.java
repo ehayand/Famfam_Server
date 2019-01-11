@@ -36,13 +36,13 @@ public class LoginServiceImpl implements LoginService {
     public DefaultRes login(LoginReq loginReq) {
         try {
             if (!loginReq.isLogin())
-                return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.LOGIN_FAIL);
+                return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.NULL_POINTER);
 
             User loginUser = new User(loginReq);
 
             final Optional<User> user = userRepository.findUserByUserIdAndUserPw(loginUser.getUserId(), loginUser.getUserPw());
             if (!user.isPresent())
-                return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.LOGIN_FAIL);
+                return DefaultRes.res(StatusCode.UNAUTHORIZED, ResponseMessage.LOGIN_FAIL);
 
             Map<String, Object> result = new HashMap<>();
 
@@ -68,7 +68,7 @@ public class LoginServiceImpl implements LoginService {
         try {
             final Optional<User> user = userRepository.findById(userIdx);
             if (!user.isPresent())
-                return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.LOGIN_FAIL);
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
             Map<String, Object> result = new HashMap<>();
 
