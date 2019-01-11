@@ -65,21 +65,6 @@ public class ContentController {
     }
 
     @Auth
-    @GetMapping("/photos/{photoIdx}")
-    public ResponseEntity<DefaultRes> getContentByPhoto(
-            @RequestHeader("Authorization") final String header,
-            @PathVariable("photoIdx") final int photoIdx) {
-        try {
-            int authUserIdx = jwtService.decode(header).getUser_idx();
-
-            return new ResponseEntity<>(contentService.findContentByPhotoId(photoIdx), HttpStatus.OK);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Auth
     @GetMapping("/count/week")
     public ResponseEntity<DefaultRes> getCountThisWeek(
             @RequestHeader("Authorization") final String header) {
