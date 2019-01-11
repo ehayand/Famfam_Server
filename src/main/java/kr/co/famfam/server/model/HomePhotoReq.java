@@ -8,5 +8,6 @@ public class HomePhotoReq {
 
     private MultipartFile photo;
 
+    private int userIdx;
     private int groupIdx;
 }

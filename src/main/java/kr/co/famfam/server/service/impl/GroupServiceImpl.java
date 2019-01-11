@@ -242,7 +242,11 @@ public class GroupServiceImpl implements GroupService {
     @Transactional
     public DefaultRes photoUpdate(HomePhotoReq homePhotoReq) {
         try {
-            Optional<Group> group = groupRepository.findById(homePhotoReq.getGroupIdx());
+            Optional<User> user = userRepository.findById(homePhotoReq.getUserIdx());
+            if (!user.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+            Optional<Group> group = groupRepository.findById(user.get().getGroupIdx());
             if (!group.isPresent())
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_GROUP);
 
