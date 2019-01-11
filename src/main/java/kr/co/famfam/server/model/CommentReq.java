@@ -9,7 +9,7 @@ import lombok.Data;
  */
 
 @Data
-public class CommentDto {
+public class CommentReq {
 
     private String content;
 

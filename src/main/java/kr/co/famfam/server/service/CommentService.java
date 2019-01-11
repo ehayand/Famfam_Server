@@ -1,6 +1,6 @@
 package kr.co.famfam.server.service;
 
-import kr.co.famfam.server.model.CommentDto;
+import kr.co.famfam.server.model.CommentReq;
 import kr.co.famfam.server.model.DefaultRes;
 
 /**
@@ -15,9 +15,9 @@ public interface CommentService {
 
     DefaultRes countThisWeek(int userIdx);
 
-    DefaultRes save(final CommentDto commentDto);
+    DefaultRes save(final CommentReq commentReq);
 
-    DefaultRes update(final int commentIdx, final CommentDto commentDto);
+    DefaultRes update(final int commentIdx, final CommentReq commentReq);
 
     DefaultRes delete(final int commentIdx);
 }
