@@ -22,6 +22,7 @@ import java.time.LocalTime;
 import java.util.*;
 
 import static kr.co.famfam.server.utils.HistoryType.ADD_EMOTION;
+import static kr.co.famfam.server.utils.PushType.PUSH_ADD_EMOTION;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -36,11 +37,13 @@ public class FeelServiceImpl implements FeelService {
     private final FeelRepository feelRepository;
     private final UserRepository userRepository;
     private final HistoryServiceImpl historyService;
+    private final PushServiceImpl pushService;
 
-    public FeelServiceImpl(FeelRepository feelRepository, UserRepository userRepository, HistoryServiceImpl historyService) {
+    public FeelServiceImpl(FeelRepository feelRepository, UserRepository userRepository, HistoryServiceImpl historyService, PushServiceImpl pushService) {
         this.feelRepository = feelRepository;
         this.userRepository = userRepository;
         this.historyService = historyService;
+        this.pushService = pushService;
     }
 
     @Override
@@ -118,6 +121,8 @@ public class FeelServiceImpl implements FeelService {
 
                 HistoryDto historyDto = new HistoryDto(feelReq.getUserIdx(), userRepository.findById(feelReq.getUserIdx()).get().getGroupIdx(), ADD_EMOTION);
                 historyService.add(historyDto);
+
+                pushService.sendToDevice(userRepository.findById(feel.get().getUserIdx()).get().getFcmToken(), PUSH_ADD_EMOTION, userRepository.findById(feelReq.getUserIdx()).get().getUserName());
 
                 return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_FEEL);
             }

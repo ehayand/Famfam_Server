@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static kr.co.famfam.server.utils.HistoryType.ADD_SCHEDULE;
+import static kr.co.famfam.server.utils.PushType.PUSH_ADD_SCHEDULE;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -34,11 +35,13 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
     private final FamilyCalendarRepository familyCalendarRepository;
     private final HistoryServiceImpl historyService;
     private final UserRepository userRepository;
+    private final PushServiceImpl pushService;
 
-    public FamilyCalendarServiceImpl(FamilyCalendarRepository familyCalendarRepository, HistoryServiceImpl historyService, UserRepository userRepository) {
+    public FamilyCalendarServiceImpl(FamilyCalendarRepository familyCalendarRepository, HistoryServiceImpl historyService, UserRepository userRepository, PushServiceImpl pushService) {
         this.familyCalendarRepository = familyCalendarRepository;
         this.historyService = historyService;
         this.userRepository = userRepository;
+        this.pushService = pushService;
     }
 
     @Override
@@ -93,6 +96,8 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
 
             HistoryDto historyDto = new HistoryDto(authUserIdx, user.get().getGroupIdx(), ADD_SCHEDULE);
             historyService.add(historyDto);
+
+            pushService.sendToTopic(user.get().getGroupIdx(), PUSH_ADD_SCHEDULE, user.get().getUserName());
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.CREATED_CALENDAR);
         } catch (Exception e) {

@@ -7,10 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+
 
 
 @Slf4j
@@ -24,10 +24,8 @@ public class ServerApplication {
         SpringApplication.run(ServerApplication.class, args);
         try {
 
-
             File file = new File("serviceAccountKey.json");
             serviceAccount = new FileInputStream(file);
-
 
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))

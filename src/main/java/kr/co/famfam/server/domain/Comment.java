@@ -1,6 +1,6 @@
 package kr.co.famfam.server.domain;
 
-import kr.co.famfam.server.model.CommentDto;
+import kr.co.famfam.server.model.CommentReq;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -34,10 +34,10 @@ public class Comment {
     @Column(name = "userIdx")
     private int userIdx;
 
-    public Comment(CommentDto commentDto) {
-        this.content = commentDto.getContent();
-        this.contentIdx = commentDto.getContentIdx();
-        this.userIdx = commentDto.getUserIdx();
+    public Comment(CommentReq commentReq) {
+        this.content = commentReq.getContent();
+        this.contentIdx = commentReq.getContentIdx();
+        this.userIdx = commentReq.getUserIdx();
         this.createdAt = LocalDateTime.now();
     }
 }

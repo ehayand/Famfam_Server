@@ -28,6 +28,7 @@ import java.time.LocalTime;
 import java.util.*;
 
 import static kr.co.famfam.server.utils.HistoryType.ADD_CONTENT;
+import static kr.co.famfam.server.utils.PushType.PUSH_ADD_CONTENTS;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -43,19 +44,23 @@ public class ContentServiceImpl implements ContentService {
     private String bucketPrefix;
     @Value("${cloud.aws.s3.bucket}")
     private String bucketOrigin;
+    @Value("${cloud.aws.s3.bucket.resized}")
+    private String bucketResized;
 
     private final ContentRepository contentRepository;
     private final PhotoRepository photoRepository;
     private final UserRepository userRepository;
     private final FileUploadService fileUploadService;
     private final HistoryServiceImpl historyService;
+    private final PushServiceImpl pushService;
 
-    public ContentServiceImpl(ContentRepository contentRepository, PhotoRepository photoRepository, UserRepository userRepository, FileUploadService fileUploadService, HistoryServiceImpl historyService) {
+    public ContentServiceImpl(ContentRepository contentRepository, PhotoRepository photoRepository, UserRepository userRepository, FileUploadService fileUploadService, HistoryServiceImpl historyService, PushServiceImpl pushService) {
         this.contentRepository = contentRepository;
         this.photoRepository = photoRepository;
         this.userRepository = userRepository;
         this.fileUploadService = fileUploadService;
         this.historyService = historyService;
+        this.pushService = pushService;
     }
 
     @Override
@@ -84,7 +89,12 @@ public class ContentServiceImpl implements ContentService {
                 if (!contentUser.isPresent())
                     return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
+                String userProfile = null;
+                if(contentUser.get().getProfilePhoto() != null)
+                    userProfile = bucketPrefix + bucketResized + contentUser.get().getProfilePhoto();
+
                 map.put("userName", contentUser.get().getUserName());
+                map.put("userProfile", userProfile);
                 map.put("content", content);
                 map.put("photos", photoUrls);
                 contents.add(map);
@@ -125,7 +135,12 @@ public class ContentServiceImpl implements ContentService {
                 if (!contentUser.isPresent())
                     return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
+                String userProfile = null;
+                if(contentUser.get().getProfilePhoto() != null)
+                    userProfile = bucketPrefix + bucketResized + contentUser.get().getProfilePhoto();
+
                 map.put("userName", contentUser.get().getUserName());
+                map.put("userProfile", userProfile);
                 map.put("content", content);
                 map.put("photos", photos);
                 contents.add(map);
@@ -158,38 +173,16 @@ public class ContentServiceImpl implements ContentService {
             if (!contentUser.isPresent())
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
+            String userProfile = null;
+            if(contentUser.get().getProfilePhoto() != null)
+                userProfile = bucketPrefix + bucketResized + contentUser.get().getProfilePhoto();
+
             result.put("userName", contentUser.get().getUserName());
+            result.put("userProfile", userProfile);
             result.put("content", content);
             result.put("photos", photos);
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, result);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
-        }
-    }
-
-    @Override
-    public DefaultRes findContentByPhotoId(int photoIdx) {
-        try {
-            Optional<Photo> temp = photoRepository.findById(photoIdx);
-            if (!temp.isPresent())
-                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_PHOTO);
-
-            Optional<Content> content = contentRepository.findById(temp.get().getContentIdx());
-            if (!content.isPresent())
-                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_CONTENT);
-
-            Map<Object, Object> result = new HashMap<>();
-            List<Photo> photos = photoRepository.findPhotosByContentIdx(content.get().getContentIdx());
-
-            for (final Photo photo : photos)
-                photo.setPhotoName(bucketPrefix + bucketOrigin + photo.getPhotoName());
-
-            result.put("content", content);
-            result.put("photos", photos);
-
-            return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, content);
         } catch (Exception e) {
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
@@ -234,7 +227,7 @@ public class ContentServiceImpl implements ContentService {
             if (contentReq.getPhotos() != null) {
                 for (MultipartFile file : contentReq.getPhotos()) {
                     log.info(file.getOriginalFilename());
-                    Photo photo = new Photo(contentIdx, contentReq.getUserIdx());
+                    Photo photo = new Photo(contentIdx, contentReq.getUserIdx(), contentReq.getGroupIdx());
                     photo.setPhotoName(fileUploadService.upload(file));
                     photoRepository.save(photo);
                 }
@@ -242,6 +235,8 @@ public class ContentServiceImpl implements ContentService {
 
             HistoryDto historyDto = new HistoryDto(contentReq.getUserIdx(), groupIdx, ADD_CONTENT);
             historyService.add(historyDto);
+
+            pushService.sendToTopic(groupIdx, PUSH_ADD_CONTENTS, userRepository.findById(contentReq.getUserIdx()).get().getUserName());
 
             return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_CONTENT);
         } catch (Exception e) {

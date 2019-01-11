@@ -1,16 +1,17 @@
 package kr.co.famfam.server.service.impl;
 
-import kr.co.famfam.server.domain.*;
+import kr.co.famfam.server.domain.Anniversary;
+import kr.co.famfam.server.domain.Group;
+import kr.co.famfam.server.domain.GroupInvitation;
+import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.model.GroupRes;
 import kr.co.famfam.server.model.HomePhotoReq;
 import kr.co.famfam.server.repository.*;
 import kr.co.famfam.server.service.FileUploadService;
 import kr.co.famfam.server.service.GroupService;
-import kr.co.famfam.server.service.PushService;
-
 import kr.co.famfam.server.service.MissionService;
-
+import kr.co.famfam.server.service.PushService;
 import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static kr.co.famfam.server.utils.PushType.PUSH_JOIN_GROUP;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -127,18 +130,19 @@ public class GroupServiceImpl implements GroupService {
 
             Optional<Group> group = groupRepository.findById(groupIdx);
             Optional<User> groupUser = userRepository.findById(group.get().getUserIdx());
-            if(groupUser.get().getMissionIdx() == 0)
+            if (groupUser.get().getMissionIdx() == 0)
                 missionService.updateUser(groupUser.get());
 
             Anniversary anniversary = new Anniversary();
             anniversary.setGroupIdx(user.get().getGroupIdx());
+            anniversary.setUserIdx(userIdx);
             anniversary.setDate(user.get().getBirthday());
             anniversary.setAnniversaryType(0);
             anniversary.setContent(user.get().getUserName() + "님의 생일");
             anniversaryRepository.save(anniversary);
 
-
             pushService.subscribeToTopic(user.get().getFcmToken(), groupIdx);
+            pushService.sendToTopic(user.get().getGroupIdx(), PUSH_JOIN_GROUP, user.get().getUserName());
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.JOIN_SUCCESS_GROUP, new GroupRes(group.get()));
         } catch (Exception e) {
@@ -170,6 +174,7 @@ public class GroupServiceImpl implements GroupService {
 
             Anniversary anniversary = new Anniversary();
             anniversary.setGroupIdx(user.get().getGroupIdx());
+            anniversary.setUserIdx(userIdx);
             anniversary.setDate(user.get().getBirthday());
             anniversary.setAnniversaryType(0);
             anniversary.setContent(user.get().getUserName() + "님의 생일");
@@ -240,17 +245,23 @@ public class GroupServiceImpl implements GroupService {
     @Transactional
     public DefaultRes photoUpdate(HomePhotoReq homePhotoReq) {
         try {
-            Optional<Group> group = groupRepository.findById(homePhotoReq.getGroupIdx());
+            Optional<User> user = userRepository.findById(homePhotoReq.getUserIdx());
+            if (!user.isPresent())
+                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+            Optional<Group> group = groupRepository.findById(user.get().getGroupIdx());
             if (!group.isPresent())
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_GROUP);
 
             if (homePhotoReq.getPhoto() != null) {
-                Photo photo = new Photo();
-                photo.setContentIdx(-1);
-                photo.setPhotoName(fileUploadService.reload(group.get().getHomePhoto(), homePhotoReq.getPhoto()));
-                photoRepository.save(photo);
+                if (group.get().getHomePhoto() != null)
+                    group.get().setHomePhoto(fileUploadService.reload(group.get().getHomePhoto(), homePhotoReq.getPhoto()));
+                else
+                    group.get().setHomePhoto(fileUploadService.upload(homePhotoReq.getPhoto()));
             }
 
+            groupRepository.save(group.get());
+            
             return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_GROUP);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

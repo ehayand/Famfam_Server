@@ -18,8 +18,6 @@ public interface ContentService {
 
     DefaultRes findContentById(int contentIdx);
 
-    DefaultRes findContentByPhotoId(int photoIdx);
-
     DefaultRes countThisWeek(int userIdx);
 
     DefaultRes save(final ContentReq contentReq);
