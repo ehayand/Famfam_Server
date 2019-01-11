@@ -77,13 +77,15 @@ public class PushServiceImpl implements PushService {
             stb.append(username);
 
             if (pushType.equals(PUSH_ADD_CONTENTS))
-                stb = stb.append("님이 게시물을 올렸습니다.");
+                stb.append("님이 게시물을 올렸습니다.");
             else if (pushType.equals(PUSH_JOIN_GROUP))
-                stb = stb.append("님이 그룹에 참여하였습니다.");
+                stb.append("님이 그룹에 참여하였습니다.");
             else if (pushType.equals(PUSH_ADD_SCHEDULE))
-                stb = stb.append("님이 일정을 등록하였습니다.");
+                stb.append("님이 일정을 등록하였습니다.");
             else if (pushType.equals(PUSH_ANNIVERSARY))
-                stb = stb.append("님이 기념일을 등록하였습니다.");
+                stb.append("님이 기념일을 등록하였습니다.");
+
+            System.out.println(stb.toString());
 
             Notification notification = new Notification("Famfam", stb.toString());
 
