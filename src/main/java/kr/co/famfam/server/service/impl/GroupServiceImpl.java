@@ -7,10 +7,8 @@ import kr.co.famfam.server.model.HomePhotoReq;
 import kr.co.famfam.server.repository.*;
 import kr.co.famfam.server.service.FileUploadService;
 import kr.co.famfam.server.service.GroupService;
-import kr.co.famfam.server.service.PushService;
-
 import kr.co.famfam.server.service.MissionService;
-
+import kr.co.famfam.server.service.PushService;
 import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
 import lombok.extern.slf4j.Slf4j;
@@ -74,7 +72,8 @@ public class GroupServiceImpl implements GroupService {
             if (!group.isPresent())
                 return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_GROUP);
 
-            group.get().setHomePhoto(bucketPrefix + bucketOrigin + group.get().getHomePhoto());
+            if (group.get().getHomePhoto() != null)
+                group.get().setHomePhoto(bucketPrefix + bucketOrigin + group.get().getHomePhoto());
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_GROUP, group.get());
         } catch (Exception e) {
@@ -82,7 +81,6 @@ public class GroupServiceImpl implements GroupService {
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
-
     }
 
     @Override
@@ -127,7 +125,7 @@ public class GroupServiceImpl implements GroupService {
 
             Optional<Group> group = groupRepository.findById(groupIdx);
             Optional<User> groupUser = userRepository.findById(group.get().getUserIdx());
-            if(groupUser.get().getMissionIdx() == 0)
+            if (groupUser.get().getMissionIdx() == 0)
                 missionService.updateUser(groupUser.get());
 
             Anniversary anniversary = new Anniversary();
