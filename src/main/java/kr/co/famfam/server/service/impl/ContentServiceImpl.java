@@ -89,8 +89,12 @@ public class ContentServiceImpl implements ContentService {
                 if (!contentUser.isPresent())
                     return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
+                String userProfile = null;
+                if(contentUser.get().getProfilePhoto() != null)
+                    userProfile = bucketPrefix + bucketResized + contentUser.get().getProfilePhoto();
+
                 map.put("userName", contentUser.get().getUserName());
-                map.put("userProfile", bucketPrefix + bucketResized + contentUser.get().getProfilePhoto());
+                map.put("userProfile", userProfile);
                 map.put("content", content);
                 map.put("photos", photoUrls);
                 contents.add(map);
@@ -131,8 +135,12 @@ public class ContentServiceImpl implements ContentService {
                 if (!contentUser.isPresent())
                     return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
+                String userProfile = null;
+                if(contentUser.get().getProfilePhoto() != null)
+                    userProfile = bucketPrefix + bucketResized + contentUser.get().getProfilePhoto();
+
                 map.put("userName", contentUser.get().getUserName());
-                map.put("userProfile", bucketPrefix + bucketResized + contentUser.get().getProfilePhoto());
+                map.put("userProfile", userProfile);
                 map.put("content", content);
                 map.put("photos", photos);
                 contents.add(map);
@@ -165,8 +173,12 @@ public class ContentServiceImpl implements ContentService {
             if (!contentUser.isPresent())
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
+            String userProfile = null;
+            if(contentUser.get().getProfilePhoto() != null)
+                userProfile = bucketPrefix + bucketResized + contentUser.get().getProfilePhoto();
+
             result.put("userName", contentUser.get().getUserName());
-            result.put("userProfile", bucketPrefix + bucketResized + contentUser.get().getProfilePhoto());
+            result.put("userProfile", userProfile);
             result.put("content", content);
             result.put("photos", photos);
 

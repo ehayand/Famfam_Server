@@ -68,9 +68,13 @@ public class CommentServiceImpl implements CommentService {
             for(Comment comment : comments) {
                 Optional<User> user = userRepository.findById(comment.getUserIdx());
 
+                String userProfile = null;
+                if(user.get().getProfilePhoto() != null)
+                    userProfile = bucketPrefix + bucketResized + user.get().getProfilePhoto();
+
                 CommentRes commentRes = new CommentRes(comment);
                 commentRes.setUserName(user.get().getUserName());
-                commentRes.setUserProfile(bucketPrefix + bucketResized + user.get().getProfilePhoto());
+                commentRes.setUserProfile(userProfile);
 
                 result.add(commentRes);
             }
