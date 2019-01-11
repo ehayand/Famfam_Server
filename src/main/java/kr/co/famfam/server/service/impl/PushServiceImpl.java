@@ -85,8 +85,6 @@ public class PushServiceImpl implements PushService {
             else if (pushType.equals(PUSH_ANNIVERSARY))
                 stb.append("님이 기념일을 등록하였습니다.");
 
-            System.out.println(stb.toString());
-
             Notification notification = new Notification("Famfam", stb.toString());
 
             Message message = Message.builder()
