@@ -80,6 +80,7 @@ public class AnniversaryServiceImpl implements AnniversaryService {
                 anniversary.setContent(anniversaryReq.getContent());
                 anniversary.setDate(date);
                 anniversary.setGroupIdx(user.get().getGroupIdx());
+                anniversary.setUserIdx(authUserIdx);
 
                 anniversaryRepository.save(anniversary);
             } else if (anniversaryType == 2) {
@@ -87,6 +88,7 @@ public class AnniversaryServiceImpl implements AnniversaryService {
                 anniversary.setContent("결혼기념일");
                 anniversary.setDate(date);
                 anniversary.setGroupIdx(user.get().getGroupIdx());
+                anniversary.setUserIdx(authUserIdx);
 
                 anniversaryRepository.save(anniversary);
             } else

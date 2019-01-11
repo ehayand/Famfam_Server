@@ -134,6 +134,7 @@ public class GroupServiceImpl implements GroupService {
 
             Anniversary anniversary = new Anniversary();
             anniversary.setGroupIdx(user.get().getGroupIdx());
+            anniversary.setUserIdx(userIdx);
             anniversary.setDate(user.get().getBirthday());
             anniversary.setAnniversaryType(0);
             anniversary.setContent(user.get().getUserName() + "님의 생일");
@@ -172,6 +173,7 @@ public class GroupServiceImpl implements GroupService {
 
             Anniversary anniversary = new Anniversary();
             anniversary.setGroupIdx(user.get().getGroupIdx());
+            anniversary.setUserIdx(userIdx);
             anniversary.setDate(user.get().getBirthday());
             anniversary.setAnniversaryType(0);
             anniversary.setContent(user.get().getUserName() + "님의 생일");
