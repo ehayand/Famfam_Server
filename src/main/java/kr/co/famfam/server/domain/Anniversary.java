@@ -32,4 +32,6 @@ public class Anniversary {
 
     @Column(name = "groupIdx")
     private int groupIdx;
+    @Column(name = "userIdx")
+    private int userIdx;
 }
