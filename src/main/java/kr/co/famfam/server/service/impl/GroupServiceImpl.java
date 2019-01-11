@@ -1,16 +1,17 @@
 package kr.co.famfam.server.service.impl;
 
-import kr.co.famfam.server.domain.*;
+import kr.co.famfam.server.domain.Anniversary;
+import kr.co.famfam.server.domain.Group;
+import kr.co.famfam.server.domain.GroupInvitation;
+import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.model.GroupRes;
 import kr.co.famfam.server.model.HomePhotoReq;
 import kr.co.famfam.server.repository.*;
 import kr.co.famfam.server.service.FileUploadService;
 import kr.co.famfam.server.service.GroupService;
-import kr.co.famfam.server.service.PushService;
-
 import kr.co.famfam.server.service.MissionService;
-
+import kr.co.famfam.server.service.PushService;
 import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
 import lombok.extern.slf4j.Slf4j;
@@ -129,7 +130,7 @@ public class GroupServiceImpl implements GroupService {
 
             Optional<Group> group = groupRepository.findById(groupIdx);
             Optional<User> groupUser = userRepository.findById(group.get().getUserIdx());
-            if(groupUser.get().getMissionIdx() == 0)
+            if (groupUser.get().getMissionIdx() == 0)
                 missionService.updateUser(groupUser.get());
 
             Anniversary anniversary = new Anniversary();
@@ -253,12 +254,14 @@ public class GroupServiceImpl implements GroupService {
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_GROUP);
 
             if (homePhotoReq.getPhoto() != null) {
-                Photo photo = new Photo();
-                photo.setContentIdx(-1);
-                photo.setPhotoName(fileUploadService.reload(group.get().getHomePhoto(), homePhotoReq.getPhoto()));
-                photoRepository.save(photo);
+                if (group.get().getHomePhoto() != null)
+                    group.get().setHomePhoto(fileUploadService.reload(group.get().getHomePhoto(), homePhotoReq.getPhoto()));
+                else
+                    group.get().setHomePhoto(fileUploadService.upload(homePhotoReq.getPhoto()));
             }
 
+            groupRepository.save(group.get());
+            
             return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_GROUP);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
