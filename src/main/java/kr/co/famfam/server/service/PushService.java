@@ -12,7 +12,8 @@ public interface PushService {
 
     boolean subscribeToTopic(String token, int groupIdx);
 
-    boolean sendToTopic(int groupIdx, PushType pushType);
+    boolean sendToTopic(int groupIdx, String pushType, String username);
 
-    boolean sendToDevice(String token, PushType pushType);
+    boolean sendToDevice(String token, String pushType, String username);
+
 }

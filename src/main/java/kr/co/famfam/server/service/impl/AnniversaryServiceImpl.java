@@ -20,7 +20,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static kr.co.famfam.server.utils.HistoryType.ADD_ANNIVERSARY;
+import static kr.co.famfam.server.utils.HistoryType.*;
+import static kr.co.famfam.server.utils.PushType.*;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -35,11 +36,13 @@ public class AnniversaryServiceImpl implements AnniversaryService {
     private final AnniversaryRepository anniversaryRepository;
     private final UserRepository userRepository;
     private final HistoryServiceImpl historyService;
+    private final PushServiceImpl pushService;
 
-    public AnniversaryServiceImpl(AnniversaryRepository anniversaryRepository, UserRepository userRepository, HistoryServiceImpl historyService) {
+    public AnniversaryServiceImpl(AnniversaryRepository anniversaryRepository, UserRepository userRepository, HistoryServiceImpl historyService, PushServiceImpl pushService) {
         this.anniversaryRepository = anniversaryRepository;
         this.userRepository = userRepository;
         this.historyService = historyService;
+        this.pushService = pushService;
     }
 
     @Override
@@ -77,6 +80,7 @@ public class AnniversaryServiceImpl implements AnniversaryService {
                 anniversary.setContent(anniversaryReq.getContent());
                 anniversary.setDate(date);
                 anniversary.setGroupIdx(user.get().getGroupIdx());
+                anniversary.setUserIdx(authUserIdx);
 
                 anniversaryRepository.save(anniversary);
             } else if (anniversaryType == 2) {
@@ -84,6 +88,7 @@ public class AnniversaryServiceImpl implements AnniversaryService {
                 anniversary.setContent("결혼기념일");
                 anniversary.setDate(date);
                 anniversary.setGroupIdx(user.get().getGroupIdx());
+                anniversary.setUserIdx(authUserIdx);
 
                 anniversaryRepository.save(anniversary);
             } else
@@ -91,6 +96,8 @@ public class AnniversaryServiceImpl implements AnniversaryService {
 
             HistoryDto historyDto = new HistoryDto(authUserIdx, user.get().getGroupIdx(), ADD_ANNIVERSARY);
             historyService.add(historyDto);
+
+            pushService.sendToTopic(user.get().getGroupIdx(), PUSH_ANNIVERSARY, user.get().getUserName());
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.CREATED_ANNIVERSARY);
         } catch (Exception e) {

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -31,6 +32,8 @@ public interface AnniversaryRepository extends JpaRepository<Anniversary, Intege
 //    List<Anniversary> findAnniversariesByContentLike(@Param("content") final String content);
 
     List<Anniversary> findAnniversariesByGroupIdx(final int groupIdx);
+
+    Optional<Anniversary> findAnniversariesByUserIdxAndAnniversaryType(final int userIdx, final int anniversaryType);
 
     List<Anniversary> findAnniversariesByDate(final LocalDateTime Date);
 }

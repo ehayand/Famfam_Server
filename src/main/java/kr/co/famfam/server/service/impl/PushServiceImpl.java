@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+
 @Slf4j
 @Service
 public class PushServiceImpl implements PushService {
@@ -26,14 +27,13 @@ public class PushServiceImpl implements PushService {
     private String SERVER_KEY;
     private String API_URL = "https://fcm.googleapis.com/fcm/send";
 
-
     @Async
     public CompletableFuture<String> send(HttpEntity<String> httpEntity) {
         RestTemplate restTemplate = new RestTemplate();
 
         ArrayList<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
 
-        interceptors.add(new HeaderRequestInterceptor("Authorization", "key="+SERVER_KEY));
+        interceptors.add(new HeaderRequestInterceptor("Authorization", "key=" + SERVER_KEY));
         interceptors.add(new HeaderRequestInterceptor("Content-Type", "application/json;charset=UTF-8"));
         restTemplate.setInterceptors(interceptors);
 
@@ -44,9 +44,7 @@ public class PushServiceImpl implements PushService {
     }
 
 
-
     public boolean subscribeToTopic(String token, int groupIdx) {
-
         try {
 
             List<String> registrationTokens = Arrays.asList(
@@ -73,12 +71,23 @@ public class PushServiceImpl implements PushService {
 
     }
 
-
-    public boolean sendToTopic(int groupIdx, PushType pushType) {
+    public boolean sendToTopic(int groupIdx, String pushType, String username) {
         try {
             String topic = String.valueOf(groupIdx);
 
-            Notification notification = new Notification("타이틀", "바디");
+            StringBuilder stb = new StringBuilder();
+            stb.append(username);
+
+            if (pushType.equals("ADD_CONTENTS"))
+                stb.append("님이 게시물을 올렸습니다.");
+            else if(pushType.equals("JOIN_GROUP"))
+                stb.append("님이 그룹에 참여하였습니다.");
+            else if(pushType.equals("ADD_SCHEDULE"))
+                stb.append("님이 일정을 등록하였습니다.");
+            else if(pushType.equals("ADD_ANNIVERSARY"))
+                stb.append("님이 기념일을 등록하였습니다.");
+
+            Notification notification = new Notification("Famfam", stb.toString());
 
             Message message = Message.builder()
                     .setNotification(notification)
@@ -97,11 +106,20 @@ public class PushServiceImpl implements PushService {
     }
 
 
-    public boolean sendToDevice(String token, PushType pushType) {
-        try {
+    public boolean sendToDevice(String token, String pushType, String username) {
 
+        try {
             String registrationToken = token;
-            Notification notification = new Notification("타이틀", "바디");
+
+            StringBuilder stb = new StringBuilder();
+            stb.append(username);
+
+            if (pushType.equals("ADD_COMMENT"))
+                stb.append("님이 댓글을 달았습니다.");
+            else if(pushType.equals("ADD_EMOTION"))
+                stb.append("님이 감정을 표현했습니다.");
+
+            Notification notification = new Notification("Famfam", stb.toString());
 
             Message message = Message.builder()
                     .setNotification(notification)
