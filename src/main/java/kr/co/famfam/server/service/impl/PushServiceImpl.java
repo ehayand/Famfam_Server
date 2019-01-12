@@ -60,7 +60,7 @@ public class PushServiceImpl implements PushService {
             if (registrationTokens.size() != response.getSuccessCount()) {
                 return false;
             }
-            System.out.println(response.getSuccessCount() + " tokens were subscribed successfully");
+            log.info(response.getSuccessCount() + " tokens were subscribed successfully");
 
             return true;
         } catch (FirebaseMessagingException e) {
@@ -93,7 +93,7 @@ public class PushServiceImpl implements PushService {
                     .build();
 
             String response = FirebaseMessaging.getInstance().send(message);
-            System.out.println("response: " + response);
+            log.info("response: " + response);
 
             return true;
 
@@ -134,7 +134,7 @@ public class PushServiceImpl implements PushService {
 
             String response = FirebaseMessaging.getInstance().send(message);
 
-            System.out.println("Successfully sent message: " + response);
+            log.info("Successfully sent message: " + response);
 
             return true;
 

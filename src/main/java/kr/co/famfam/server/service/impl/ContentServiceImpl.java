@@ -239,7 +239,7 @@ public class ContentServiceImpl implements ContentService {
             Optional<User> contentUser = userRepository.findById(contentReq.getUserIdx());
             List<User> users = userRepository.findUsersByGroupIdxAndUserIdxIsNotIn(contentUser.get().getGroupIdx(), contentUser.get().getUserIdx());
             for(User user : users){
-                System.out.println(user.getUserId());
+                log.info(user.getUserId());
                 pushService.sendToDevice(user.getFcmToken(), PUSH_ADD_CONTENTS, contentUser.get().getUserName());
             }
 
