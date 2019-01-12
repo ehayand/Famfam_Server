@@ -142,7 +142,12 @@ public class GroupServiceImpl implements GroupService {
             anniversaryRepository.save(anniversary);
 
             pushService.subscribeToTopic(user.get().getFcmToken(), groupIdx);
-            pushService.sendToTopic(user.get().getGroupIdx(), PUSH_JOIN_GROUP, user.get().getUserName());
+
+            List<User> users = userRepository.findUsersByGroupIdxAndUserIdxIsNotIn(user.get().getGroupIdx(), user.get().getUserIdx());
+            for(User userTemp : users){
+                System.out.println(userTemp.getUserId());
+                pushService.sendToDevice(userTemp.getFcmToken(), PUSH_JOIN_GROUP, user.get().getUserName());
+            }
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.JOIN_SUCCESS_GROUP, new GroupRes(group.get()));
         } catch (Exception e) {

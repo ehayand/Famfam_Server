@@ -97,7 +97,12 @@ public class AnniversaryServiceImpl implements AnniversaryService {
             HistoryDto historyDto = new HistoryDto(authUserIdx, user.get().getGroupIdx(), ADD_ANNIVERSARY);
             historyService.add(historyDto);
 
-            pushService.sendToTopic(user.get().getGroupIdx(), PUSH_ANNIVERSARY, user.get().getUserName());
+            List<User> users = userRepository.findUsersByGroupIdxAndUserIdxIsNotIn(user.get().getGroupIdx(), authUserIdx);
+
+            for(User item : users){
+                System.out.println(item.getFcmToken());
+                pushService.sendToDevice(item.getFcmToken(), PUSH_ANNIVERSARY, user.get().getUserName());
+            }
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.CREATED_ANNIVERSARY);
         } catch (Exception e) {

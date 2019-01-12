@@ -34,4 +34,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findUserByUserPhoneAndBirthday(String number, LocalDateTime birthday);
 
     Optional<User> findUserByUserIdAndUserPhone(String userId, String number);
+
 }

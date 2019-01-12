@@ -90,7 +90,7 @@ public class ContentServiceImpl implements ContentService {
                     return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
                 String userProfile = null;
-                if (contentUser.get().getProfilePhoto() != null)
+                if(contentUser.get().getProfilePhoto() != null)
                     userProfile = bucketPrefix + bucketResized + contentUser.get().getProfilePhoto();
 
                 map.put("userName", contentUser.get().getUserName());
@@ -136,7 +136,7 @@ public class ContentServiceImpl implements ContentService {
                     return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
                 String userProfile = null;
-                if (contentUser.get().getProfilePhoto() != null)
+                if(contentUser.get().getProfilePhoto() != null)
                     userProfile = bucketPrefix + bucketResized + contentUser.get().getProfilePhoto();
 
                 map.put("userName", contentUser.get().getUserName());
@@ -174,7 +174,7 @@ public class ContentServiceImpl implements ContentService {
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
             String userProfile = null;
-            if (contentUser.get().getProfilePhoto() != null)
+            if(contentUser.get().getProfilePhoto() != null)
                 userProfile = bucketPrefix + bucketResized + contentUser.get().getProfilePhoto();
 
             result.put("userName", contentUser.get().getUserName());
@@ -236,7 +236,12 @@ public class ContentServiceImpl implements ContentService {
             HistoryDto historyDto = new HistoryDto(contentReq.getUserIdx(), groupIdx, ADD_CONTENT);
             historyService.add(historyDto);
 
-            pushService.sendToTopic(groupIdx, PUSH_ADD_CONTENTS, userRepository.findById(contentReq.getUserIdx()).get().getUserName());
+            Optional<User> contentUser = userRepository.findById(contentReq.getUserIdx());
+            List<User> users = userRepository.findUsersByGroupIdxAndUserIdxIsNotIn(contentUser.get().getGroupIdx(), contentUser.get().getUserIdx());
+            for(User user : users){
+                System.out.println(user.getUserId());
+                pushService.sendToDevice(user.getFcmToken(), PUSH_ADD_CONTENTS, contentUser.get().getUserName());
+            }
 
             return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_CONTENT);
         } catch (Exception e) {
