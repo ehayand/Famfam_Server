@@ -3,7 +3,6 @@ package kr.co.famfam.server.service.impl;
 import kr.co.famfam.server.domain.Photo;
 import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.DefaultRes;
-import kr.co.famfam.server.model.UserRes;
 import kr.co.famfam.server.repository.PhotoRepository;
 import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.PhotoService;
@@ -58,8 +57,6 @@ public class PhotoServiceImpl implements PhotoService {
             for (final Photo photo : photos)
                 photo.setPhotoName(bucketPrefix + bucketResized + photo.getPhotoName());
 
-            UserRes userRes = new UserRes(user.get());
-            result.put("user", userRes);
             result.put("photos", photos.getContent());
             result.put("totalPage", photos.getTotalPages());
 
