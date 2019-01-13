@@ -20,8 +20,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static kr.co.famfam.server.utils.HistoryType.*;
-import static kr.co.famfam.server.utils.PushType.*;
+import static kr.co.famfam.server.utils.HistoryType.ADD_ANNIVERSARY;
+import static kr.co.famfam.server.utils.PushType.PUSH_ANNIVERSARY;
 
 /**
  * Created by ehay@naver.com on 2018-12-25

@@ -7,5 +7,6 @@ public interface FirebaseAdminService {
     void subscribeToTopic(SubscribeTopicDto subscribeTopicDto);
 
     void sendToTopic();
+
     void sendToDevice();
 }

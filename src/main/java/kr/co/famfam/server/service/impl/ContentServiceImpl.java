@@ -90,7 +90,7 @@ public class ContentServiceImpl implements ContentService {
                     return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
                 String userProfile = null;
-                if(contentUser.get().getProfilePhoto() != null)
+                if (contentUser.get().getProfilePhoto() != null)
                     userProfile = bucketPrefix + bucketResized + contentUser.get().getProfilePhoto();
 
                 map.put("userName", contentUser.get().getUserName());
@@ -136,7 +136,7 @@ public class ContentServiceImpl implements ContentService {
                     return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
                 String userProfile = null;
-                if(contentUser.get().getProfilePhoto() != null)
+                if (contentUser.get().getProfilePhoto() != null)
                     userProfile = bucketPrefix + bucketResized + contentUser.get().getProfilePhoto();
 
                 map.put("userName", contentUser.get().getUserName());
@@ -174,7 +174,7 @@ public class ContentServiceImpl implements ContentService {
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
             String userProfile = null;
-            if(contentUser.get().getProfilePhoto() != null)
+            if (contentUser.get().getProfilePhoto() != null)
                 userProfile = bucketPrefix + bucketResized + contentUser.get().getProfilePhoto();
 
             result.put("userName", contentUser.get().getUserName());

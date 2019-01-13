@@ -1,10 +1,6 @@
 package kr.co.famfam.server.controller;
 
 
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
-import kr.co.famfam.server.service.FirebaseAdminService;
 import kr.co.famfam.server.service.PushService;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
@@ -17,14 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.*;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 
 @Slf4j
@@ -42,24 +36,19 @@ public class PushController {
     public ResponseEntity<String> send(@RequestBody Map<String, Object> paramInfo) {
         try {
             JSONObject body = new JSONObject();
-
             List<String> tokenList = new ArrayList<>();
-
             Object object = paramInfo.get("token");
-
             List<String> list = (ArrayList<String>) object;
 
             list.forEach(item -> {
                 tokenList.add(item);
             });
 
-
             JSONArray array = new JSONArray();
 
             tokenList.forEach(item ->
                     array.put(item)
             );
-
 
             body.put("registration_ids", array);
 
@@ -73,15 +62,12 @@ public class PushController {
             notification.put("title", "pu푸시sh");
             notification.put("body", decode);
 
-
             body.put("notification", notification);
-
 
             HttpEntity<String> request = new HttpEntity<>(body.toString());
 
             CompletableFuture<String> pushNotification = pushService.send(request);
             CompletableFuture.allOf(pushNotification).join();
-
 
             String firebaseResponse = pushNotification.get();
 
@@ -90,7 +76,5 @@ public class PushController {
             e.printStackTrace();
             return new ResponseEntity<>("Push Errorrrrrr", HttpStatus.BAD_REQUEST);
         }
-
     }
-
 }

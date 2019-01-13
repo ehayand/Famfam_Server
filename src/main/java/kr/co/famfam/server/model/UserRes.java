@@ -2,7 +2,6 @@ package kr.co.famfam.server.model;
 
 import kr.co.famfam.server.domain.User;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
 
@@ -35,9 +34,10 @@ public class UserRes {
         this.sexType = user.getSexType();
         this.statusMessage = user.getStatusMessage();
         this.groupIdx = user.getGroupIdx();
-        if(user.getProfilePhoto() != null) this.profilePhoto = this.bucketPrefix + this.bucketResized + user.getProfilePhoto();
+        if (user.getProfilePhoto() != null)
+            this.profilePhoto = this.bucketPrefix + this.bucketResized + user.getProfilePhoto();
         else this.profilePhoto = null;
-        if(user.getBackPhoto() != null) this.backPhoto = this.bucketPrefix + this.bucketOrigin + user.getBackPhoto();
+        if (user.getBackPhoto() != null) this.backPhoto = this.bucketPrefix + this.bucketOrigin + user.getBackPhoto();
         else this.backPhoto = null;
     }
 }

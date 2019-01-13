@@ -65,11 +65,11 @@ public class CommentServiceImpl implements CommentService {
 
             List<Object> result = new LinkedList<>();
 
-            for(Comment comment : comments) {
+            for (Comment comment : comments) {
                 Optional<User> user = userRepository.findById(comment.getUserIdx());
 
                 String userProfile = null;
-                if(user.get().getProfilePhoto() != null)
+                if (user.get().getProfilePhoto() != null)
                     userProfile = bucketPrefix + bucketResized + user.get().getProfilePhoto();
 
                 CommentRes commentRes = new CommentRes(comment);

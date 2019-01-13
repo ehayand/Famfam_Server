@@ -261,7 +261,7 @@ public class GroupServiceImpl implements GroupService {
             }
 
             groupRepository.save(group.get());
-            
+
             return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_GROUP);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
