@@ -97,7 +97,11 @@ public class FamilyCalendarServiceImpl implements FamilyCalendarService {
             HistoryDto historyDto = new HistoryDto(authUserIdx, user.get().getGroupIdx(), ADD_SCHEDULE);
             historyService.add(historyDto);
 
-            pushService.sendToTopic(user.get().getGroupIdx(), PUSH_ADD_SCHEDULE, user.get().getUserName());
+            List<User> users = userRepository.findUsersByGroupIdxAndUserIdxIsNotIn(user.get().getGroupIdx(), user.get().getUserIdx());
+            for(User userTemp : users){
+                System.out.println(userTemp.getUserId());
+                pushService.sendToDevice(userTemp.getFcmToken(), PUSH_ADD_SCHEDULE, user.get().getUserName());
+            }
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.CREATED_CALENDAR);
         } catch (Exception e) {

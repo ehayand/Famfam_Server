@@ -33,7 +33,7 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public DefaultRes login(LoginReq loginReq) {
+    public DefaultRes login(LoginReq loginReq, Optional<String> fcmToken) {
         try {
             if (!loginReq.isLogin())
                 return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.NULL_POINTER);
@@ -56,6 +56,11 @@ public class LoginServiceImpl implements LoginService {
             result.put("token", tokenRes.getToken());
             result.put("user", new UserRes(user.get()));
 
+            if(fcmToken.isPresent()) {
+                user.get().setFcmToken(fcmToken.get());
+                userRepository.save(user.get());
+            }
+
             return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, result);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -64,7 +69,7 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public DefaultRes login(final int userIdx) {
+    public DefaultRes login(final int userIdx, Optional<String> fcmToken) {
         try {
             final Optional<User> user = userRepository.findById(userIdx);
             if (!user.isPresent())
@@ -81,6 +86,11 @@ public class LoginServiceImpl implements LoginService {
 
             result.put("token", tokenRes.getToken());
             result.put("user", new UserRes(user.get()));
+
+            if(fcmToken.isPresent()) {
+                user.get().setFcmToken(fcmToken.get());
+                userRepository.save(user.get());
+            }
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, result);
         } catch (Exception e) {

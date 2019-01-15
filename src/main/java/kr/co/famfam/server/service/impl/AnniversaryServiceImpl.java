@@ -20,8 +20,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static kr.co.famfam.server.utils.HistoryType.*;
-import static kr.co.famfam.server.utils.PushType.*;
+import static kr.co.famfam.server.utils.HistoryType.ADD_ANNIVERSARY;
+import static kr.co.famfam.server.utils.PushType.PUSH_ANNIVERSARY;
 
 /**
  * Created by ehay@naver.com on 2018-12-25
@@ -97,7 +97,12 @@ public class AnniversaryServiceImpl implements AnniversaryService {
             HistoryDto historyDto = new HistoryDto(authUserIdx, user.get().getGroupIdx(), ADD_ANNIVERSARY);
             historyService.add(historyDto);
 
-            pushService.sendToTopic(user.get().getGroupIdx(), PUSH_ANNIVERSARY, user.get().getUserName());
+            List<User> users = userRepository.findUsersByGroupIdxAndUserIdxIsNotIn(user.get().getGroupIdx(), authUserIdx);
+
+            for(User item : users){
+                System.out.println(item.getFcmToken());
+                pushService.sendToDevice(item.getFcmToken(), PUSH_ANNIVERSARY, user.get().getUserName());
+            }
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.CREATED_ANNIVERSARY);
         } catch (Exception e) {
