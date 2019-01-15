@@ -1,11 +1,13 @@
 package kr.co.famfam.server.service.impl;
 
+import kr.co.famfam.server.domain.Content;
 import kr.co.famfam.server.domain.Feel;
 import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.DefaultRes;
 import kr.co.famfam.server.model.FeelReq;
 import kr.co.famfam.server.model.FeelRes;
 import kr.co.famfam.server.model.HistoryDto;
+import kr.co.famfam.server.repository.ContentRepository;
 import kr.co.famfam.server.repository.FeelRepository;
 import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.FeelService;
@@ -38,12 +40,14 @@ public class FeelServiceImpl implements FeelService {
     private final UserRepository userRepository;
     private final HistoryServiceImpl historyService;
     private final PushServiceImpl pushService;
+    private final ContentRepository contentRepository;
 
-    public FeelServiceImpl(FeelRepository feelRepository, UserRepository userRepository, HistoryServiceImpl historyService, PushServiceImpl pushService) {
+    public FeelServiceImpl(FeelRepository feelRepository, UserRepository userRepository, HistoryServiceImpl historyService, PushServiceImpl pushService, ContentRepository contentRepository) {
         this.feelRepository = feelRepository;
         this.userRepository = userRepository;
         this.historyService = historyService;
         this.pushService = pushService;
+        this.contentRepository = contentRepository;
     }
 
     @Override
@@ -122,7 +126,9 @@ public class FeelServiceImpl implements FeelService {
                 HistoryDto historyDto = new HistoryDto(feelReq.getUserIdx(), userRepository.findById(feelReq.getUserIdx()).get().getGroupIdx(), ADD_EMOTION);
                 historyService.add(historyDto);
 
-                pushService.sendToDevice(userRepository.findById(feel.get().getUserIdx()).get().getFcmToken(), PUSH_ADD_EMOTION, userRepository.findById(feelReq.getUserIdx()).get().getUserName());
+                Optional<Content> content = contentRepository.findById(feelReq.getContentIdx());
+                int contentUserIdx = content.get().getUserIdx();
+                pushService.sendToDevice(userRepository.findById(contentUserIdx).get().getFcmToken(), PUSH_ADD_EMOTION, userRepository.findById(feelReq.getUserIdx()).get().getUserName());
 
                 return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_FEEL);
             }

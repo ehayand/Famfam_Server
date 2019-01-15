@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 import static kr.co.famfam.server.model.DefaultRes.FAIL_DEFAULT_RES;
 
 @Slf4j
@@ -26,12 +28,13 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody final LoginReq loginReq) {
+    public ResponseEntity login(@RequestBody final LoginReq loginReq,
+                                @RequestHeader(value = "User-Agent") final Optional<String> fcmToken) {
         try {
             PasswordUtil util = new PasswordUtil();
             loginReq.setUserPw(util.encryptSHA256(loginReq.getUserPw()));
 
-            return new ResponseEntity<>(loginService.login(loginReq), HttpStatus.OK);
+            return new ResponseEntity<>(loginService.login(loginReq, fcmToken), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -40,11 +43,13 @@ public class LoginController {
 
     @Auth
     @GetMapping("/login")
-    public ResponseEntity<DefaultRes> login(@RequestHeader(value = "Authorization") final String header) {
+    public ResponseEntity<DefaultRes> login(
+            @RequestHeader(value = "Authorization") final String header,
+            @RequestHeader(value = "User-Agent") final Optional<String> fcmToken) {
         try {
             int authIdx = jwtService.decode(header).getUser_idx();
 
-            return new ResponseEntity<>(loginService.login(authIdx), HttpStatus.OK);
+            return new ResponseEntity<>(loginService.login(authIdx, fcmToken), HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
