@@ -1,7 +1,6 @@
 package kr.co.famfam.server.controller;
 
 
-
 import kr.co.famfam.server.model.SubscribeTopicDto;
 import kr.co.famfam.server.service.FirebaseAdminService;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +18,6 @@ import java.util.Map;
 @RequestMapping("/fb/admin")
 public class FirebaseController {
 
-
     private FirebaseAdminService firebaseAdminService;
 
     public FirebaseController(FirebaseAdminService firebaseAdminService) {
@@ -27,14 +25,10 @@ public class FirebaseController {
     }
 
     @PostMapping("/subsToTopic")
-    public ResponseEntity subscribeToTopic(@RequestBody SubscribeTopicDto subscribeTopicDto){
-
+    public ResponseEntity subscribeToTopic(@RequestBody SubscribeTopicDto subscribeTopicDto) {
         firebaseAdminService.subscribeToTopic(subscribeTopicDto);
-
-
         return new ResponseEntity("pp", HttpStatus.OK);
     }
-
 
     @PostMapping("/sendToTopic")
     public ResponseEntity sendToTopic() {
@@ -42,15 +36,9 @@ public class FirebaseController {
         return new ResponseEntity("a", HttpStatus.OK);
     }
 
-
     @PostMapping("/sendToDevice")
     public ResponseEntity sendToDevice(@RequestBody Map<String, Object> input) {
-
-
         firebaseAdminService.sendToDevice();
         return new ResponseEntity("pp", HttpStatus.OK);
     }
-
-
-
 }

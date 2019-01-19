@@ -1,13 +1,9 @@
 package kr.co.famfam.server.service.impl;
 
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.*;
 import kr.co.famfam.server.model.SubscribeTopicDto;
 import kr.co.famfam.server.service.FirebaseAdminService;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
@@ -33,7 +29,6 @@ public class FirebaseAdminServiceImpl implements FirebaseAdminService {
             TopicManagementResponse response = FirebaseMessaging.getInstance().subscribeToTopic(
                     registrationTokens, topic);
 
-
             System.out.println(response.getErrors());
             System.out.println(response.getSuccessCount() + " tokens were subscribed successfully");
 
@@ -54,9 +49,8 @@ public class FirebaseAdminServiceImpl implements FirebaseAdminService {
                     .setTopic(topic)
                     .build();
 
-
             String response = FirebaseMessaging.getInstance().send(message);
-            System.out.println("res: "+response);
+            System.out.println("res: " + response);
         } catch (FirebaseMessagingException e) {
             log.error(e.getErrorCode());
         }

@@ -72,5 +72,4 @@ public class AnniversaryController {
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 }

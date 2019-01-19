@@ -1,6 +1,5 @@
 package kr.co.famfam.server.service;
 
-import kr.co.famfam.server.utils.PushType;
 import org.springframework.http.HttpEntity;
 
 import java.util.concurrent.CompletableFuture;
@@ -15,5 +14,4 @@ public interface PushService {
     boolean sendToTopic(int groupIdx, String pushType, String username);
 
     boolean sendToDevice(String token, String pushType, String username);
-
 }

@@ -5,11 +5,13 @@ import kr.co.famfam.server.domain.Photo;
 import kr.co.famfam.server.domain.User;
 import kr.co.famfam.server.model.ContentReq;
 import kr.co.famfam.server.model.DefaultRes;
+import kr.co.famfam.server.model.FeelRes;
 import kr.co.famfam.server.model.HistoryDto;
 import kr.co.famfam.server.repository.ContentRepository;
 import kr.co.famfam.server.repository.PhotoRepository;
 import kr.co.famfam.server.repository.UserRepository;
 import kr.co.famfam.server.service.ContentService;
+import kr.co.famfam.server.service.FeelService;
 import kr.co.famfam.server.service.FileUploadService;
 import kr.co.famfam.server.utils.ResponseMessage;
 import kr.co.famfam.server.utils.StatusCode;
@@ -48,14 +50,16 @@ public class ContentServiceImpl implements ContentService {
     private String bucketResized;
 
     private final ContentRepository contentRepository;
+    private final FeelService feelService;
     private final PhotoRepository photoRepository;
     private final UserRepository userRepository;
     private final FileUploadService fileUploadService;
     private final HistoryServiceImpl historyService;
     private final PushServiceImpl pushService;
 
-    public ContentServiceImpl(ContentRepository contentRepository, PhotoRepository photoRepository, UserRepository userRepository, FileUploadService fileUploadService, HistoryServiceImpl historyService, PushServiceImpl pushService) {
+    public ContentServiceImpl(ContentRepository contentRepository, FeelService feelService, PhotoRepository photoRepository, UserRepository userRepository, FileUploadService fileUploadService, HistoryServiceImpl historyService, PushServiceImpl pushService) {
         this.contentRepository = contentRepository;
+        this.feelService = feelService;
         this.photoRepository = photoRepository;
         this.userRepository = userRepository;
         this.fileUploadService = fileUploadService;
@@ -89,13 +93,16 @@ public class ContentServiceImpl implements ContentService {
                 if (!contentUser.isPresent())
                     return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
+                FeelRes feelRes = feelService.findFeelsByContentIdxInternal(content.getContentIdx());
+
                 String userProfile = null;
-                if(contentUser.get().getProfilePhoto() != null)
+                if (contentUser.get().getProfilePhoto() != null)
                     userProfile = bucketPrefix + bucketResized + contentUser.get().getProfilePhoto();
 
                 map.put("userName", contentUser.get().getUserName());
                 map.put("userProfile", userProfile);
                 map.put("content", content);
+                map.put("feel", feelRes);
                 map.put("photos", photoUrls);
                 contents.add(map);
             }
@@ -135,13 +142,16 @@ public class ContentServiceImpl implements ContentService {
                 if (!contentUser.isPresent())
                     return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
+                FeelRes feelRes = feelService.findFeelsByContentIdxInternal(content.getContentIdx());
+
                 String userProfile = null;
-                if(contentUser.get().getProfilePhoto() != null)
+                if (contentUser.get().getProfilePhoto() != null)
                     userProfile = bucketPrefix + bucketResized + contentUser.get().getProfilePhoto();
 
                 map.put("userName", contentUser.get().getUserName());
                 map.put("userProfile", userProfile);
                 map.put("content", content);
+                map.put("feel", feelRes);
                 map.put("photos", photos);
                 contents.add(map);
             }
@@ -173,13 +183,16 @@ public class ContentServiceImpl implements ContentService {
             if (!contentUser.isPresent())
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
 
+            FeelRes feelRes = feelService.findFeelsByContentIdxInternal(content.get().getContentIdx());
+
             String userProfile = null;
-            if(contentUser.get().getProfilePhoto() != null)
+            if (contentUser.get().getProfilePhoto() != null)
                 userProfile = bucketPrefix + bucketResized + contentUser.get().getProfilePhoto();
 
             result.put("userName", contentUser.get().getUserName());
             result.put("userProfile", userProfile);
             result.put("content", content);
+            result.put("feel", feelRes);
             result.put("photos", photos);
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_CONTENT, result);
@@ -238,7 +251,7 @@ public class ContentServiceImpl implements ContentService {
 
             Optional<User> contentUser = userRepository.findById(contentReq.getUserIdx());
             List<User> users = userRepository.findUsersByGroupIdxAndUserIdxIsNotIn(contentUser.get().getGroupIdx(), contentUser.get().getUserIdx());
-            for(User user : users){
+            for (User user : users) {
                 log.info(user.getUserId());
                 pushService.sendToDevice(user.getFcmToken(), PUSH_ADD_CONTENTS, contentUser.get().getUserName());
             }

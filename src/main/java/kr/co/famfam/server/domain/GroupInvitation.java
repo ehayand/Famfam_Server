@@ -27,5 +27,4 @@ public class GroupInvitation {
 
     @Indexed
     private int groupIdx;
-
 }
