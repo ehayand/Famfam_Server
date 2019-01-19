@@ -77,7 +77,8 @@ public class GroupServiceImpl implements GroupService {
             if (!group.isPresent())
                 return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.NOT_FOUND_GROUP);
 
-            group.get().setHomePhoto(bucketPrefix + bucketOrigin + group.get().getHomePhoto());
+            if (group.get().getHomePhoto() != null)
+                group.get().setHomePhoto(bucketPrefix + bucketOrigin + group.get().getHomePhoto());
 
             return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_GROUP, group.get());
         } catch (Exception e) {
@@ -85,7 +86,6 @@ public class GroupServiceImpl implements GroupService {
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
-
     }
 
     @Override
@@ -266,7 +266,7 @@ public class GroupServiceImpl implements GroupService {
             }
 
             groupRepository.save(group.get());
-            
+
             return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_GROUP);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

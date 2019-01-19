@@ -80,6 +80,35 @@ public class FeelServiceImpl implements FeelService {
     }
 
     @Override
+    public FeelRes findFeelsByContentIdxInternal(int contentIdx) {
+        try {
+            final List<Feel> feels = feelRepository.findFeelsByContentIdxOrderByCreatedAtAsc(contentIdx);
+
+            if (feels.isEmpty())
+                return null;
+
+            List<Integer> types = new LinkedList<>();
+            for (Feel feel : feels)
+                types.add(feel.getFeelType());
+
+            Optional<User> firstUser = userRepository.findById(feels.get(0).getUserIdx());
+            if (!firstUser.isPresent())
+                return null;
+
+            FeelRes feelRes = FeelRes.builder()
+                    .feelTypes(feels)
+                    .firstUserName(firstUser.get().getUserName())
+                    .feelCount(feels.size())
+                    .build();
+
+            return feelRes;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
     public DefaultRes countThisWeek(int userIdx) {
         try {
             Optional<User> user = userRepository.findById(userIdx);

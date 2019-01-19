@@ -18,11 +18,9 @@ import java.util.concurrent.CompletableFuture;
 
 import static kr.co.famfam.server.utils.PushType.*;
 
-
 @Slf4j
 @Service
 public class PushServiceImpl implements PushService {
-
 
     @Value("${fcm.server.key}")
     private String SERVER_KEY;
